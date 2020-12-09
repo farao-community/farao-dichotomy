@@ -23,6 +23,8 @@ jobs:
         uses: actions/checkout@v1
         with:
           repository: farao-community/farao-core
+          ref: master
+          path: farao-core
 
       - name: Build FARAO core
         run: mvn --batch-mode -DskipTests install
