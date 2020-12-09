@@ -39,6 +39,7 @@
         <!-- Project properties -->
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <java.version>11</java.version>
+        <maven.compiler.source>11</maven.compiler.source>
 
         <!-- Dependencies versions -->
 	    <farao.core.version>2.2.0-SNAPSHOT</farao.core.version>
@@ -118,9 +119,6 @@
                                 <goals>
                                     <goal>prepare-agent</goal>
                                 </goals>
-                                <configuration>
-                                    <destFile>${sonar.jacoco.reportPath}</destFile>
-                                </configuration>
                             </execution>
                             <execution>
                                 <id>post-unit-test</id>
@@ -128,9 +126,6 @@
                                 <goals>
                                     <goal>report</goal>
                                 </goals>
-                                <configuration>
-                                    <dataFile>${sonar.jacoco.reportPath}</dataFile>
-                                </configuration>
                             </execution>
                         </executions>
                     </plugin>
