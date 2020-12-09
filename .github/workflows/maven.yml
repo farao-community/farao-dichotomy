@@ -28,7 +28,7 @@ jobs:
 
       - name: Build FARAO core
         run: mvn --batch-mode -DskipTests install
-        working-directory: ./farao-core
+        working-directory: ../farao-core
 
       - name: Build with Maven
         if: matrix.os == 'ubuntu-latest'
