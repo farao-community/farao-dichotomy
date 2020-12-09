@@ -43,7 +43,7 @@ public class RaoValidationStrategy implements ValidationStrategy<RaoStepResult> 
 
     @Override
     public RaoStepResult validateStep(double stepValue) {
-        LOGGER.info("Validating step value: " + stepValue);
+        LOGGER.info("Validating step value: {}", stepValue);
         Network duplicatedNetwork = duplicateNetwork(network);
         Crac duplicatedCrac = duplicateCrac(crac);
         splittingFactors.forEach((zoneId, splittingFactor) -> scalables.getData(zoneId).scale(duplicatedNetwork, stepValue * splittingFactor));

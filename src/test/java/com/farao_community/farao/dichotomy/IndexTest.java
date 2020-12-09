@@ -18,7 +18,7 @@ class IndexTest {
     private static final double EPSILON = 1e-3;
 
     @Test
-    public void checkStandardIndexManipulation() {
+    void checkStandardIndexManipulation() {
         Index<DefaultStepResult> index = new Index<>(-1000, -200, 100);
 
         assertEquals(-1000, index.minValue(), EPSILON);
@@ -27,12 +27,12 @@ class IndexTest {
     }
 
     @Test
-    public void checkIndexCreationFailsIfMinHigherThanMax() {
+    void checkIndexCreationFailsIfMinHigherThanMax() {
         Assertions.assertThrows(DichotomyException.class, () -> new Index<>(-200, -1000, 100));
     }
 
     @Test
-    public void checkIndexCreationFailsIfPrecisionIsLowerThanSearchInterval() {
+    void checkIndexCreationFailsIfPrecisionIsLowerThanSearchInterval() {
         Assertions.assertThrows(DichotomyException.class, () -> new Index<>(-100, -100, 300));
     }
 

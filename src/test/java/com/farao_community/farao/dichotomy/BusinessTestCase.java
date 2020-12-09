@@ -101,7 +101,7 @@ class BusinessTestCase {
     }
 
     @Test
-    public void runRangeDivisionDichotomy() {
+    void runRangeDivisionDichotomy() {
         double minValue = 0;
         double maxValue = 4500;
         double precision = 200;
@@ -124,7 +124,7 @@ class BusinessTestCase {
     }
 
     @Test
-    public void runStepsDichotomy() {
+    void runStepsDichotomy() {
         double minValue = 0;
         double maxValue = 4500;
         double precision = 200;

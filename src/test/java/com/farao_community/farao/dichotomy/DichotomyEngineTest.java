@@ -18,7 +18,7 @@ class DichotomyEngineTest {
     private static final double EPSILON = 1e-3;
 
     @Test
-    public void checkRangeDivisionIndexStrategyStartingWithMin() {
+    void checkRangeDivisionIndexStrategyStartingWithMin() {
         double limit = -340;
         double minValue = -1000;
         double maxValue = 1000;
@@ -49,7 +49,7 @@ class DichotomyEngineTest {
     }
 
     @Test
-    public void checkRangeDivisionIndexStrategyStartingWithMax() {
+    void checkRangeDivisionIndexStrategyStartingWithMax() {
         double limit = -340;
         double minValue = -1000;
         double maxValue = 1000;
@@ -80,7 +80,7 @@ class DichotomyEngineTest {
     }
 
     @Test
-    public void checkStepsIndexStrategyStartingWithMin() {
+    void checkStepsIndexStrategyStartingWithMin() {
         double limit = -340;
         double minValue = -1000;
         double maxValue = 1000;
@@ -110,7 +110,7 @@ class DichotomyEngineTest {
     }
 
     @Test
-    public void checkStepsIndexStrategyStartingWithMax() {
+    void checkStepsIndexStrategyStartingWithMax() {
         double limit = -340;
         double minValue = -1000;
         double maxValue = 1000;
@@ -144,7 +144,7 @@ class DichotomyEngineTest {
     }
 
     @Test
-    public void checkDichotomyEngineStopsAtMaxIterations() {
+    void checkDichotomyEngineStopsAtMaxIterations() {
         double limit = -340;
         double minValue = -1000;
         double maxValue = 1000;
@@ -174,7 +174,7 @@ class DichotomyEngineTest {
     }
 
     @Test
-    public void checkAllSecure() {
+    void checkAllSecure() {
         double limit = 1500;
         double minValue = -1000;
         double maxValue = 1000;
@@ -196,7 +196,7 @@ class DichotomyEngineTest {
     }
 
     @Test
-    public void checkAllUnsecure() {
+    void checkAllUnsecure() {
         double limit = -1500;
         double minValue = -1000;
         double maxValue = 1000;
@@ -216,7 +216,7 @@ class DichotomyEngineTest {
     }
 
     @Test
-    public void checkThatEngineFailsWhenMaxIterationTooLow() {
+    void checkThatEngineFailsWhenMaxIterationTooLow() {
         double limit = -1500;
         double minValue = -1000;
         double maxValue = 1000;
@@ -228,7 +228,7 @@ class DichotomyEngineTest {
     }
 
     @Test
-    public void checkThatStepsIndexStrategyCreationFailsWhenStepsSizeNegative() {
+    void checkThatStepsIndexStrategyCreationFailsWhenStepsSizeNegative() {
         Assertions.assertThrows(DichotomyException.class, () -> new StepsIndexStrategy(true, -10));
         Assertions.assertThrows(DichotomyException.class, () -> new StepsIndexStrategy(true, 0));
     }
