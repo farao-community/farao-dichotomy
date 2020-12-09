@@ -115,14 +115,15 @@
                         <version>${maven.jacoco.version}</version>
                         <executions>
                             <execution>
-                                <id>pre-unit-tests</id>
+                                <id>prepare-jacoco-agent</id>
+                                <phase>test-compile</phase>
                                 <goals>
                                     <goal>prepare-agent</goal>
                                 </goals>
                             </execution>
                             <execution>
-                                <id>post-unit-test</id>
-                                <phase>test</phase>
+                                <id>generate-jacoco-report</id>
+                                <phase>verify</phase>
                                 <goals>
                                     <goal>report</goal>
                                 </goals>
