@@ -10,10 +10,10 @@ import com.farao_community.farao.commons.Unit;
 import com.farao_community.farao.commons.ZonalData;
 import com.farao_community.farao.commons.ZonalDataImpl;
 import com.farao_community.farao.data.crac_api.*;
+import com.farao_community.farao.data.crac_api.threshold.BranchThresholdRule;
 import com.farao_community.farao.data.crac_api.usage_rule.UsageMethod;
 import com.farao_community.farao.data.crac_impl.SimpleCrac;
 import com.farao_community.farao.data.crac_impl.remedial_action.network_action.Topology;
-import com.farao_community.farao.data.crac_impl.threshold.AbsoluteFlowThreshold;
 import com.farao_community.farao.data.crac_impl.usage_rule.FreeToUseImpl;
 import com.farao_community.farao.dichotomy.rao.RaoStepResult;
 import com.farao_community.farao.dichotomy.rao.RaoValidationStrategy;
@@ -21,7 +21,6 @@ import com.powsybl.action.util.Scalable;
 import com.powsybl.iidm.network.*;
 import org.junit.jupiter.api.Test;
 
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.TreeMap;
@@ -77,9 +76,12 @@ class BusinessTestCase {
         State preventiveState = crac.addState(null, instant);
         crac.addNetworkElement("Italy internal 1");
         crac.addNetworkElement("Italy internal 2");
-        crac.addCnec("Italy internal 1", "Italy internal 1", Collections.singleton(new AbsoluteFlowThreshold(Unit.MEGAWATT, Side.LEFT, Direction.BOTH, 3000)), preventiveState.getId());
-        crac.addCnec("Italy internal 2", "Italy internal 2", Collections.singleton(new AbsoluteFlowThreshold(Unit.MEGAWATT, Side.LEFT, Direction.BOTH, 3000)), preventiveState.getId());
-
+        crac.newBranchCnec().setId("Italy internal 1").setInstant(instant)
+                .newNetworkElement().setId("Italy internal 1").add()
+                .newThreshold().setMax(3000.).setUnit(Unit.MEGAWATT).setRule(BranchThresholdRule.ON_LEFT_SIDE).add();
+        crac.newBranchCnec().setId("Italy internal 2").setInstant(instant)
+                .newNetworkElement().setId("Italy internal 2").add()
+                .newThreshold().setMax(3000.).setUnit(Unit.MEGAWATT).setRule(BranchThresholdRule.ON_LEFT_SIDE).add();
         NetworkElement switchElement = crac.addNetworkElement("Switch Italy");
         Topology switchRa = new Topology(
                 "Switch Italy",
