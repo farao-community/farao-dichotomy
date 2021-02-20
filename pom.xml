@@ -46,8 +46,11 @@
         <junit.jupiter.version>RELEASE</junit.jupiter.version>
         <maven.checkstyle.version>3.1.1</maven.checkstyle.version>
         <maven.compiler.version>3.8.1</maven.compiler.version>
+        <maven.gpg.version>1.6</maven.gpg.version>
         <maven.jacoco.version>0.8.5</maven.jacoco.version>
+        <maven.javadoc.version>3.2.0</maven.javadoc.version>
         <maven.resources.version>3.1.0</maven.resources.version>
+        <maven.source.version>3.2.1</maven.source.version>
         <maven.surefire.version>2.22.2</maven.surefire.version>
         <powsybl.core.version>4.0.0</powsybl.core.version>
         <powsybl.rte.core.version>3.0.0</powsybl.rte.core.version>
@@ -132,6 +135,65 @@
                     </plugin>
                 </plugins>
             </build>
+        </profile>
+        <profile>
+            <id>release</id>
+            <activation>
+                <activeByDefault>false</activeByDefault>
+            </activation>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-gpg-plugin</artifactId>
+                        <version>${maven.gpg.version}</version>
+                        <executions>
+                            <execution>
+                                <phase>verify</phase>
+                                <goals>
+                                    <goal>sign</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                    </plugin>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-javadoc-plugin</artifactId>
+                        <version>${maven.javadoc.version}</version>
+                        <executions>
+                            <execution>
+                                <goals>
+                                    <goal>jar</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                    </plugin>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-source-plugin</artifactId>
+                        <version>${maven.source.version}</version>
+                        <executions>
+                            <execution>
+                                <phase>package</phase>
+                                <goals>
+                                    <goal>jar-no-fork</goal>
+                                    <goal>test-jar-no-fork</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                    </plugin>
+                </plugins>
+            </build>
+            <distributionManagement>
+                <snapshotRepository>
+                    <id>ossrh</id>
+                    <url>https://oss.sonatype.org/content/repositories/snapshots</url>
+                </snapshotRepository>
+                <repository>
+                    <id>ossrh</id>
+                    <url>https://oss.sonatype.org/service/local/staging/deploy/maven2/</url>
+                </repository>
+            </distributionManagement>
         </profile>
     </profiles>
 
