@@ -29,6 +29,8 @@ class DichotomyEngineTest {
         DichotomyEngine<DefaultStepResult> engine = new DichotomyEngine<>(index, indexStrategy, validationStrategy);
         engine.run();
 
+        assertEquals(6, index.testedSteps().size());
+
         assertTrue(index.higherSecureStep().isSecure());
         assertEquals(-375, index.higherSecureStep().stepValue(), EPSILON);
         assertFalse(index.lowerUnsecureStep().isSecure());
@@ -59,6 +61,8 @@ class DichotomyEngineTest {
         ValidationStrategy<DefaultStepResult> validationStrategy = new ExampleValidationStrategy(limit);
         DichotomyEngine<DefaultStepResult> engine = new DichotomyEngine<>(index, indexStrategy, validationStrategy);
         engine.run();
+
+        assertEquals(6, index.testedSteps().size());
 
         assertTrue(index.higherSecureStep().isSecure());
         assertEquals(-375, index.higherSecureStep().stepValue(), EPSILON);
@@ -92,6 +96,8 @@ class DichotomyEngineTest {
         DichotomyEngine<DefaultStepResult> engine = new DichotomyEngine<>(index, indexStrategy, validationStrategy);
         engine.run();
 
+        assertEquals(5, index.testedSteps().size());
+
         assertTrue(index.higherSecureStep().isSecure());
         assertEquals(-400, index.higherSecureStep().stepValue(), EPSILON);
         assertFalse(index.lowerUnsecureStep().isSecure());
@@ -121,6 +127,8 @@ class DichotomyEngineTest {
         ValidationStrategy<DefaultStepResult> validationStrategy = new ExampleValidationStrategy(limit);
         DichotomyEngine<DefaultStepResult> engine = new DichotomyEngine<>(index, indexStrategy, validationStrategy);
         engine.run();
+
+        assertEquals(7, index.testedSteps().size());
 
         assertTrue(index.higherSecureStep().isSecure());
         assertEquals(-400, index.higherSecureStep().stepValue(), EPSILON);
@@ -156,6 +164,8 @@ class DichotomyEngineTest {
         DichotomyEngine<DefaultStepResult> engine = new DichotomyEngine<>(index, indexStrategy, validationStrategy, maxIterations);
         engine.run();
 
+        assertEquals(5, index.testedSteps().size());
+
         assertTrue(index.higherSecureStep().isSecure());
         assertEquals(-500, index.higherSecureStep().stepValue(), EPSILON);
         assertFalse(index.lowerUnsecureStep().isSecure());
@@ -185,6 +195,8 @@ class DichotomyEngineTest {
         DichotomyEngine<DefaultStepResult> engine = new DichotomyEngine<>(index, indexStrategy, validationStrategy);
         engine.run();
 
+        assertEquals(2, index.testedSteps().size());
+
         assertTrue(index.higherSecureStep().isSecure());
         assertEquals(1000, index.higherSecureStep().stepValue(), EPSILON);
         assertNull(index.lowerUnsecureStep());
@@ -206,6 +218,8 @@ class DichotomyEngineTest {
         ValidationStrategy<DefaultStepResult> validationStrategy = new ExampleValidationStrategy(limit);
         DichotomyEngine<DefaultStepResult> engine = new DichotomyEngine<>(index, indexStrategy, validationStrategy);
         engine.run();
+
+        assertEquals(1, index.testedSteps().size());
 
         assertNull(index.higherSecureStep());
         assertFalse(index.lowerUnsecureStep().isSecure());
@@ -231,5 +245,77 @@ class DichotomyEngineTest {
     void checkThatStepsIndexStrategyCreationFailsWhenStepsSizeNegative() {
         Assertions.assertThrows(DichotomyException.class, () -> new StepsIndexStrategy(true, -10));
         Assertions.assertThrows(DichotomyException.class, () -> new StepsIndexStrategy(true, 0));
+    }
+
+    @Test
+    void checkDichotomyEngineChecksLimitsWhenIntervalSmallerThanPrecision() {
+        double limit = 0;
+        double minValue = -50;
+        double maxValue = 50;
+        double precision = 200;
+        int maxIterations = 5;
+        Index<DefaultStepResult> index = new Index<>(minValue, maxValue, precision);
+        IndexStrategy indexStrategy = new RangeDivisionIndexStrategy(true);
+        ValidationStrategy<DefaultStepResult> validationStrategy = new ExampleValidationStrategy(limit);
+        DichotomyEngine<DefaultStepResult> engine = new DichotomyEngine<>(index, indexStrategy, validationStrategy, maxIterations);
+        engine.run();
+
+        assertEquals(2, index.testedSteps().size());
+
+        assertTrue(index.higherSecureStep().isSecure());
+        assertEquals(-50, index.higherSecureStep().stepValue(), EPSILON);
+        assertFalse(index.lowerUnsecureStep().isSecure());
+        assertEquals(50, index.lowerUnsecureStep().stepValue(), EPSILON);
+
+        assertEquals(-50, index.testedSteps().get(0).stepValue(), EPSILON);
+        assertTrue(index.testedSteps().get(0).isSecure());
+        assertEquals(50, index.testedSteps().get(1).stepValue(), EPSILON);
+        assertFalse(index.testedSteps().get(1).isSecure());
+    }
+
+    @Test
+    void checkDichotomyEngineStopEarlyWhenIntervalSmallerThanPrecisionButMinUnsecure() {
+        double limit = -100;
+        double minValue = -50;
+        double maxValue = 50;
+        double precision = 100;
+        int maxIterations = 5;
+        Index<DefaultStepResult> index = new Index<>(minValue, maxValue, precision);
+        IndexStrategy indexStrategy = new RangeDivisionIndexStrategy(true);
+        ValidationStrategy<DefaultStepResult> validationStrategy = new ExampleValidationStrategy(limit);
+        DichotomyEngine<DefaultStepResult> engine = new DichotomyEngine<>(index, indexStrategy, validationStrategy, maxIterations);
+        engine.run();
+
+        assertEquals(1, index.testedSteps().size());
+
+        assertNull(index.higherSecureStep());
+        assertFalse(index.lowerUnsecureStep().isSecure());
+        assertEquals(-50, index.lowerUnsecureStep().stepValue(), EPSILON);
+
+        assertEquals(-50, index.testedSteps().get(0).stepValue(), EPSILON);
+        assertFalse(index.testedSteps().get(0).isSecure());
+    }
+
+    @Test
+    void checkDichotomyEngineStopEarlyWhenIntervalSmallerThanPrecisionButMaxSecure() {
+        double limit = 100;
+        double minValue = -50;
+        double maxValue = 50;
+        double precision = 100;
+        int maxIterations = 5;
+        Index<DefaultStepResult> index = new Index<>(minValue, maxValue, precision);
+        IndexStrategy indexStrategy = new RangeDivisionIndexStrategy(false);
+        ValidationStrategy<DefaultStepResult> validationStrategy = new ExampleValidationStrategy(limit);
+        DichotomyEngine<DefaultStepResult> engine = new DichotomyEngine<>(index, indexStrategy, validationStrategy, maxIterations);
+        engine.run();
+
+        assertEquals(1, index.testedSteps().size());
+
+        assertTrue(index.higherSecureStep().isSecure());
+        assertNull(index.lowerUnsecureStep());
+        assertEquals(50, index.higherSecureStep().stepValue(), EPSILON);
+
+        assertEquals(50, index.testedSteps().get(0).stepValue(), EPSILON);
+        assertTrue(index.testedSteps().get(0).isSecure());
     }
 }
