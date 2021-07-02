@@ -32,8 +32,10 @@ class IndexTest {
     }
 
     @Test
-    void checkIndexCreationFailsIfPrecisionIsLowerThanSearchInterval() {
-        Assertions.assertThrows(DichotomyException.class, () -> new Index<>(-100, -100, 300));
+    void checkIndexCreationSucceedsIfPrecisionIsLowerThanSearchInterval() {
+        Index<DefaultStepResult> index = new Index<>(0, 100, 300);
+        assertEquals(0, index.minValue(), EPSILON);
+        assertEquals(100, index.maxValue(), EPSILON);
+        assertEquals(300, index.precision(), EPSILON);
     }
-
 }

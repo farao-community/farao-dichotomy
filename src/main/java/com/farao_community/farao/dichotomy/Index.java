@@ -33,9 +33,6 @@ public class Index<T extends StepResult> {
         if (minValue > maxValue) {
             throw new DichotomyException("Index creation impossible, minValue is supposed to be lower than maxValue.");
         }
-        if (precision > maxValue - minValue) {
-            throw new DichotomyException("Index creation impossible, precision is bigger than actual research interval.");
-        }
         this.minValue = minValue;
         this.maxValue = maxValue;
         this.precision = precision;
@@ -81,17 +78,15 @@ public class Index<T extends StepResult> {
     }
 
     boolean precisionReached() {
-        if (lowerUnsecureStep == null && higherSecureStep == null) {
-            return false;
-        }
         if (lowerUnsecureStep != null && Math.abs(lowerUnsecureStep.stepValue() - minValue) < EPSILON) {
             return true;
         }
         if (higherSecureStep != null && Math.abs(higherSecureStep.stepValue() - maxValue) < EPSILON) {
             return true;
         }
-        double minInterval = higherSecureStep != null ? higherSecureStep.stepValue() : minValue;
-        double maxInterval = lowerUnsecureStep != null ? lowerUnsecureStep.stepValue() : maxValue;
-        return Math.abs(minInterval - maxInterval) < precision;
+        if (lowerUnsecureStep == null || higherSecureStep == null) {
+            return false;
+        }
+        return Math.abs(higherSecureStep.stepValue() - lowerUnsecureStep.stepValue()) < precision;
     }
 }
