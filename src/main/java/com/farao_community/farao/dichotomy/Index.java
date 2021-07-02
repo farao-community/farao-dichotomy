@@ -78,9 +78,6 @@ public class Index<T extends StepResult> {
     }
 
     boolean precisionReached() {
-        if (lowerUnsecureStep == null && higherSecureStep == null) {
-            return false;
-        }
         if (lowerUnsecureStep != null && Math.abs(lowerUnsecureStep.stepValue() - minValue) < EPSILON) {
             return true;
         }
