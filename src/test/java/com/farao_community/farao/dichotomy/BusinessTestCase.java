@@ -10,19 +10,16 @@ import com.farao_community.farao.commons.Unit;
 import com.farao_community.farao.commons.ZonalData;
 import com.farao_community.farao.commons.ZonalDataImpl;
 import com.farao_community.farao.data.crac_api.*;
+import com.farao_community.farao.data.crac_api.network_action.ActionType;
 import com.farao_community.farao.data.crac_api.threshold.BranchThresholdRule;
 import com.farao_community.farao.data.crac_api.usage_rule.UsageMethod;
-import com.farao_community.farao.data.crac_impl.SimpleCrac;
-import com.farao_community.farao.data.crac_impl.remedial_action.network_action.NetworkActionImpl;
-import com.farao_community.farao.data.crac_impl.remedial_action.network_action.TopologicalActionImpl;
-import com.farao_community.farao.data.crac_impl.usage_rule.FreeToUseImpl;
+import com.farao_community.farao.data.crac_impl.CracImplFactory;
 import com.farao_community.farao.dichotomy.rao.RaoStepResult;
 import com.farao_community.farao.dichotomy.rao.RaoValidationStrategy;
 import com.powsybl.action.util.Scalable;
 import com.powsybl.iidm.network.*;
 import org.junit.jupiter.api.Test;
 
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.TreeMap;
@@ -73,23 +70,24 @@ class BusinessTestCase {
     }
 
     public Crac createCrac() {
-        SimpleCrac crac = new SimpleCrac("Dichotomy test crac");
-        crac.addNetworkElement("Italy internal 1");
-        crac.addNetworkElement("Italy internal 2");
-        crac.newBranchCnec().setId("Italy internal 1").setInstant(Instant.PREVENTIVE)
-                .newNetworkElement().setId("Italy internal 1").add()
-                .newThreshold().setMax(3000.).setUnit(Unit.MEGAWATT).setRule(BranchThresholdRule.ON_LEFT_SIDE).add();
-        crac.newBranchCnec().setId("Italy internal 2").setInstant(Instant.PREVENTIVE)
-                .newNetworkElement().setId("Italy internal 2").add()
-                .newThreshold().setMax(3000.).setUnit(Unit.MEGAWATT).setRule(BranchThresholdRule.ON_LEFT_SIDE).add();
-        NetworkElement switchElement = crac.addNetworkElement("Switch Italy");
-        NetworkAction switchRa = new NetworkActionImpl(
-                "Switch Italy",
-                "Switch Italy",
-                "",
-                Collections.singletonList(new FreeToUseImpl(UsageMethod.AVAILABLE, Instant.PREVENTIVE)),
-                Collections.singleton(new TopologicalActionImpl(switchElement, ActionType.CLOSE)));
-        crac.addNetworkAction(switchRa);
+        CracFactory cracFactory = new CracImplFactory();
+        Crac crac = cracFactory.create("Dichotomy test crac");
+        crac.newFlowCnec()
+                .withId("Italy internal 1")
+                .withInstant(Instant.PREVENTIVE)
+                .withNetworkElement("Italy internal 1")
+                .newThreshold().withMax(3000.).withUnit(Unit.MEGAWATT).withRule(BranchThresholdRule.ON_LEFT_SIDE).add()
+                .add();
+        crac.newFlowCnec()
+                .withId("Italy internal 2")
+                .withInstant(Instant.PREVENTIVE)
+                .withNetworkElement("Italy internal 2")
+                .newThreshold().withMax(3000.).withUnit(Unit.MEGAWATT).withRule(BranchThresholdRule.ON_LEFT_SIDE).add()
+                .add();
+        crac.newNetworkAction()
+                .newTopologicalAction().withActionType(ActionType.CLOSE).withNetworkElement("Switch Italy").add()
+                .newFreeToUseUsageRule().withInstant(Instant.PREVENTIVE).withUsageMethod(UsageMethod.AVAILABLE)
+                .add();
         return crac;
     }
 
