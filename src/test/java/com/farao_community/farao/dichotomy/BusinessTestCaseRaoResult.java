@@ -1,3 +1,9 @@
+/*
+ * Copyright (c) 2021, RTE (http://www.rte-france.com)
+ * This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at http://mozilla.org/MPL/2.0/.
+ */
 package com.farao_community.farao.dichotomy;
 
 import com.farao_community.farao.commons.Unit;
@@ -45,37 +51,37 @@ public class BusinessTestCaseRaoResult implements RaoResult {
 
     @Override
     public double getFlow(OptimizationState optimizationState, FlowCnec flowCnec, Unit unit) {
-        return 0;
+        throw new UnsupportedOperationException();
     }
 
     @Override
     public double getMargin(OptimizationState optimizationState, FlowCnec flowCnec, Unit unit) {
-        return 0;
+        throw new UnsupportedOperationException();
     }
 
     @Override
     public double getRelativeMargin(OptimizationState optimizationState, FlowCnec flowCnec, Unit unit) {
-        return 0;
+        throw new UnsupportedOperationException();
     }
 
     @Override
     public double getCommercialFlow(OptimizationState optimizationState, FlowCnec flowCnec, Unit unit) {
-        return 0;
+        throw new UnsupportedOperationException();
     }
 
     @Override
     public double getLoopFlow(OptimizationState optimizationState, FlowCnec flowCnec, Unit unit) {
-        return 0;
+        throw new UnsupportedOperationException();
     }
 
     @Override
     public double getPtdfZonalSum(OptimizationState optimizationState, FlowCnec flowCnec) {
-        return 0;
+        throw new UnsupportedOperationException();
     }
 
     @Override
     public double getCost(OptimizationState optimizationState) {
-        return 0;
+        throw new UnsupportedOperationException();
     }
 
     @Override
@@ -85,71 +91,71 @@ public class BusinessTestCaseRaoResult implements RaoResult {
 
     @Override
     public double getVirtualCost(OptimizationState optimizationState) {
-        return 0;
+        throw new UnsupportedOperationException();
     }
 
     @Override
     public Set<String> getVirtualCostNames() {
-        return null;
+        throw new UnsupportedOperationException();
     }
 
     @Override
     public double getVirtualCost(OptimizationState optimizationState, String s) {
-        return 0;
+        throw new UnsupportedOperationException();
     }
 
     @Override
     public boolean wasActivatedBeforeState(State state, NetworkAction networkAction) {
-        return false;
+        throw new UnsupportedOperationException();
     }
 
     @Override
     public boolean isActivatedDuringState(State state, NetworkAction networkAction) {
-        return false;
+        throw new UnsupportedOperationException();
     }
 
     @Override
     public Set<NetworkAction> getActivatedNetworkActionsDuringState(State state) {
-        return null;
+        throw new UnsupportedOperationException();
     }
 
     @Override
     public boolean isActivatedDuringState(State state, RangeAction rangeAction) {
-        return false;
+        throw new UnsupportedOperationException();
     }
 
     @Override
     public int getPreOptimizationTapOnState(State state, PstRangeAction pstRangeAction) {
-        return 0;
+        throw new UnsupportedOperationException();
     }
 
     @Override
     public int getOptimizedTapOnState(State state, PstRangeAction pstRangeAction) {
-        return 0;
+        throw new UnsupportedOperationException();
     }
 
     @Override
     public double getPreOptimizationSetPointOnState(State state, RangeAction rangeAction) {
-        return 0;
+        throw new UnsupportedOperationException();
     }
 
     @Override
     public double getOptimizedSetPointOnState(State state, RangeAction rangeAction) {
-        return 0;
+        throw new UnsupportedOperationException();
     }
 
     @Override
     public Set<RangeAction> getActivatedRangeActionsDuringState(State state) {
-        return null;
+        throw new UnsupportedOperationException();
     }
 
     @Override
     public Map<PstRangeAction, Integer> getOptimizedTapsOnState(State state) {
-        return null;
+        throw new UnsupportedOperationException();
     }
 
     @Override
     public Map<RangeAction, Double> getOptimizedSetPointsOnState(State state) {
-        return null;
+        throw new UnsupportedOperationException();
     }
 }
