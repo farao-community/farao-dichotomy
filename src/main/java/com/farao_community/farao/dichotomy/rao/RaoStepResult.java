@@ -28,7 +28,7 @@ public class RaoStepResult implements StepResult {
         if (raoResult.getComputationStatus() == ComputationStatus.FAILURE) {
             return false;
         }
-        return raoResult.getFunctionalCost(OptimizationState.AFTER_CRA) > 0;
+        return raoResult.getFunctionalCost(OptimizationState.AFTER_CRA) <= 0;
     }
 
     @Override

@@ -18,8 +18,8 @@ import java.util.Set;
  */
 public class BusinessTestCaseRaoResult implements RaoResult {
     public enum Status {
-        SECURED(50.),
-        UNSECURED(-50.);
+        SECURED(-50.),
+        UNSECURED(50.);
 
         private double functionalCost;
 
