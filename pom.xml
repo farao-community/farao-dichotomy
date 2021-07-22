@@ -42,7 +42,6 @@
         <maven.compiler.source>11</maven.compiler.source>
 
         <!-- Dependencies versions -->
-	    <farao.core.version>2.4.2</farao.core.version>
         <junit.jupiter.version>RELEASE</junit.jupiter.version>
         <maven.checkstyle.version>3.1.1</maven.checkstyle.version>
         <maven.compiler.version>3.8.1</maven.compiler.version>
@@ -52,9 +51,12 @@
         <maven.resources.version>3.1.0</maven.resources.version>
         <maven.source.version>3.2.1</maven.source.version>
         <maven.surefire.version>2.22.2</maven.surefire.version>
-        <powsybl.core.version>4.0.0</powsybl.core.version>
-        <powsybl.rte.core.version>3.0.0</powsybl.rte.core.version>
         <slf4j.version>1.7.30</slf4j.version>
+
+        <!-- Business dependencies -->
+        <farao.core.version>3.0.0</farao.core.version>
+        <powsybl.core.version>4.2.0</powsybl.core.version>
+        <powsybl.rte.core.version>3.2.0</powsybl.rte.core.version>
     </properties>
 
     <build>

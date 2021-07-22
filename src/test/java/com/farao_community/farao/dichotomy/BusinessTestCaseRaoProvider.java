@@ -6,12 +6,10 @@
  */
 package com.farao_community.farao.dichotomy;
 
-import com.farao_community.farao.data.crac_result_extensions.CracResult;
-import com.farao_community.farao.data.crac_result_extensions.CracResultExtension;
+import com.farao_community.farao.data.rao_result_api.RaoResult;
 import com.farao_community.farao.rao_api.RaoInput;
-import com.farao_community.farao.rao_api.RaoParameters;
 import com.farao_community.farao.rao_api.RaoProvider;
-import com.farao_community.farao.rao_api.RaoResult;
+import com.farao_community.farao.rao_api.parameters.RaoParameters;
 import com.google.auto.service.AutoService;
 
 import java.util.concurrent.CompletableFuture;
@@ -21,40 +19,16 @@ import java.util.concurrent.CompletableFuture;
  */
 @AutoService(RaoProvider.class)
 public class BusinessTestCaseRaoProvider implements RaoProvider {
-    public static class MyCracResultExtension extends CracResultExtension {
-        private final MyCracResult myCracResult;
-
-        public MyCracResultExtension(MyCracResult myCracResult) {
-            this.myCracResult = myCracResult;
-        }
-
-        @Override
-        public CracResult getVariant(String variantId) {
-            return myCracResult;
-        }
-    }
-
-    public static class MyCracResult extends CracResult {
-        private final NetworkSecurityStatus networkSecurityStatus;
-
-        public MyCracResult(NetworkSecurityStatus networkSecurityStatus) {
-            this.networkSecurityStatus = networkSecurityStatus;
-        }
-
-        @Override
-        public NetworkSecurityStatus getNetworkSecurityStatus() {
-            return networkSecurityStatus;
-        }
-    }
 
     @Override
     public CompletableFuture<RaoResult> run(RaoInput raoInput, RaoParameters raoParameters) {
+        RaoResult raoResult;
         if (raoInput.getNetwork().getLoad("Load Italy").getP0() < 6000) {
-            raoInput.getCrac().addExtension(CracResultExtension.class, new MyCracResultExtension(new MyCracResult(CracResult.NetworkSecurityStatus.SECURED)));
+            raoResult = new BusinessTestCaseRaoResult(BusinessTestCaseRaoResult.Status.SECURED);
         } else {
-            raoInput.getCrac().addExtension(CracResultExtension.class, new MyCracResultExtension(new MyCracResult(CracResult.NetworkSecurityStatus.UNSECURED)));
+            raoResult = new BusinessTestCaseRaoResult(BusinessTestCaseRaoResult.Status.UNSECURED);
         }
-        return CompletableFuture.completedFuture(new RaoResult(RaoResult.Status.SUCCESS));
+        return CompletableFuture.completedFuture(raoResult);
     }
 
     @Override
