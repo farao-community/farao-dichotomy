@@ -5,11 +5,16 @@
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>com.farao-community.farao</groupId>
-    <artifactId>farao-dichotomy-rao-impl</artifactId>
-    <version>2.1.0-SNAPSHOT</version>
-    <packaging>jar</packaging>
+    <artifactId>farao-dichotomy</artifactId>
+    <version>2.0.0</version>
+    <packaging>pom</packaging>
 
-    <name>FARAO dichotomy implementation for RAO</name>
+    <modules>
+        <module>farao-dichotomy-api</module>
+        <module>farao-dichotomy-rao-impl</module>
+    </modules>
+
+    <name>FARAO dichotomy</name>
     <description>Basic implementation set for dichotomy use with FARAO</description>
     <url>http://www.farao-community.com</url>
 
@@ -36,10 +41,12 @@
     </developers>
 
     <properties>
+        <!-- Project properties -->
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <java.version>11</java.version>
         <maven.compiler.source>11</maven.compiler.source>
-        <maven.compiler.target>11</maven.compiler.target>
 
+        <!-- Dependencies versions -->
         <junit.jupiter.version>RELEASE</junit.jupiter.version>
         <maven.checkstyle.version>3.1.1</maven.checkstyle.version>
         <maven.compiler.version>3.8.1</maven.compiler.version>
@@ -51,7 +58,7 @@
         <maven.surefire.version>2.22.2</maven.surefire.version>
         <slf4j.version>1.7.30</slf4j.version>
 
-        <farao.dichotomy.version>2.1.0-SNAPSHOT</farao.dichotomy.version>
+        <!-- Business dependencies -->
         <farao.core.version>3.1.0</farao.core.version>
         <powsybl.core.version>4.2.0</powsybl.core.version>
     </properties>
@@ -196,62 +203,71 @@
         </profile>
     </profiles>
 
-    <dependencies>
-        <dependency>
-            <groupId>com.farao-community.farao</groupId>
-            <artifactId>farao-dichotomy-api</artifactId>
-            <version>${farao.dichotomy.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>com.farao-community.farao</groupId>
-            <artifactId>farao-crac-api</artifactId>
-            <version>${farao.core.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>com.farao-community.farao</groupId>
-            <artifactId>farao-rao-result-api</artifactId>
-            <version>${farao.core.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>com.farao-community.farao</groupId>
-            <artifactId>farao-rao-api</artifactId>
-            <version>${farao.core.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>com.powsybl</groupId>
-            <artifactId>powsybl-action-util</artifactId>
-            <version>${powsybl.core.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>com.powsybl</groupId>
-            <artifactId>powsybl-iidm-xml-converter</artifactId>
-            <version>${powsybl.core.version}</version>
-        </dependency>
+    <dependencyManagement>
+        <dependencies>
+            <!-- Compile dependencies -->
+            <dependency>
+                <groupId>com.farao-community.farao</groupId>
+                <artifactId>farao-dichotomy-api</artifactId>
+                <version>${farao.dichotomy.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.farao-community.farao</groupId>
+                <artifactId>farao-crac-api</artifactId>
+                <version>${farao.core.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.farao-community.farao</groupId>
+                <artifactId>farao-rao-result-api</artifactId>
+                <version>${farao.core.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.farao-community.farao</groupId>
+                <artifactId>farao-rao-api</artifactId>
+                <version>${farao.core.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.powsybl</groupId>
+                <artifactId>powsybl-action-util</artifactId>
+                <version>${powsybl.core.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.powsybl</groupId>
+                <artifactId>powsybl-iidm-xml-converter</artifactId>
+                <version>${powsybl.core.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.slf4j</groupId>
+                <artifactId>slf4j-api</artifactId>
+                <version>${slf4j.version}</version>
+            </dependency>
 
-        <!-- Test dependencies -->
-        <dependency>
-            <groupId>com.farao-community.farao</groupId>
-            <artifactId>farao-crac-impl</artifactId>
-            <version>${farao.core.version}</version>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>com.powsybl</groupId>
-            <artifactId>powsybl-config-test</artifactId>
-            <version>${powsybl.core.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.junit.jupiter</groupId>
-            <artifactId>junit-jupiter</artifactId>
-            <version>${junit.jupiter.version}</version>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.slf4j</groupId>
-            <artifactId>slf4j-simple</artifactId>
-            <version>${slf4j.version}</version>
-            <scope>test</scope>
-        </dependency>
-    </dependencies>
+            <!-- Test dependencies -->
+            <dependency>
+                <groupId>com.farao-community.farao</groupId>
+                <artifactId>farao-crac-impl</artifactId>
+                <version>${farao.core.version}</version>
+                <scope>test</scope>
+            </dependency>
+            <dependency>
+                <groupId>com.powsybl</groupId>
+                <artifactId>powsybl-config-test</artifactId>
+                <version>${powsybl.core.version}</version>
+                <scope>test</scope>
+            </dependency>
+            <dependency>
+                <groupId>org.junit.jupiter</groupId>
+                <artifactId>junit-jupiter</artifactId>
+                <version>${junit.jupiter.version}</version>
+                <scope>test</scope>
+            </dependency>
+            <dependency>
+                <groupId>org.slf4j</groupId>
+                <artifactId>slf4j-simple</artifactId>
+                <version>${slf4j.version}</version>
+                <scope>test</scope>
+            </dependency>
+        </dependencies>
+    </dependencyManagement>
 
 </project>
