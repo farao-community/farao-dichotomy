@@ -4,12 +4,11 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
-package com.farao_community.farao.dichotomy.rao;
+package com.farao_community.farao.dichotomy;
 
 import com.farao_community.farao.commons.ZonalData;
 import com.farao_community.farao.data.crac_api.Crac;
 import com.farao_community.farao.data.rao_result_api.RaoResult;
-import com.farao_community.farao.dichotomy.ValidationStrategy;
 import com.farao_community.farao.rao_api.Rao;
 import com.farao_community.farao.rao_api.RaoInput;
 import com.powsybl.action.util.Scalable;

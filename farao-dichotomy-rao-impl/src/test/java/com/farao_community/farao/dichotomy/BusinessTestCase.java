@@ -14,8 +14,6 @@ import com.farao_community.farao.data.crac_api.network_action.ActionType;
 import com.farao_community.farao.data.crac_api.threshold.BranchThresholdRule;
 import com.farao_community.farao.data.crac_api.usage_rule.UsageMethod;
 import com.farao_community.farao.data.crac_impl.CracImplFactory;
-import com.farao_community.farao.dichotomy.rao.RaoStepResult;
-import com.farao_community.farao.dichotomy.rao.RaoValidationStrategy;
 import com.powsybl.action.util.Scalable;
 import com.powsybl.iidm.network.*;
 import org.junit.jupiter.api.Test;

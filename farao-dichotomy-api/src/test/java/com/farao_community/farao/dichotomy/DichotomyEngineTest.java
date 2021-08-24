@@ -199,7 +199,7 @@ class DichotomyEngineTest {
 
         assertTrue(index.higherSecureStep().isSecure());
         assertEquals(1000, index.higherSecureStep().stepValue(), EPSILON);
-        assertNull(index.lowerUnsecureStep());
+        Assertions.assertNull(index.lowerUnsecureStep());
 
         assertEquals(-1000, index.testedSteps().get(0).stepValue(), EPSILON);
         assertTrue(index.testedSteps().get(0).isSecure());
@@ -221,7 +221,7 @@ class DichotomyEngineTest {
 
         assertEquals(1, index.testedSteps().size());
 
-        assertNull(index.higherSecureStep());
+        Assertions.assertNull(index.higherSecureStep());
         assertFalse(index.lowerUnsecureStep().isSecure());
         assertEquals(-1000, index.lowerUnsecureStep().stepValue(), EPSILON);
 
@@ -288,7 +288,7 @@ class DichotomyEngineTest {
 
         assertEquals(1, index.testedSteps().size());
 
-        assertNull(index.higherSecureStep());
+        Assertions.assertNull(index.higherSecureStep());
         assertFalse(index.lowerUnsecureStep().isSecure());
         assertEquals(-50, index.lowerUnsecureStep().stepValue(), EPSILON);
 
@@ -312,7 +312,7 @@ class DichotomyEngineTest {
         assertEquals(1, index.testedSteps().size());
 
         assertTrue(index.higherSecureStep().isSecure());
-        assertNull(index.lowerUnsecureStep());
+        Assertions.assertNull(index.lowerUnsecureStep());
         assertEquals(50, index.higherSecureStep().stepValue(), EPSILON);
 
         assertEquals(50, index.testedSteps().get(0).stepValue(), EPSILON);
