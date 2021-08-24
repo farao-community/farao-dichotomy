@@ -6,7 +6,6 @@
  */
 package com.farao_community.farao.dichotomy;
 
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -199,7 +198,7 @@ class DichotomyEngineTest {
 
         assertTrue(index.higherSecureStep().isSecure());
         assertEquals(1000, index.higherSecureStep().stepValue(), EPSILON);
-        Assertions.assertNull(index.lowerUnsecureStep());
+        assertNull(index.lowerUnsecureStep());
 
         assertEquals(-1000, index.testedSteps().get(0).stepValue(), EPSILON);
         assertTrue(index.testedSteps().get(0).isSecure());
@@ -221,7 +220,7 @@ class DichotomyEngineTest {
 
         assertEquals(1, index.testedSteps().size());
 
-        Assertions.assertNull(index.higherSecureStep());
+        assertNull(index.higherSecureStep());
         assertFalse(index.lowerUnsecureStep().isSecure());
         assertEquals(-1000, index.lowerUnsecureStep().stepValue(), EPSILON);
 
@@ -238,13 +237,13 @@ class DichotomyEngineTest {
         Index<DefaultStepResult> index = new Index<>(minValue, maxValue, precision);
         IndexStrategy indexStrategy = new RangeDivisionIndexStrategy(true);
         ValidationStrategy<DefaultStepResult> validationStrategy = new ExampleValidationStrategy(limit);
-        Assertions.assertThrows(DichotomyException.class, () -> new DichotomyEngine<>(index, indexStrategy, validationStrategy, 2));
+        assertThrows(DichotomyException.class, () -> new DichotomyEngine<>(index, indexStrategy, validationStrategy, 2));
     }
 
     @Test
     void checkThatStepsIndexStrategyCreationFailsWhenStepsSizeNegative() {
-        Assertions.assertThrows(DichotomyException.class, () -> new StepsIndexStrategy(true, -10));
-        Assertions.assertThrows(DichotomyException.class, () -> new StepsIndexStrategy(true, 0));
+        assertThrows(DichotomyException.class, () -> new StepsIndexStrategy(true, -10));
+        assertThrows(DichotomyException.class, () -> new StepsIndexStrategy(true, 0));
     }
 
     @Test
@@ -288,7 +287,7 @@ class DichotomyEngineTest {
 
         assertEquals(1, index.testedSteps().size());
 
-        Assertions.assertNull(index.higherSecureStep());
+        assertNull(index.higherSecureStep());
         assertFalse(index.lowerUnsecureStep().isSecure());
         assertEquals(-50, index.lowerUnsecureStep().stepValue(), EPSILON);
 
@@ -312,7 +311,7 @@ class DichotomyEngineTest {
         assertEquals(1, index.testedSteps().size());
 
         assertTrue(index.higherSecureStep().isSecure());
-        Assertions.assertNull(index.lowerUnsecureStep());
+        assertNull(index.lowerUnsecureStep());
         assertEquals(50, index.higherSecureStep().stepValue(), EPSILON);
 
         assertEquals(50, index.testedSteps().get(0).stepValue(), EPSILON);
