@@ -10,6 +10,67 @@
 This package provides a generic dichotomy engine that allows creating custom dichotomy process by
 providing specific validation strategy and dichotomy step result implementation.
 
+## Quick implementations example
+
+#### Implement a StepResult
+```java
+public class RaoStepResult implements StepResult {
+    private final double stepValue;
+    private final RaoResult raoResult;
+
+    public RaoStepResult(double stepValue, RaoResult raoResult) {
+        this.stepValue = stepValue;
+        this.raoResult = raoResult;
+    }
+
+    @Override
+    public boolean isSecure() {
+        if (raoResult.getComputationStatus() == ComputationStatus.FAILURE) {
+            return false;
+        }
+        return raoResult.getFunctionalCost(OptimizationState.AFTER_CRA) <= 0;
+    }
+
+    @Override
+    public double stepValue() {
+        return stepValue;
+    }
+}
+```
+
+#### Implement a ValidationStrategy
+
+```java
+public class RaoValidationStrategy implements ValidationStrategy<RaoStepResult> {
+    private final Network network;
+    private final Crac crac;
+    private final ZonalData<Scalable> scalables;
+    private final Map<String, Double> splittingFactors;
+
+    public RaoValidationStrategy(Network network, Crac crac, ZonalData<Scalable> scalables, Map<String, Double> splittingFactors) {
+        this.network = network;
+        this.crac = crac;
+        this.scalables = scalables;
+        this.splittingFactors = splittingFactors;
+    }
+
+    @Override
+    public RaoStepResult validateStep(double stepValue) {
+        Network duplicatedNetwork = duplicateNetwork(network);
+        splittingFactors.forEach((zoneId, splittingFactor) -> scalables.getData(zoneId).scale(duplicatedNetwork, stepValue * splittingFactor));
+        RaoInput raoInput = RaoInput.build(duplicatedNetwork, crac).build();
+        RaoResult raoResult = Rao.run(raoInput);
+        return new RaoStepResult(stepValue, raoResult);
+    }
+
+    private Network duplicateNetwork(Network network) {
+        return NetworkXml.copy(network);
+    }
+}
+```
+
+Thanks to these basics implementation you could run a basic dichotomy on RAO runs.
+
 ## License
 
 This project is licensed under the Mozilla Public License 2.0 - see the [LICENSE.txt](https://github.com/farao-community/farao-core/blob/master/LICENSE.txt) file for details.
