@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <parent>
+        <artifactId>farao-dichotomy</artifactId>
+        <groupId>com.farao-community.farao</groupId>
+        <version>2.0.0</version>
+    </parent>
+
+    <artifactId>farao-dichotomy-rao-impl</artifactId>
+    <packaging>jar</packaging>
+
+    <name>FARAO dichotomy implementation for RAO</name>
+    <description>Basic implementation set for dichotomy use with FARAO</description>
+    <url>http://www.farao-community.com</url>
+
+    <dependencies>
+        <dependency>
+            <groupId>com.farao-community.farao</groupId>
+            <artifactId>farao-dichotomy-api</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.farao-community.farao</groupId>
+            <artifactId>farao-crac-api</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.farao-community.farao</groupId>
+            <artifactId>farao-rao-result-api</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.farao-community.farao</groupId>
+            <artifactId>farao-rao-api</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.powsybl</groupId>
+            <artifactId>powsybl-action-util</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.powsybl</groupId>
+            <artifactId>powsybl-iidm-xml-converter</artifactId>
+        </dependency>
+
+        <!-- Test dependencies -->
+        <dependency>
+            <groupId>com.farao-community.farao</groupId>
+            <artifactId>farao-crac-impl</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>com.powsybl</groupId>
+            <artifactId>powsybl-config-test</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.junit.jupiter</groupId>
+            <artifactId>junit-jupiter</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-simple</artifactId>
+            <scope>test</scope>
+        </dependency>
+    </dependencies>
+
+</project>
