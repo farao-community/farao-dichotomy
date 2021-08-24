@@ -15,7 +15,7 @@
     </modules>
 
     <name>FARAO dichotomy</name>
-    <description>Basic implementation set for dichotomy use with FARAO</description>
+    <description>Package to enable the use of a dichotomy in FARAO suite</description>
     <url>http://www.farao-community.com</url>
 
     <licenses>
