@@ -9,7 +9,7 @@ import org.slf4j.LoggerFactory;
 /**
  * @author Joris Mancini {@literal <joris.mancini at rte-france.com>}
  */
-public abstract class AbstractNetworkValidationStrategy<I extends NetworkValidationResult> implements ValidationStrategy<NetworkStepResultWrapper<I>> {
+public abstract class AbstractNetworkValidationStrategy<I extends NetworkValidationResult> implements ValidationStrategy<NetworkValidationResultWrapper<I>> {
     private static final Logger LOGGER = LoggerFactory.getLogger(AbstractNetworkValidationStrategy.class);
 
     protected final Network network;
@@ -22,7 +22,7 @@ public abstract class AbstractNetworkValidationStrategy<I extends NetworkValidat
     }
 
     @Override
-    public NetworkStepResultWrapper<I> validateStep(double stepValue) throws ValidationException {
+    public NetworkValidationResultWrapper<I> validateStep(double stepValue) throws ValidationException {
         String initialVariant = network.getVariantManager().getWorkingVariantId();
         String newVariant = variantName(stepValue);
         network.getVariantManager().cloneVariant(initialVariant, newVariant);
@@ -33,10 +33,10 @@ public abstract class AbstractNetworkValidationStrategy<I extends NetworkValidat
             shiftNetwork(stepValue);
             LOGGER.debug("Validating network");
             I networkStepResult = networkValidator.validateNetwork(network);
-            return  NetworkStepResultWrapper.fromNetworkValidationResult(stepValue, networkStepResult);
+            return  NetworkValidationResultWrapper.fromNetworkValidationResult(stepValue, networkStepResult);
         } catch (GlskLimitationException e) {
             LOGGER.warn("GLSK limits have been reached for step value {}", stepValue);
-            return NetworkStepResultWrapper.withGlskLimitation(stepValue);
+            return NetworkValidationResultWrapper.withGlskLimitation(stepValue);
         } catch (ShiftingException | NetworkValidationException e) {
             throw new ValidationException(String.format("Impossible to validate step %.0f", stepValue), e);
         } finally {
@@ -49,5 +49,5 @@ public abstract class AbstractNetworkValidationStrategy<I extends NetworkValidat
         return String.format("ScaledBy-%d", (int) stepValue);
     }
 
-    protected abstract void shiftNetwork(double stepValue) throws GlskLimitationException;
+    protected abstract void shiftNetwork(double stepValue) throws GlskLimitationException, ShiftingException;
 }

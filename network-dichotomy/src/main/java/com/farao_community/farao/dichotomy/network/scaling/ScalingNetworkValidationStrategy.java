@@ -32,7 +32,7 @@ public class ScalingNetworkValidationStrategy<I extends NetworkValidationResult>
     }
 
     @Override
-    protected void shiftNetwork(double stepValue) throws GlskLimitationException {
+    protected void shiftNetwork(double stepValue) throws GlskLimitationException, ShiftingException {
         LOGGER.info("Scale network file");
         Map<String, Double> scalingValuesByCountry = shiftDispatcher.dispatch(stepValue);
         List<String> limitingCountries = new ArrayList<>();

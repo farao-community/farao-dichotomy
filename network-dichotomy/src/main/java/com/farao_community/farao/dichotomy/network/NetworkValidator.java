@@ -7,5 +7,5 @@ import com.powsybl.iidm.network.Network;
  */
 public interface NetworkValidator<I extends NetworkValidationResult> {
 
-    I validateNetwork(Network network);
+    I validateNetwork(Network network) throws NetworkValidationException;
 }

@@ -1,5 +1,7 @@
 package com.farao_community.farao.dichotomy.network.scaling;
 
+import com.farao_community.farao.dichotomy.network.ShiftingException;
+
 import java.util.Map;
 
 /**
@@ -7,5 +9,5 @@ import java.util.Map;
  */
 public interface ShiftDispatcher {
 
-    Map<String, Double> dispatch(double value);
+    Map<String, Double> dispatch(double value) throws ShiftingException;
 }

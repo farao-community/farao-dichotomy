@@ -1,6 +1,4 @@
-package com.farao_community.farao.dichotomy.network.scaling;
-
-import com.farao_community.farao.dichotomy.network.NetworkValidationResult;
+package com.farao_community.farao.dichotomy.network;
 
 /**
  * @author Joris Mancini {@literal <joris.mancini at rte-france.com>}
