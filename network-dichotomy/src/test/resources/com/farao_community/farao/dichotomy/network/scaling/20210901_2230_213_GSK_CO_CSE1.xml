@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<GSKDocument DtdVersion="5" DtdRelease="0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="gsk-document.xsd">
+  <DocumentIdentification v="20210901_2230_2D3_CO_GSK_CSE"/>
+  <DocumentVersion v="1"/>
+  <DocumentType v="Z02"/>
+  <ProcessType v="Z02"/>
+  <SenderIdentification v="XXXXXXXXXXXXXXXX" codingScheme="A01"/>
+  <SenderRole v="A36"/>
+  <ReceiverIdentification v="XXXXXXXXXXXXXXXX" codingScheme="A01"/>
+  <ReceiverRole v="A04"/>
+  <CreationDateTime v="2021-09-01T00:00:00Z"/>
+  <GSKTimeInterval v="2021-09-01T20:00Z/2021-09-01T21:00Z"/>
+  <Domain v="XXXXXXXXXXXXXXXX" codingScheme="A01"/>
+  <TimeSeries>
+    <TimeSeriesIdentification v="1"/>
+    <BusinessType v="Z02"/>
+    <Area v="10YCH-SWISSGRIDZ" codingScheme="A01"/>
+    <Name v="CH"/>
+    <TimeInterval v="2021-09-01T20:00Z/2021-09-01T20:59Z"/>
+    <ReserveGSKBlock>
+      <Order>1</Order>
+      <Factor v="1"/>
+      <Node>
+        <Name v="SWISS111"/>
+        <Pmin v="8"/>
+        <Pmax v="-2000"/>
+      </Node>
+      <Node>
+        <Name v="SWISS211"/>
+        <Pmin v="0"/>
+        <Pmax v="-2000"/>
+      </Node>
+    </ReserveGSKBlock>
+  </TimeSeries>
+</GSKDocument>
