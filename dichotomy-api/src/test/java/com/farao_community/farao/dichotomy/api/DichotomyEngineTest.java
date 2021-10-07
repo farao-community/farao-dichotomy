@@ -31,10 +31,10 @@ class DichotomyEngineTest {
 
         assertEquals(6, index.testedSteps().size());
 
-        assertTrue(index.higherValidStep().isValid());
-        assertEquals(-375, index.higherValidStep().stepValue(), EPSILON);
-        assertFalse(index.lowerInvalidStep().isValid());
-        assertEquals(-250, index.lowerInvalidStep().stepValue(), EPSILON);
+        assertTrue(index.highestValidStep().isValid());
+        assertEquals(-375, index.highestValidStep().stepValue(), EPSILON);
+        assertFalse(index.lowestInvalidStep().isValid());
+        assertEquals(-250, index.lowestInvalidStep().stepValue(), EPSILON);
 
         assertEquals(-1000, index.testedSteps().get(0).stepValue(), EPSILON);
         assertTrue(index.testedSteps().get(0).isValid());
@@ -64,10 +64,10 @@ class DichotomyEngineTest {
 
         assertEquals(6, index.testedSteps().size());
 
-        assertTrue(index.higherValidStep().isValid());
-        assertEquals(-375, index.higherValidStep().stepValue(), EPSILON);
-        assertFalse(index.lowerInvalidStep().isValid());
-        assertEquals(-250, index.lowerInvalidStep().stepValue(), EPSILON);
+        assertTrue(index.highestValidStep().isValid());
+        assertEquals(-375, index.highestValidStep().stepValue(), EPSILON);
+        assertFalse(index.lowestInvalidStep().isValid());
+        assertEquals(-250, index.lowestInvalidStep().stepValue(), EPSILON);
 
         assertEquals(1000, index.testedSteps().get(0).stepValue(), EPSILON);
         assertFalse(index.testedSteps().get(0).isValid());
@@ -98,10 +98,10 @@ class DichotomyEngineTest {
 
         assertEquals(5, index.testedSteps().size());
 
-        assertTrue(index.higherValidStep().isValid());
-        assertEquals(-400, index.higherValidStep().stepValue(), EPSILON);
-        assertFalse(index.lowerInvalidStep().isValid());
-        assertEquals(-300, index.lowerInvalidStep().stepValue(), EPSILON);
+        assertTrue(index.highestValidStep().isValid());
+        assertEquals(-400, index.highestValidStep().stepValue(), EPSILON);
+        assertFalse(index.lowestInvalidStep().isValid());
+        assertEquals(-300, index.lowestInvalidStep().stepValue(), EPSILON);
 
         assertEquals(-1000, index.testedSteps().get(0).stepValue(), EPSILON);
         assertTrue(index.testedSteps().get(0).isValid());
@@ -130,10 +130,10 @@ class DichotomyEngineTest {
 
         assertEquals(7, index.testedSteps().size());
 
-        assertTrue(index.higherValidStep().isValid());
-        assertEquals(-400, index.higherValidStep().stepValue(), EPSILON);
-        assertFalse(index.lowerInvalidStep().isValid());
-        assertEquals(-300, index.lowerInvalidStep().stepValue(), EPSILON);
+        assertTrue(index.highestValidStep().isValid());
+        assertEquals(-400, index.highestValidStep().stepValue(), EPSILON);
+        assertFalse(index.lowestInvalidStep().isValid());
+        assertEquals(-300, index.lowestInvalidStep().stepValue(), EPSILON);
 
         assertEquals(1000, index.testedSteps().get(0).stepValue(), EPSILON);
         assertFalse(index.testedSteps().get(0).isValid());
@@ -166,10 +166,10 @@ class DichotomyEngineTest {
 
         assertEquals(5, index.testedSteps().size());
 
-        assertTrue(index.higherValidStep().isValid());
-        assertEquals(-500, index.higherValidStep().stepValue(), EPSILON);
-        assertFalse(index.lowerInvalidStep().isValid());
-        assertEquals(-250, index.lowerInvalidStep().stepValue(), EPSILON);
+        assertTrue(index.highestValidStep().isValid());
+        assertEquals(-500, index.highestValidStep().stepValue(), EPSILON);
+        assertFalse(index.lowestInvalidStep().isValid());
+        assertEquals(-250, index.lowestInvalidStep().stepValue(), EPSILON);
 
         assertEquals(-1000, index.testedSteps().get(0).stepValue(), EPSILON);
         assertTrue(index.testedSteps().get(0).isValid());
@@ -197,9 +197,9 @@ class DichotomyEngineTest {
 
         assertEquals(2, index.testedSteps().size());
 
-        assertTrue(index.higherValidStep().isValid());
-        assertEquals(1000, index.higherValidStep().stepValue(), EPSILON);
-        assertNull(index.lowerInvalidStep());
+        assertTrue(index.highestValidStep().isValid());
+        assertEquals(1000, index.highestValidStep().stepValue(), EPSILON);
+        assertNull(index.lowestInvalidStep());
 
         assertEquals(-1000, index.testedSteps().get(0).stepValue(), EPSILON);
         assertTrue(index.testedSteps().get(0).isValid());
@@ -221,9 +221,9 @@ class DichotomyEngineTest {
 
         assertEquals(1, index.testedSteps().size());
 
-        assertNull(index.higherValidStep());
-        assertFalse(index.lowerInvalidStep().isValid());
-        assertEquals(-1000, index.lowerInvalidStep().stepValue(), EPSILON);
+        assertNull(index.highestValidStep());
+        assertFalse(index.lowestInvalidStep().isValid());
+        assertEquals(-1000, index.lowestInvalidStep().stepValue(), EPSILON);
 
         assertEquals(-1000, index.testedSteps().get(0).stepValue(), EPSILON);
         assertFalse(index.testedSteps().get(0).isValid());
@@ -262,10 +262,10 @@ class DichotomyEngineTest {
 
         assertEquals(2, index.testedSteps().size());
 
-        assertTrue(index.higherValidStep().isValid());
-        assertEquals(-50, index.higherValidStep().stepValue(), EPSILON);
-        assertFalse(index.lowerInvalidStep().isValid());
-        assertEquals(50, index.lowerInvalidStep().stepValue(), EPSILON);
+        assertTrue(index.highestValidStep().isValid());
+        assertEquals(-50, index.highestValidStep().stepValue(), EPSILON);
+        assertFalse(index.lowestInvalidStep().isValid());
+        assertEquals(50, index.lowestInvalidStep().stepValue(), EPSILON);
 
         assertEquals(-50, index.testedSteps().get(0).stepValue(), EPSILON);
         assertTrue(index.testedSteps().get(0).isValid());
@@ -288,9 +288,9 @@ class DichotomyEngineTest {
 
         assertEquals(1, index.testedSteps().size());
 
-        assertNull(index.higherValidStep());
-        assertFalse(index.lowerInvalidStep().isValid());
-        assertEquals(-50, index.lowerInvalidStep().stepValue(), EPSILON);
+        assertNull(index.highestValidStep());
+        assertFalse(index.lowestInvalidStep().isValid());
+        assertEquals(-50, index.lowestInvalidStep().stepValue(), EPSILON);
 
         assertEquals(-50, index.testedSteps().get(0).stepValue(), EPSILON);
         assertFalse(index.testedSteps().get(0).isValid());
@@ -311,9 +311,9 @@ class DichotomyEngineTest {
 
         assertEquals(1, index.testedSteps().size());
 
-        assertTrue(index.higherValidStep().isValid());
-        assertNull(index.lowerInvalidStep());
-        assertEquals(50, index.higherValidStep().stepValue(), EPSILON);
+        assertTrue(index.highestValidStep().isValid());
+        assertNull(index.lowestInvalidStep());
+        assertEquals(50, index.highestValidStep().stepValue(), EPSILON);
 
         assertEquals(50, index.testedSteps().get(0).stepValue(), EPSILON);
         assertTrue(index.testedSteps().get(0).isValid());

@@ -26,8 +26,8 @@ public class Index<T extends StepResult> {
     private final double maxValue;
     private final double precision;
     private final List<T> stepResults = new ArrayList<>();
-    private T higherValidStep;
-    private T lowerInvalidStep;
+    private T highestValidStep;
+    private T lowestInvalidStep;
 
     public Index(double minValue, double maxValue, double precision) {
         if (minValue > maxValue) {
@@ -50,12 +50,12 @@ public class Index<T extends StepResult> {
         return precision;
     }
 
-    public T higherValidStep() {
-        return higherValidStep;
+    public T highestValidStep() {
+        return highestValidStep;
     }
 
-    public T lowerInvalidStep() {
-        return lowerInvalidStep;
+    public T lowestInvalidStep() {
+        return lowestInvalidStep;
     }
 
     public List<T> testedSteps() {
@@ -64,29 +64,29 @@ public class Index<T extends StepResult> {
 
     void addDichotomyStepResult(T stepResult) {
         if (stepResult.isValid()) {
-            if (higherValidStep != null && higherValidStep.stepValue() > stepResult.stepValue()) {
-                throw new AssertionError("Step result tested is secure but its value is lower than higher secure step one. Should not happen");
+            if (highestValidStep != null && highestValidStep.stepValue() > stepResult.stepValue()) {
+                throw new AssertionError("Step result tested is secure but its value is lower than highest secure step one. Should not happen");
             }
-            higherValidStep = stepResult;
+            highestValidStep = stepResult;
         } else if (!stepResult.isValid()) {
-            if (lowerInvalidStep != null && lowerInvalidStep.stepValue() < stepResult.stepValue()) {
-                throw new AssertionError("Step result tested is unsecure but its value is higher than lower unsecure step one. Should not happen");
+            if (lowestInvalidStep != null && lowestInvalidStep.stepValue() < stepResult.stepValue()) {
+                throw new AssertionError("Step result tested is unsecure but its value is higher than lowest unsecure step one. Should not happen");
             }
-            lowerInvalidStep = stepResult;
+            lowestInvalidStep = stepResult;
         }
         stepResults.add(stepResult);
     }
 
     boolean precisionReached() {
-        if (lowerInvalidStep != null && Math.abs(lowerInvalidStep.stepValue() - minValue) < EPSILON) {
+        if (lowestInvalidStep != null && Math.abs(lowestInvalidStep.stepValue() - minValue) < EPSILON) {
             return true;
         }
-        if (higherValidStep != null && Math.abs(higherValidStep.stepValue() - maxValue) < EPSILON) {
+        if (highestValidStep != null && Math.abs(highestValidStep.stepValue() - maxValue) < EPSILON) {
             return true;
         }
-        if (lowerInvalidStep == null || higherValidStep == null) {
+        if (lowestInvalidStep == null || highestValidStep == null) {
             return false;
         }
-        return Math.abs(higherValidStep.stepValue() - lowerInvalidStep.stepValue()) < precision;
+        return Math.abs(highestValidStep.stepValue() - lowestInvalidStep.stepValue()) < precision;
     }
 }
