@@ -11,7 +11,7 @@
     </parent>
 
     <artifactId>farao-dichotomy</artifactId>
-    <version>3.1.0-SNAPSHOT</version>
+    <version>3.1.1</version>
     <name>FARAO dichotomy engine</name>
     <description>A dichotomy engine for process based on remedial actions optimisation and security analysis</description>
     <packaging>pom</packaging>
