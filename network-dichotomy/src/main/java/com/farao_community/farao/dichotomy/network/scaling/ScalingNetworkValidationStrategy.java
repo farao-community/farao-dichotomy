@@ -13,9 +13,14 @@ import java.util.Map;
 import java.util.StringJoiner;
 
 /**
+ * This final implementation of network validation strategy use basic scaling strategy for network shifting. According
+ * to a set of {@link Scalable} defined by {@link ZonalData} it performs a simple shift -- without balancing -- on the
+ * network. The way to define shift amounts per zonal data -- how to dispatch the shift between areas from step
+ * value -- is handled by {@link ShiftDispatcher}.
+ *
  * @author Joris Mancini {@literal <joris.mancini at rte-france.com>}
  */
-public class ScalingNetworkValidationStrategy<I extends NetworkValidationResult> extends AbstractNetworkValidationStrategy<I> {
+public final class ScalingNetworkValidationStrategy<I extends NetworkValidationResult> extends AbstractNetworkValidationStrategy<I> {
     private static final Logger LOGGER = LoggerFactory.getLogger(ScalingNetworkValidationStrategy.class);
     private static final double EPSILON = 1e-3;
 
@@ -23,9 +28,9 @@ public class ScalingNetworkValidationStrategy<I extends NetworkValidationResult>
     private final ShiftDispatcher shiftDispatcher;
 
     public ScalingNetworkValidationStrategy(Network network,
-                                               NetworkValidator<I> networkValidator,
-                                               ZonalData<Scalable> zonalScalable,
-                                               ShiftDispatcher shiftDispatcher) {
+                                            NetworkValidator<I> networkValidator,
+                                            ZonalData<Scalable> zonalScalable,
+                                            ShiftDispatcher shiftDispatcher) {
         super(network, networkValidator);
         this.zonalScalable = zonalScalable;
         this.shiftDispatcher = shiftDispatcher;

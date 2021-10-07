@@ -11,10 +11,10 @@ class NetworkValidationResultWrapperTest {
 
     @Test
     void testWithGlskLimitation() {
-        NetworkValidationResultWrapper<?> result = NetworkValidationResultWrapper.withGlskLimitation(200);
+        NetworkValidationResultWrapper<?> result = NetworkValidationResultWrapper.fromNetworkValidationFailure(200, ReasonInvalid.GLSK_LIMITATION, "GLSK limits");
         assertEquals(200, result.stepValue());
-        assertFalse(result.isSecure());
-        assertEquals(ReasonUnsecure.GLSK_LIMITATION, result.getReasonUnsecure());
+        assertFalse(result.isValid());
+        assertEquals(ReasonInvalid.GLSK_LIMITATION, result.getReasonInvalid());
         assertTrue(result.getNetworkValidationResult().isEmpty());
     }
 
@@ -24,8 +24,8 @@ class NetworkValidationResultWrapperTest {
                 200,
                 new NetworkValidationResultImpl(true));
         assertEquals(200, result.stepValue());
-        assertTrue(result.isSecure());
-        assertEquals(ReasonUnsecure.NONE, result.getReasonUnsecure());
+        assertTrue(result.isValid());
+        assertEquals(ReasonInvalid.NONE, result.getReasonInvalid());
         assertTrue(result.getNetworkValidationResult().isPresent());
         assertTrue(result.getNetworkValidationResult().get().isSecure());
     }
@@ -36,8 +36,8 @@ class NetworkValidationResultWrapperTest {
                 200,
                 new NetworkValidationResultImpl(false));
         assertEquals(200, result.stepValue());
-        assertFalse(result.isSecure());
-        assertEquals(ReasonUnsecure.UNSECURE_AFTER_VALIDATION, result.getReasonUnsecure());
+        assertFalse(result.isValid());
+        assertEquals(ReasonInvalid.UNSECURE_AFTER_VALIDATION, result.getReasonInvalid());
         assertTrue(result.getNetworkValidationResult().isPresent());
         assertFalse(result.getNetworkValidationResult().get().isSecure());
     }

@@ -15,7 +15,8 @@ package com.farao_community.farao.dichotomy.api;
  * @author Sebastien Murgey {@literal <sebastien.murgey at rte-france.com>}
  */
 public interface StepResult {
-    boolean isSecure();
+
+    boolean isValid();
 
     double stepValue();
 }

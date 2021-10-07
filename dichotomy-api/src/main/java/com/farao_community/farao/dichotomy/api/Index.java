@@ -26,8 +26,8 @@ public class Index<T extends StepResult> {
     private final double maxValue;
     private final double precision;
     private final List<T> stepResults = new ArrayList<>();
-    private T higherSecureStep;
-    private T lowerUnsecureStep;
+    private T higherValidStep;
+    private T lowerInvalidStep;
 
     public Index(double minValue, double maxValue, double precision) {
         if (minValue > maxValue) {
@@ -50,12 +50,12 @@ public class Index<T extends StepResult> {
         return precision;
     }
 
-    public T higherSecureStep() {
-        return higherSecureStep;
+    public T higherValidStep() {
+        return higherValidStep;
     }
 
-    public T lowerUnsecureStep() {
-        return lowerUnsecureStep;
+    public T lowerInvalidStep() {
+        return lowerInvalidStep;
     }
 
     public List<T> testedSteps() {
@@ -63,30 +63,30 @@ public class Index<T extends StepResult> {
     }
 
     void addDichotomyStepResult(T stepResult) {
-        if (stepResult.isSecure()) {
-            if (higherSecureStep != null && higherSecureStep.stepValue() > stepResult.stepValue()) {
+        if (stepResult.isValid()) {
+            if (higherValidStep != null && higherValidStep.stepValue() > stepResult.stepValue()) {
                 throw new AssertionError("Step result tested is secure but its value is lower than higher secure step one. Should not happen");
             }
-            higherSecureStep = stepResult;
-        } else if (!stepResult.isSecure()) {
-            if (lowerUnsecureStep != null && lowerUnsecureStep.stepValue() < stepResult.stepValue()) {
+            higherValidStep = stepResult;
+        } else if (!stepResult.isValid()) {
+            if (lowerInvalidStep != null && lowerInvalidStep.stepValue() < stepResult.stepValue()) {
                 throw new AssertionError("Step result tested is unsecure but its value is higher than lower unsecure step one. Should not happen");
             }
-            lowerUnsecureStep = stepResult;
+            lowerInvalidStep = stepResult;
         }
         stepResults.add(stepResult);
     }
 
     boolean precisionReached() {
-        if (lowerUnsecureStep != null && Math.abs(lowerUnsecureStep.stepValue() - minValue) < EPSILON) {
+        if (lowerInvalidStep != null && Math.abs(lowerInvalidStep.stepValue() - minValue) < EPSILON) {
             return true;
         }
-        if (higherSecureStep != null && Math.abs(higherSecureStep.stepValue() - maxValue) < EPSILON) {
+        if (higherValidStep != null && Math.abs(higherValidStep.stepValue() - maxValue) < EPSILON) {
             return true;
         }
-        if (lowerUnsecureStep == null || higherSecureStep == null) {
+        if (lowerInvalidStep == null || higherValidStep == null) {
             return false;
         }
-        return Math.abs(higherSecureStep.stepValue() - lowerUnsecureStep.stepValue()) < precision;
+        return Math.abs(higherValidStep.stepValue() - lowerInvalidStep.stepValue()) < precision;
     }
 }

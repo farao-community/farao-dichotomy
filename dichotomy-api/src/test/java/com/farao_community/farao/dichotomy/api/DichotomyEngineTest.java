@@ -18,7 +18,7 @@ class DichotomyEngineTest {
     private static final double EPSILON = 1e-3;
 
     @Test
-    void checkRangeDivisionIndexStrategyStartingWithMin() throws ValidationException {
+    void checkRangeDivisionIndexStrategyStartingWithMin() {
         double limit = -340;
         double minValue = -1000;
         double maxValue = 1000;
@@ -31,27 +31,27 @@ class DichotomyEngineTest {
 
         assertEquals(6, index.testedSteps().size());
 
-        assertTrue(index.higherSecureStep().isSecure());
-        assertEquals(-375, index.higherSecureStep().stepValue(), EPSILON);
-        assertFalse(index.lowerUnsecureStep().isSecure());
-        assertEquals(-250, index.lowerUnsecureStep().stepValue(), EPSILON);
+        assertTrue(index.higherValidStep().isValid());
+        assertEquals(-375, index.higherValidStep().stepValue(), EPSILON);
+        assertFalse(index.lowerInvalidStep().isValid());
+        assertEquals(-250, index.lowerInvalidStep().stepValue(), EPSILON);
 
         assertEquals(-1000, index.testedSteps().get(0).stepValue(), EPSILON);
-        assertTrue(index.testedSteps().get(0).isSecure());
+        assertTrue(index.testedSteps().get(0).isValid());
         assertEquals(1000, index.testedSteps().get(1).stepValue(), EPSILON);
-        assertFalse(index.testedSteps().get(1).isSecure());
+        assertFalse(index.testedSteps().get(1).isValid());
         assertEquals(0, index.testedSteps().get(2).stepValue(), EPSILON);
-        assertFalse(index.testedSteps().get(2).isSecure());
+        assertFalse(index.testedSteps().get(2).isValid());
         assertEquals(-500, index.testedSteps().get(3).stepValue(), EPSILON);
-        assertTrue(index.testedSteps().get(3).isSecure());
+        assertTrue(index.testedSteps().get(3).isValid());
         assertEquals(-250, index.testedSteps().get(4).stepValue(), EPSILON);
-        assertFalse(index.testedSteps().get(4).isSecure());
+        assertFalse(index.testedSteps().get(4).isValid());
         assertEquals(-375, index.testedSteps().get(5).stepValue(), EPSILON);
-        assertTrue(index.testedSteps().get(5).isSecure());
+        assertTrue(index.testedSteps().get(5).isValid());
     }
 
     @Test
-    void checkRangeDivisionIndexStrategyStartingWithMax() throws ValidationException {
+    void checkRangeDivisionIndexStrategyStartingWithMax() {
         double limit = -340;
         double minValue = -1000;
         double maxValue = 1000;
@@ -64,27 +64,27 @@ class DichotomyEngineTest {
 
         assertEquals(6, index.testedSteps().size());
 
-        assertTrue(index.higherSecureStep().isSecure());
-        assertEquals(-375, index.higherSecureStep().stepValue(), EPSILON);
-        assertFalse(index.lowerUnsecureStep().isSecure());
-        assertEquals(-250, index.lowerUnsecureStep().stepValue(), EPSILON);
+        assertTrue(index.higherValidStep().isValid());
+        assertEquals(-375, index.higherValidStep().stepValue(), EPSILON);
+        assertFalse(index.lowerInvalidStep().isValid());
+        assertEquals(-250, index.lowerInvalidStep().stepValue(), EPSILON);
 
         assertEquals(1000, index.testedSteps().get(0).stepValue(), EPSILON);
-        assertFalse(index.testedSteps().get(0).isSecure());
+        assertFalse(index.testedSteps().get(0).isValid());
         assertEquals(-1000, index.testedSteps().get(1).stepValue(), EPSILON);
-        assertTrue(index.testedSteps().get(1).isSecure());
+        assertTrue(index.testedSteps().get(1).isValid());
         assertEquals(0, index.testedSteps().get(2).stepValue(), EPSILON);
-        assertFalse(index.testedSteps().get(2).isSecure());
+        assertFalse(index.testedSteps().get(2).isValid());
         assertEquals(-500, index.testedSteps().get(3).stepValue(), EPSILON);
-        assertTrue(index.testedSteps().get(3).isSecure());
+        assertTrue(index.testedSteps().get(3).isValid());
         assertEquals(-250, index.testedSteps().get(4).stepValue(), EPSILON);
-        assertFalse(index.testedSteps().get(4).isSecure());
+        assertFalse(index.testedSteps().get(4).isValid());
         assertEquals(-375, index.testedSteps().get(5).stepValue(), EPSILON);
-        assertTrue(index.testedSteps().get(5).isSecure());
+        assertTrue(index.testedSteps().get(5).isValid());
     }
 
     @Test
-    void checkStepsIndexStrategyStartingWithMin() throws ValidationException {
+    void checkStepsIndexStrategyStartingWithMin() {
         double limit = -340;
         double minValue = -1000;
         double maxValue = 1000;
@@ -98,25 +98,25 @@ class DichotomyEngineTest {
 
         assertEquals(5, index.testedSteps().size());
 
-        assertTrue(index.higherSecureStep().isSecure());
-        assertEquals(-400, index.higherSecureStep().stepValue(), EPSILON);
-        assertFalse(index.lowerUnsecureStep().isSecure());
-        assertEquals(-300, index.lowerUnsecureStep().stepValue(), EPSILON);
+        assertTrue(index.higherValidStep().isValid());
+        assertEquals(-400, index.higherValidStep().stepValue(), EPSILON);
+        assertFalse(index.lowerInvalidStep().isValid());
+        assertEquals(-300, index.lowerInvalidStep().stepValue(), EPSILON);
 
         assertEquals(-1000, index.testedSteps().get(0).stepValue(), EPSILON);
-        assertTrue(index.testedSteps().get(0).isSecure());
+        assertTrue(index.testedSteps().get(0).isValid());
         assertEquals(-600, index.testedSteps().get(1).stepValue(), EPSILON);
-        assertTrue(index.testedSteps().get(1).isSecure());
+        assertTrue(index.testedSteps().get(1).isValid());
         assertEquals(-200, index.testedSteps().get(2).stepValue(), EPSILON);
-        assertFalse(index.testedSteps().get(2).isSecure());
+        assertFalse(index.testedSteps().get(2).isValid());
         assertEquals(-400, index.testedSteps().get(3).stepValue(), EPSILON);
-        assertTrue(index.testedSteps().get(3).isSecure());
+        assertTrue(index.testedSteps().get(3).isValid());
         assertEquals(-300, index.testedSteps().get(4).stepValue(), EPSILON);
-        assertFalse(index.testedSteps().get(4).isSecure());
+        assertFalse(index.testedSteps().get(4).isValid());
     }
 
     @Test
-    void checkStepsIndexStrategyStartingWithMax() throws ValidationException {
+    void checkStepsIndexStrategyStartingWithMax() {
         double limit = -340;
         double minValue = -1000;
         double maxValue = 1000;
@@ -130,29 +130,29 @@ class DichotomyEngineTest {
 
         assertEquals(7, index.testedSteps().size());
 
-        assertTrue(index.higherSecureStep().isSecure());
-        assertEquals(-400, index.higherSecureStep().stepValue(), EPSILON);
-        assertFalse(index.lowerUnsecureStep().isSecure());
-        assertEquals(-300, index.lowerUnsecureStep().stepValue(), EPSILON);
+        assertTrue(index.higherValidStep().isValid());
+        assertEquals(-400, index.higherValidStep().stepValue(), EPSILON);
+        assertFalse(index.lowerInvalidStep().isValid());
+        assertEquals(-300, index.lowerInvalidStep().stepValue(), EPSILON);
 
         assertEquals(1000, index.testedSteps().get(0).stepValue(), EPSILON);
-        assertFalse(index.testedSteps().get(0).isSecure());
+        assertFalse(index.testedSteps().get(0).isValid());
         assertEquals(600, index.testedSteps().get(1).stepValue(), EPSILON);
-        assertFalse(index.testedSteps().get(1).isSecure());
+        assertFalse(index.testedSteps().get(1).isValid());
         assertEquals(200, index.testedSteps().get(2).stepValue(), EPSILON);
-        assertFalse(index.testedSteps().get(2).isSecure());
+        assertFalse(index.testedSteps().get(2).isValid());
         assertEquals(-200, index.testedSteps().get(3).stepValue(), EPSILON);
-        assertFalse(index.testedSteps().get(3).isSecure());
+        assertFalse(index.testedSteps().get(3).isValid());
         assertEquals(-600, index.testedSteps().get(4).stepValue(), EPSILON);
-        assertTrue(index.testedSteps().get(4).isSecure());
+        assertTrue(index.testedSteps().get(4).isValid());
         assertEquals(-400, index.testedSteps().get(5).stepValue(), EPSILON);
-        assertTrue(index.testedSteps().get(5).isSecure());
+        assertTrue(index.testedSteps().get(5).isValid());
         assertEquals(-300, index.testedSteps().get(6).stepValue(), EPSILON);
-        assertFalse(index.testedSteps().get(6).isSecure());
+        assertFalse(index.testedSteps().get(6).isValid());
     }
 
     @Test
-    void checkDichotomyEngineStopsAtMaxIterations() throws ValidationException {
+    void checkDichotomyEngineStopsAtMaxIterations() {
         double limit = -340;
         double minValue = -1000;
         double maxValue = 1000;
@@ -166,25 +166,25 @@ class DichotomyEngineTest {
 
         assertEquals(5, index.testedSteps().size());
 
-        assertTrue(index.higherSecureStep().isSecure());
-        assertEquals(-500, index.higherSecureStep().stepValue(), EPSILON);
-        assertFalse(index.lowerUnsecureStep().isSecure());
-        assertEquals(-250, index.lowerUnsecureStep().stepValue(), EPSILON);
+        assertTrue(index.higherValidStep().isValid());
+        assertEquals(-500, index.higherValidStep().stepValue(), EPSILON);
+        assertFalse(index.lowerInvalidStep().isValid());
+        assertEquals(-250, index.lowerInvalidStep().stepValue(), EPSILON);
 
         assertEquals(-1000, index.testedSteps().get(0).stepValue(), EPSILON);
-        assertTrue(index.testedSteps().get(0).isSecure());
+        assertTrue(index.testedSteps().get(0).isValid());
         assertEquals(1000, index.testedSteps().get(1).stepValue(), EPSILON);
-        assertFalse(index.testedSteps().get(1).isSecure());
+        assertFalse(index.testedSteps().get(1).isValid());
         assertEquals(0, index.testedSteps().get(2).stepValue(), EPSILON);
-        assertFalse(index.testedSteps().get(2).isSecure());
+        assertFalse(index.testedSteps().get(2).isValid());
         assertEquals(-500, index.testedSteps().get(3).stepValue(), EPSILON);
-        assertTrue(index.testedSteps().get(3).isSecure());
+        assertTrue(index.testedSteps().get(3).isValid());
         assertEquals(-250, index.testedSteps().get(4).stepValue(), EPSILON);
-        assertFalse(index.testedSteps().get(4).isSecure());
+        assertFalse(index.testedSteps().get(4).isValid());
     }
 
     @Test
-    void checkAllSecure() throws ValidationException {
+    void checkAllSecure() {
         double limit = 1500;
         double minValue = -1000;
         double maxValue = 1000;
@@ -197,18 +197,18 @@ class DichotomyEngineTest {
 
         assertEquals(2, index.testedSteps().size());
 
-        assertTrue(index.higherSecureStep().isSecure());
-        assertEquals(1000, index.higherSecureStep().stepValue(), EPSILON);
-        assertNull(index.lowerUnsecureStep());
+        assertTrue(index.higherValidStep().isValid());
+        assertEquals(1000, index.higherValidStep().stepValue(), EPSILON);
+        assertNull(index.lowerInvalidStep());
 
         assertEquals(-1000, index.testedSteps().get(0).stepValue(), EPSILON);
-        assertTrue(index.testedSteps().get(0).isSecure());
+        assertTrue(index.testedSteps().get(0).isValid());
         assertEquals(1000, index.testedSteps().get(1).stepValue(), EPSILON);
-        assertTrue(index.testedSteps().get(1).isSecure());
+        assertTrue(index.testedSteps().get(1).isValid());
     }
 
     @Test
-    void checkAllUnsecure() throws ValidationException {
+    void checkAllUnsecure() {
         double limit = -1500;
         double minValue = -1000;
         double maxValue = 1000;
@@ -221,12 +221,12 @@ class DichotomyEngineTest {
 
         assertEquals(1, index.testedSteps().size());
 
-        assertNull(index.higherSecureStep());
-        assertFalse(index.lowerUnsecureStep().isSecure());
-        assertEquals(-1000, index.lowerUnsecureStep().stepValue(), EPSILON);
+        assertNull(index.higherValidStep());
+        assertFalse(index.lowerInvalidStep().isValid());
+        assertEquals(-1000, index.lowerInvalidStep().stepValue(), EPSILON);
 
         assertEquals(-1000, index.testedSteps().get(0).stepValue(), EPSILON);
-        assertFalse(index.testedSteps().get(0).isSecure());
+        assertFalse(index.testedSteps().get(0).isValid());
     }
 
     @Test
@@ -248,7 +248,7 @@ class DichotomyEngineTest {
     }
 
     @Test
-    void checkDichotomyEngineChecksLimitsWhenIntervalSmallerThanPrecision() throws ValidationException {
+    void checkDichotomyEngineChecksLimitsWhenIntervalSmallerThanPrecision() {
         double limit = 0;
         double minValue = -50;
         double maxValue = 50;
@@ -262,19 +262,19 @@ class DichotomyEngineTest {
 
         assertEquals(2, index.testedSteps().size());
 
-        assertTrue(index.higherSecureStep().isSecure());
-        assertEquals(-50, index.higherSecureStep().stepValue(), EPSILON);
-        assertFalse(index.lowerUnsecureStep().isSecure());
-        assertEquals(50, index.lowerUnsecureStep().stepValue(), EPSILON);
+        assertTrue(index.higherValidStep().isValid());
+        assertEquals(-50, index.higherValidStep().stepValue(), EPSILON);
+        assertFalse(index.lowerInvalidStep().isValid());
+        assertEquals(50, index.lowerInvalidStep().stepValue(), EPSILON);
 
         assertEquals(-50, index.testedSteps().get(0).stepValue(), EPSILON);
-        assertTrue(index.testedSteps().get(0).isSecure());
+        assertTrue(index.testedSteps().get(0).isValid());
         assertEquals(50, index.testedSteps().get(1).stepValue(), EPSILON);
-        assertFalse(index.testedSteps().get(1).isSecure());
+        assertFalse(index.testedSteps().get(1).isValid());
     }
 
     @Test
-    void checkDichotomyEngineStopEarlyWhenIntervalSmallerThanPrecisionButMinUnsecure() throws ValidationException {
+    void checkDichotomyEngineStopEarlyWhenIntervalSmallerThanPrecisionButMinUnsecure() {
         double limit = -100;
         double minValue = -50;
         double maxValue = 50;
@@ -288,16 +288,16 @@ class DichotomyEngineTest {
 
         assertEquals(1, index.testedSteps().size());
 
-        assertNull(index.higherSecureStep());
-        assertFalse(index.lowerUnsecureStep().isSecure());
-        assertEquals(-50, index.lowerUnsecureStep().stepValue(), EPSILON);
+        assertNull(index.higherValidStep());
+        assertFalse(index.lowerInvalidStep().isValid());
+        assertEquals(-50, index.lowerInvalidStep().stepValue(), EPSILON);
 
         assertEquals(-50, index.testedSteps().get(0).stepValue(), EPSILON);
-        assertFalse(index.testedSteps().get(0).isSecure());
+        assertFalse(index.testedSteps().get(0).isValid());
     }
 
     @Test
-    void checkDichotomyEngineStopEarlyWhenIntervalSmallerThanPrecisionButMaxSecure() throws ValidationException {
+    void checkDichotomyEngineStopEarlyWhenIntervalSmallerThanPrecisionButMaxSecure() {
         double limit = 100;
         double minValue = -50;
         double maxValue = 50;
@@ -311,11 +311,11 @@ class DichotomyEngineTest {
 
         assertEquals(1, index.testedSteps().size());
 
-        assertTrue(index.higherSecureStep().isSecure());
-        assertNull(index.lowerUnsecureStep());
-        assertEquals(50, index.higherSecureStep().stepValue(), EPSILON);
+        assertTrue(index.higherValidStep().isValid());
+        assertNull(index.lowerInvalidStep());
+        assertEquals(50, index.higherValidStep().stepValue(), EPSILON);
 
         assertEquals(50, index.testedSteps().get(0).stepValue(), EPSILON);
-        assertTrue(index.testedSteps().get(0).isSecure());
+        assertTrue(index.testedSteps().get(0).isValid());
     }
 }

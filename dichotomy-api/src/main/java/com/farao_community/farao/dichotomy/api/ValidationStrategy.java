@@ -16,5 +16,5 @@ package com.farao_community.farao.dichotomy.api;
  */
 public interface ValidationStrategy<T extends StepResult> {
 
-    T validateStep(double stepValue) throws ValidationException;
+    T validateStep(double stepValue);
 }
