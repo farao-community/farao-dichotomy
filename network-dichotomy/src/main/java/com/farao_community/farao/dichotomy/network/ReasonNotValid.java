@@ -6,8 +6,9 @@ package com.farao_community.farao.dichotomy.network;
 /**
  * @author Theo Pascoli {@literal <theo.pascoli at rte-france.com>}
  */
-public enum ReasonUnsecure {
+public enum ReasonNotValid {
     GLSK_LIMITATION,
     UNSECURE_AFTER_VALIDATION,
+    VALIDATION_FAILED,
     NONE
 }

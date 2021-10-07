@@ -1,9 +1,7 @@
 package com.farao_community.farao.dichotomy.network.scaling;
 
-import com.farao_community.farao.commons.FaraoException;
 import com.farao_community.farao.commons.ZonalData;
 import com.farao_community.farao.data.glsk.api.io.GlskDocumentImporters;
-import com.farao_community.farao.dichotomy.api.ValidationException;
 import com.farao_community.farao.dichotomy.network.*;
 import com.powsybl.action.util.Scalable;
 import com.powsybl.iidm.import_.Importers;
@@ -15,7 +13,7 @@ import org.mockito.Mockito;
 import java.util.Map;
 import java.util.Objects;
 
-import static com.farao_community.farao.dichotomy.network.ReasonUnsecure.GLSK_LIMITATION;
+import static com.farao_community.farao.dichotomy.network.ReasonNotValid.GLSK_LIMITATION;
 import static org.junit.jupiter.api.Assertions.*;
 
 /**
@@ -42,7 +40,7 @@ class ScalingNetworkValidationStrategyTest {
     }
 
     @Test
-    void scalingNetworkValidationStrategyWithGlskLimitation() throws ValidationException, ShiftingException {
+    void scalingNetworkValidationStrategyWithGlskLimitation() throws ShiftingException {
         Mockito.when(shiftDispatcher.dispatch(200)).thenReturn(Map.of(
                 "10YCH-SWISSGRIDZ", 5000.
         ));
@@ -55,11 +53,11 @@ class ScalingNetworkValidationStrategyTest {
         );
 
         NetworkValidationResultWrapper<?> networkStepResult = scalingNetworkValidationStrategy.validateStep(200);
-        assertEquals(GLSK_LIMITATION, networkStepResult.getReasonUnsecure());
+        assertEquals(GLSK_LIMITATION, networkStepResult.getReasonNotValid());
     }
 
     @Test
-    void scalingNetworkValidationStrategyWithSecure() throws ValidationException, ShiftingException, NetworkValidationException {
+    void scalingNetworkValidationStrategyWithSecure() throws ShiftingException, NetworkValidationException {
         Mockito.when(shiftDispatcher.dispatch(200)).thenReturn(Map.of(
                 "10YCH-SWISSGRIDZ", 200.
         ));
@@ -73,12 +71,12 @@ class ScalingNetworkValidationStrategyTest {
         );
 
         NetworkValidationResultWrapper<?> networkStepResult = scalingNetworkValidationStrategy.validateStep(200);
-        assertTrue(networkStepResult.isSecure());
+        assertTrue(networkStepResult.isValid());
         assertEquals(200, networkStepResult.stepValue());
     }
 
     @Test
-    void scalingNetworkValidationStrategyWithUnsecure() throws ValidationException, ShiftingException, NetworkValidationException {
+    void scalingNetworkValidationStrategyWithUnsecure() throws ShiftingException, NetworkValidationException {
         Mockito.when(shiftDispatcher.dispatch(200)).thenReturn(Map.of(
                 "10YCH-SWISSGRIDZ", 200.
         ));
@@ -92,7 +90,7 @@ class ScalingNetworkValidationStrategyTest {
         );
 
         NetworkValidationResultWrapper<?> networkStepResult = scalingNetworkValidationStrategy.validateStep(200);
-        assertFalse(networkStepResult.isSecure());
+        assertFalse(networkStepResult.isValid());
         assertEquals(200, networkStepResult.stepValue());
     }
 
@@ -101,7 +99,7 @@ class ScalingNetworkValidationStrategyTest {
         Mockito.when(shiftDispatcher.dispatch(200)).thenReturn(Map.of(
                 "10YCH-SWISSGRIDZ", 200.
         ));
-        Mockito.when(networkValidator.validateNetwork(network)).thenThrow(new NetworkValidationException("RAO failure", new FaraoException()));
+        Mockito.when(networkValidator.validateNetwork(network)).thenThrow(new NetworkValidationException("RAO failure"));
 
         ScalingNetworkValidationStrategy<?> scalingNetworkValidationStrategy = new ScalingNetworkValidationStrategy<>(
                 network,
@@ -110,7 +108,9 @@ class ScalingNetworkValidationStrategyTest {
                 shiftDispatcher
         );
 
-        assertThrows(ValidationException.class, () -> scalingNetworkValidationStrategy.validateStep(200));
+        NetworkValidationResultWrapper<?> networkStepResult = scalingNetworkValidationStrategy.validateStep(200);
+        assertTrue(networkStepResult.isFailed());
+        assertEquals("RAO failure", networkStepResult.getFailureMessage());
     }
 
     @Test
@@ -123,6 +123,8 @@ class ScalingNetworkValidationStrategyTest {
                 shiftDispatcher
         );
 
-        assertThrows(ValidationException.class, () -> scalingNetworkValidationStrategy.validateStep(200));
+        NetworkValidationResultWrapper<?> networkStepResult = scalingNetworkValidationStrategy.validateStep(200);
+        assertTrue(networkStepResult.isFailed());
+        assertEquals("Impossible to shift", networkStepResult.getFailureMessage());
     }
 }

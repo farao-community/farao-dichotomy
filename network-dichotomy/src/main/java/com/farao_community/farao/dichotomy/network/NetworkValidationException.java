@@ -5,7 +5,7 @@ package com.farao_community.farao.dichotomy.network;
  */
 public class NetworkValidationException extends Exception {
 
-    public NetworkValidationException(String message, Throwable e) {
-        super(message, e);
+    public NetworkValidationException(String message) {
+        super(message);
     }
 }

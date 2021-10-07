@@ -41,7 +41,7 @@ public class DichotomyEngine<T extends StepResult> {
         this.maxIteration = maxIteration;
     }
 
-    public void run() throws ValidationException {
+    public void run() {
         int iterationCounter = 0;
         while (!index.precisionReached() && iterationCounter < maxIteration) {
             double nextValue = indexStrategy.nextValue(index);

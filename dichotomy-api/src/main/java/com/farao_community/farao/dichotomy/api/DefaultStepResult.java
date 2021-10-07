@@ -13,17 +13,17 @@ package com.farao_community.farao.dichotomy.api;
  * @author Sebastien Murgey {@literal <sebastien.murgey at rte-france.com>}
  */
 public class DefaultStepResult implements StepResult {
-    private final boolean isSecure;
+    private final boolean isValid;
     private final double stepValue;
 
-    public DefaultStepResult(boolean isSecure, double stepValue) {
-        this.isSecure = isSecure;
+    public DefaultStepResult(boolean isValid, double stepValue) {
+        this.isValid = isValid;
         this.stepValue = stepValue;
     }
 
     @Override
-    public boolean isSecure() {
-        return isSecure;
+    public boolean isValid() {
+        return isValid;
     }
 
     @Override
