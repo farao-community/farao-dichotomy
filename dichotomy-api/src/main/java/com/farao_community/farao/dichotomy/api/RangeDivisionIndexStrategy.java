@@ -26,20 +26,20 @@ public class RangeDivisionIndexStrategy implements IndexStrategy {
             throw new AssertionError("Dichotomy engine should not ask for next value if precision is reached");
         }
         if (startWithMin) {
-            if (index.higherValidStep() == null) {
+            if (index.highestValidStep() == null) {
                 return index.minValue();
             }
-            if (index.lowerInvalidStep() == null) {
+            if (index.lowestInvalidStep() == null) {
                 return index.maxValue();
             }
         } else {
-            if (index.lowerInvalidStep() == null) {
+            if (index.lowestInvalidStep() == null) {
                 return index.maxValue();
             }
-            if (index.higherValidStep() == null) {
+            if (index.highestValidStep() == null) {
                 return index.minValue();
             }
         }
-        return (index.lowerInvalidStep().stepValue() + index.higherValidStep().stepValue()) / 2;
+        return (index.lowestInvalidStep().stepValue() + index.highestValidStep().stepValue()) / 2;
     }
 }

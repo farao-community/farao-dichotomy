@@ -35,20 +35,20 @@ public class StepsIndexStrategy implements IndexStrategy {
         }
 
         if (startWithMin) {
-            if (index.higherValidStep() == null) {
+            if (index.highestValidStep() == null) {
                 return index.minValue();
             }
-            if (index.lowerInvalidStep() == null) {
-                return Math.min(index.higherValidStep().stepValue() + increaseValueBeforeDichotomy, index.maxValue());
+            if (index.lowestInvalidStep() == null) {
+                return Math.min(index.highestValidStep().stepValue() + increaseValueBeforeDichotomy, index.maxValue());
             }
         } else {
-            if (index.lowerInvalidStep() == null) {
+            if (index.lowestInvalidStep() == null) {
                 return index.maxValue();
             }
-            if (index.higherValidStep() == null) {
-                return Math.max(index.lowerInvalidStep().stepValue() - increaseValueBeforeDichotomy, index.minValue());
+            if (index.highestValidStep() == null) {
+                return Math.max(index.lowestInvalidStep().stepValue() - increaseValueBeforeDichotomy, index.minValue());
             }
         }
-        return (index.lowerInvalidStep().stepValue() + index.higherValidStep().stepValue()) / 2;
+        return (index.lowestInvalidStep().stepValue() + index.highestValidStep().stepValue()) / 2;
     }
 }
