@@ -13,7 +13,7 @@ import org.mockito.Mockito;
 import java.util.Map;
 import java.util.Objects;
 
-import static com.farao_community.farao.dichotomy.network.ReasonNotValid.GLSK_LIMITATION;
+import static com.farao_community.farao.dichotomy.network.ReasonInvalid.GLSK_LIMITATION;
 import static org.junit.jupiter.api.Assertions.*;
 
 /**
@@ -53,7 +53,7 @@ class ScalingNetworkValidationStrategyTest {
         );
 
         NetworkValidationResultWrapper<?> networkStepResult = scalingNetworkValidationStrategy.validateStep(200);
-        assertEquals(GLSK_LIMITATION, networkStepResult.getReasonNotValid());
+        assertEquals(GLSK_LIMITATION, networkStepResult.getReasonInvalid());
     }
 
     @Test
