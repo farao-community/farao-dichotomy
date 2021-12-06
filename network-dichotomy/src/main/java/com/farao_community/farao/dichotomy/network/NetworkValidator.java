@@ -11,7 +11,7 @@ import com.powsybl.iidm.network.Network;
 /**
  * @author Joris Mancini {@literal <joris.mancini at rte-france.com>}
  */
-public interface NetworkValidator<I extends NetworkValidationResult> {
+public interface NetworkValidator<I> {
 
-    I validateNetwork(Network network) throws NetworkValidationException;
+    NetworkValidationResult<I> validateNetwork(Network network) throws NetworkValidationException;
 }

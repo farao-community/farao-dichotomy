@@ -26,7 +26,7 @@ import java.util.StringJoiner;
  *
  * @author Joris Mancini {@literal <joris.mancini at rte-france.com>}
  */
-public final class ScalingNetworkValidationStrategy<I extends NetworkValidationResult> extends AbstractNetworkValidationStrategy<I> {
+public final class ScalingNetworkValidationStrategy<I> extends AbstractNetworkValidationStrategy<I> {
     private static final Logger LOGGER = LoggerFactory.getLogger(ScalingNetworkValidationStrategy.class);
     private static final double EPSILON = 1e-3;
 

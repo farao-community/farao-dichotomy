@@ -6,10 +6,14 @@
  */
 package com.farao_community.farao.dichotomy.network;
 
+import com.farao_community.farao.data.rao_result_api.RaoResult;
+
 /**
  * @author Joris Mancini {@literal <joris.mancini at rte-france.com>}
  */
-public interface NetworkValidationResult {
+public interface NetworkValidationResult<I> {
 
-    boolean isSecure();
+    RaoResult getRaoResult();
+
+    I getValidationData();
 }

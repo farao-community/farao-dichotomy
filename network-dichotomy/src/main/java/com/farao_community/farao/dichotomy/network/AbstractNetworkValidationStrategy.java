@@ -17,12 +17,12 @@ import org.slf4j.LoggerFactory;
  * validating it -- usually with a RAO but then again strategies can be different.
  * Shifting strategies would be defined in child classes and validation strategies and network validation would be
  * handled by implementations of {@link NetworkValidator}.
- * This implementation is based on {@link NetworkValidationResultWrapper} that can wraps meta-data about the validation
+ * This implementation is based on {@link NetworkDichotomyStepResult} that can wrap meta-data about the validation
  * process around concrete network validation data.
  *
  * @author Joris Mancini {@literal <joris.mancini at rte-france.com>}
  */
-public abstract class AbstractNetworkValidationStrategy<I extends NetworkValidationResult> implements ValidationStrategy<NetworkValidationResultWrapper<I>> {
+public abstract class AbstractNetworkValidationStrategy<I> implements ValidationStrategy<NetworkDichotomyStepResult<I>> {
     private static final Logger LOGGER = LoggerFactory.getLogger(AbstractNetworkValidationStrategy.class);
 
     protected final Network network;
@@ -37,7 +37,7 @@ public abstract class AbstractNetworkValidationStrategy<I extends NetworkValidat
     }
 
     @Override
-    public NetworkValidationResultWrapper<I> validateStep(double stepValue) {
+    public NetworkDichotomyStepResult<I> validateStep(double stepValue) {
         String newVariant = variantName(stepValue);
         network.getVariantManager().cloneVariant(initialVariant, newVariant);
         network.getVariantManager().setWorkingVariant(newVariant);
@@ -46,13 +46,13 @@ public abstract class AbstractNetworkValidationStrategy<I extends NetworkValidat
             LOGGER.debug("Shifting network");
             shiftNetwork(stepValue);
             LOGGER.debug("Validating network");
-            I networkStepResult = networkValidator.validateNetwork(network);
-            return  NetworkValidationResultWrapper.fromNetworkValidationResult(stepValue, networkStepResult);
+            NetworkValidationResult<I> networkValidationResult = networkValidator.validateNetwork(network);
+            return  NetworkDichotomyStepResult.fromNetworkValidationResult(stepValue, networkValidationResult);
         } catch (GlskLimitationException e) {
             LOGGER.warn("GLSK limits have been reached for step value {}", stepValue);
-            return NetworkValidationResultWrapper.fromNetworkValidationFailure(stepValue, ReasonInvalid.GLSK_LIMITATION, e.getMessage());
+            return NetworkDichotomyStepResult.fromFailure(stepValue, ReasonInvalid.GLSK_LIMITATION, e.getMessage());
         } catch (ShiftingException | NetworkValidationException e) {
-            return NetworkValidationResultWrapper.fromNetworkValidationFailure(stepValue, ReasonInvalid.VALIDATION_FAILED, e.getMessage());
+            return NetworkDichotomyStepResult.fromFailure(stepValue, ReasonInvalid.VALIDATION_FAILED, e.getMessage());
         } finally {
             network.getVariantManager().setWorkingVariant(initialVariant);
             network.getVariantManager().removeVariant(newVariant);

@@ -28,7 +28,7 @@ import static org.junit.jupiter.api.Assertions.*;
 class ScalingNetworkValidationStrategyTest {
     private Network network;
     private ZonalData<Scalable> zonalScalable;
-    private NetworkValidator<NetworkValidationResultImpl> networkValidator;
+    private NetworkValidator networkValidator;
     private ShiftDispatcher shiftDispatcher;
 
     @BeforeEach
@@ -51,14 +51,14 @@ class ScalingNetworkValidationStrategyTest {
                 "10YCH-SWISSGRIDZ", 5000.
         ));
 
-        ScalingNetworkValidationStrategy<?> scalingNetworkValidationStrategy = new ScalingNetworkValidationStrategy<>(
+        ScalingNetworkValidationStrategy scalingNetworkValidationStrategy = new ScalingNetworkValidationStrategy(
                 network,
                 networkValidator,
                 zonalScalable,
                 shiftDispatcher
         );
 
-        NetworkValidationResultWrapper<?> networkStepResult = scalingNetworkValidationStrategy.validateStep(200);
+        NetworkDichotomyStepResult networkStepResult = scalingNetworkValidationStrategy.validateStep(200);
         assertEquals(GLSK_LIMITATION, networkStepResult.getReasonInvalid());
     }
 
@@ -67,16 +67,16 @@ class ScalingNetworkValidationStrategyTest {
         Mockito.when(shiftDispatcher.dispatch(200)).thenReturn(Map.of(
                 "10YCH-SWISSGRIDZ", 200.
         ));
-        Mockito.when(networkValidator.validateNetwork(network)).thenReturn(new NetworkValidationResultImpl(true));
+        Mockito.when(networkValidator.validateNetwork(network)).thenReturn(new NetworkValidationResultTest(true));
 
-        ScalingNetworkValidationStrategy<?> scalingNetworkValidationStrategy = new ScalingNetworkValidationStrategy<>(
+        ScalingNetworkValidationStrategy scalingNetworkValidationStrategy = new ScalingNetworkValidationStrategy(
                 network,
                 networkValidator,
                 zonalScalable,
                 shiftDispatcher
         );
 
-        NetworkValidationResultWrapper<?> networkStepResult = scalingNetworkValidationStrategy.validateStep(200);
+        NetworkDichotomyStepResult networkStepResult = scalingNetworkValidationStrategy.validateStep(200);
         assertTrue(networkStepResult.isValid());
         assertEquals(200, networkStepResult.stepValue());
     }
@@ -86,16 +86,16 @@ class ScalingNetworkValidationStrategyTest {
         Mockito.when(shiftDispatcher.dispatch(200)).thenReturn(Map.of(
                 "10YCH-SWISSGRIDZ", 200.
         ));
-        Mockito.when(networkValidator.validateNetwork(network)).thenReturn(new NetworkValidationResultImpl(false));
+        Mockito.when(networkValidator.validateNetwork(network)).thenReturn(new NetworkValidationResultTest(false));
 
-        ScalingNetworkValidationStrategy<?> scalingNetworkValidationStrategy = new ScalingNetworkValidationStrategy<>(
+        ScalingNetworkValidationStrategy scalingNetworkValidationStrategy = new ScalingNetworkValidationStrategy(
                 network,
                 networkValidator,
                 zonalScalable,
                 shiftDispatcher
         );
 
-        NetworkValidationResultWrapper<?> networkStepResult = scalingNetworkValidationStrategy.validateStep(200);
+        NetworkDichotomyStepResult networkStepResult = scalingNetworkValidationStrategy.validateStep(200);
         assertFalse(networkStepResult.isValid());
         assertEquals(200, networkStepResult.stepValue());
     }
@@ -107,14 +107,14 @@ class ScalingNetworkValidationStrategyTest {
         ));
         Mockito.when(networkValidator.validateNetwork(network)).thenThrow(new NetworkValidationException("RAO failure"));
 
-        ScalingNetworkValidationStrategy<?> scalingNetworkValidationStrategy = new ScalingNetworkValidationStrategy<>(
+        ScalingNetworkValidationStrategy scalingNetworkValidationStrategy = new ScalingNetworkValidationStrategy(
                 network,
                 networkValidator,
                 zonalScalable,
                 shiftDispatcher
         );
 
-        NetworkValidationResultWrapper<?> networkStepResult = scalingNetworkValidationStrategy.validateStep(200);
+        NetworkDichotomyStepResult networkStepResult = scalingNetworkValidationStrategy.validateStep(200);
         assertTrue(networkStepResult.isFailed());
         assertEquals("RAO failure", networkStepResult.getFailureMessage());
     }
@@ -122,14 +122,14 @@ class ScalingNetworkValidationStrategyTest {
     @Test
     void scalingNetworkValidationStrategyWithShiftingException() throws ShiftingException {
         Mockito.when(shiftDispatcher.dispatch(200)).thenThrow(new ShiftingException("Impossible to shift"));
-        ScalingNetworkValidationStrategy<?> scalingNetworkValidationStrategy = new ScalingNetworkValidationStrategy<>(
+        ScalingNetworkValidationStrategy scalingNetworkValidationStrategy = new ScalingNetworkValidationStrategy(
                 network,
                 networkValidator,
                 zonalScalable,
                 shiftDispatcher
         );
 
-        NetworkValidationResultWrapper<?> networkStepResult = scalingNetworkValidationStrategy.validateStep(200);
+        NetworkDichotomyStepResult networkStepResult = scalingNetworkValidationStrategy.validateStep(200);
         assertTrue(networkStepResult.isFailed());
         assertEquals("Impossible to shift", networkStepResult.getFailureMessage());
     }
