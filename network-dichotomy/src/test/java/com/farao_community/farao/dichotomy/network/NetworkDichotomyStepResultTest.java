@@ -17,7 +17,7 @@ class NetworkDichotomyStepResultTest {
 
     @Test
     void testWithGlskLimitation() {
-        NetworkDichotomyStepResult result = NetworkDichotomyStepResult.fromFailure(200, ReasonInvalid.GLSK_LIMITATION, "GLSK limits");
+        NetworkDichotomyStepResult<?> result = NetworkDichotomyStepResult.fromFailure(200, ReasonInvalid.GLSK_LIMITATION, "GLSK limits");
         assertEquals(200, result.stepValue());
         assertFalse(result.isValid());
         assertEquals(ReasonInvalid.GLSK_LIMITATION, result.getReasonInvalid());
@@ -25,7 +25,7 @@ class NetworkDichotomyStepResultTest {
 
     @Test
     void testWithSecureNetworkValidationResult() {
-        NetworkDichotomyStepResult result = NetworkDichotomyStepResult.fromNetworkValidationResult(200, new NetworkValidationResultTest(true));
+        NetworkDichotomyStepResult<?> result = NetworkDichotomyStepResult.fromNetworkValidationResult(200, new NetworkValidationResultTest<>(true));
         assertEquals(200, result.stepValue());
         assertTrue(result.isValid());
         assertEquals(ReasonInvalid.NONE, result.getReasonInvalid());
@@ -34,7 +34,7 @@ class NetworkDichotomyStepResultTest {
 
     @Test
     void testWithUnsecureNetworkValidationResult() {
-        NetworkDichotomyStepResult result = NetworkDichotomyStepResult.fromNetworkValidationResult(200, new NetworkValidationResultTest(false));
+        NetworkDichotomyStepResult<?> result = NetworkDichotomyStepResult.fromNetworkValidationResult(200, new NetworkValidationResultTest<>(false));
         assertEquals(200, result.stepValue());
         assertFalse(result.isValid());
         assertEquals(ReasonInvalid.UNSECURE_AFTER_VALIDATION, result.getReasonInvalid());
