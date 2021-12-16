@@ -1,0 +1,114 @@
+/*
+ * Copyright (c) 2021, RTE (http://www.rte-france.com)
+ * This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at http://mozilla.org/MPL/2.0/.
+ */
+package com.farao_community.farao.dichotomy.shift;
+
+import com.farao_community.farao.commons.ZonalData;
+import com.farao_community.farao.data.glsk.api.io.GlskDocumentImporters;
+import com.farao_community.farao.dichotomy.api.NetworkValidator;
+import com.farao_community.farao.dichotomy.api.results.DichotomyStepResult;
+import com.powsybl.action.util.Scalable;
+import com.powsybl.iidm.import_.Importers;
+import com.powsybl.iidm.network.Network;
+import org.junit.jupiter.api.BeforeEach;
+//import org.junit.jupiter.api.Test;
+import org.mockito.Mockito;
+
+//import java.util.Map;
+import java.util.Objects;
+
+//import static com.farao_community.farao.dichotomy.api.ReasonInvalid.GLSK_LIMITATION;
+//import static org.junit.jupiter.api.Assertions.*;
+
+/**
+ * @author Joris Mancini {@literal <joris.mancini at rte-france.com>}
+ */
+class LinearScalerTest {
+    private Network network;
+    private ZonalData<Scalable> zonalScalable;
+    private NetworkValidator<?> networkValidator;
+    private ShiftDispatcher shiftDispatcher;
+
+    @BeforeEach
+    void setUp() {
+        String networkFilename = "20210901_2230_test_network.uct";
+        network = Importers.loadNetwork(networkFilename, getClass().getResourceAsStream(networkFilename));
+
+        String glskFilename = "20210901_2230_213_GSK_CO_CSE1.xml";
+        zonalScalable = GlskDocumentImporters
+                .importGlsk(Objects.requireNonNull(getClass().getResourceAsStream(glskFilename)))
+                .getZonalScalable(network);
+
+        networkValidator = Mockito.mock(NetworkValidator.class);
+        shiftDispatcher = Mockito.mock(ShiftDispatcher.class);
+    }
+
+    private <I> DichotomyStepResult<I> getStepResult(boolean secure) {
+        return DichotomyStepResult.fromNetworkValidationResult(new RaoResultMock(secure), null);
+    }
+
+    /*@Test
+    void scalingNetworkValidationStrategyWithGlskLimitation() throws ShiftingException, GlskLimitationException, ValidationException {
+        Mockito.when(shiftDispatcher.dispatch(200)).thenReturn(Map.of(
+                "10YCH-SWISSGRIDZ", 5000.
+        ));
+
+        LinearScaler linearScaler = new LinearScaler(zonalScalable, shiftDispatcher);
+        linearScaler.shiftNetwork(200, network);
+        DichotomyStepResult<?> networkStepResult = networkValidator.validateNetwork(network);
+        assertEquals(GLSK_LIMITATION, networkStepResult.getReasonInvalid());
+    }
+
+    @Test
+    void scalingNetworkValidationStrategyWithSecure() throws ShiftingException, ValidationException, GlskLimitationException {
+        Mockito.when(shiftDispatcher.dispatch(200)).thenReturn(Map.of(
+                "10YCH-SWISSGRIDZ", 200.
+        ));
+        Mockito.when(networkValidator.validateNetwork(network)).thenReturn(getStepResult(true));
+
+        LinearScaler linearScaler = new LinearScaler(zonalScalable, shiftDispatcher);
+        linearScaler.shiftNetwork(200, network);
+        DichotomyStepResult<?> networkStepResult = networkValidator.validateNetwork(network);
+        assertTrue(networkStepResult.isValid());
+    }
+
+    @Test
+    void scalingNetworkValidationStrategyWithUnsecure() throws ShiftingException, ValidationException, GlskLimitationException {
+        Mockito.when(shiftDispatcher.dispatch(200)).thenReturn(Map.of(
+                "10YCH-SWISSGRIDZ", 200.
+        ));
+        Mockito.when(networkValidator.validateNetwork(network)).thenReturn(getStepResult(false));
+
+        LinearScaler linearScaler = new LinearScaler(zonalScalable, shiftDispatcher);
+        linearScaler.shiftNetwork(200, network);
+        DichotomyStepResult<?> networkStepResult = networkValidator.validateNetwork(network);
+        assertFalse(networkStepResult.isValid());
+    }
+
+    @Test
+    void scalingNetworkValidationStrategyWithFailure() throws ShiftingException, ValidationException, GlskLimitationException {
+        Mockito.when(shiftDispatcher.dispatch(200)).thenReturn(Map.of(
+                "10YCH-SWISSGRIDZ", 200.
+        ));
+        Mockito.when(networkValidator.validateNetwork(network)).thenThrow(new ValidationException("RAO failure"));
+
+        LinearScaler linearScaler = new LinearScaler(zonalScalable, shiftDispatcher);
+        linearScaler.shiftNetwork(200, network);
+        DichotomyStepResult<?> networkStepResult = networkValidator.validateNetwork(network);
+        assertTrue(networkStepResult.isFailed());
+        assertEquals("RAO failure", networkStepResult.getFailureMessage());
+    }
+
+    @Test
+    void scalingNetworkValidationStrategyWithShiftingException() throws ShiftingException, GlskLimitationException, ValidationException {
+        Mockito.when(shiftDispatcher.dispatch(200)).thenThrow(new ShiftingException("Impossible to shift"));
+        LinearScaler linearScaler = new LinearScaler(zonalScalable, shiftDispatcher);
+        linearScaler.shiftNetwork(200, network);
+        DichotomyStepResult<?> networkStepResult = networkValidator.validateNetwork(network);
+        assertTrue(networkStepResult.isFailed());
+        assertEquals("Impossible to shift", networkStepResult.getFailureMessage());
+    }*/
+}
