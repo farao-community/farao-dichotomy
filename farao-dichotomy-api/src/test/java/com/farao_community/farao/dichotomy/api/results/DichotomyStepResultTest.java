@@ -27,7 +27,6 @@ class DichotomyStepResultTest {
         DichotomyStepResult<?> result = DichotomyStepResult.fromNetworkValidationResult(new RaoResultMock(true), null);
         assertTrue(result.isValid());
         assertEquals(ReasonInvalid.NONE, result.getReasonInvalid());
-        assertTrue(result.isValid());
     }
 
     @Test
