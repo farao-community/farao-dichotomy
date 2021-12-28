@@ -78,6 +78,11 @@ public final class DichotomyResult<I> {
         return highestValidStep != null ? highestValidStep.getLeft() : Double.NaN;
     }
 
+    @JsonIgnore
+    public double getLowestInvalidStepValue() {
+        return lowestInvalidStep != null ? lowestInvalidStep.getLeft() : Double.NaN;
+    }
+
     @Override
     public String toString() {
         return ToStringBuilder.reflectionToString(this);
