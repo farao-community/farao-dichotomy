@@ -7,69 +7,58 @@
 
 ## Overview
 
-This package provides a generic dichotomy engine that allows creating custom dichotomy process by
-providing specific validation strategy and dichotomy step result implementation.
+This repository is made of a main module **farao-dichotomy-api** that provides a ready-to-use **DichotomyEngine**. This engine already contains the basic requirements of a dichotomy. It runs on an IIDM network and at each iteration of the dichotomy it shifts the network and tries to validate it, each step resutl fills the index until the dichotomy precision is higher or equal to the step difference between highest valid step and lowest invalid step.
+Two main interfaces are present in this module. First, **NetworkShifter** where you can find one implementation in the second module **farao-dichotomy-shift**. The only present implementation for now is a **LinearScaler** based on **SplittingFactors**, but it would be completed with further needs. The second interface is **NetworkValidator** this one has no implementation provided, clients will have to provide one. The method of this interafce will validate a Network according to the process requirements and will provide DichotomyStepResult with additional internal data if necessary.
+This **DichotomyEngine** through its **DihotomyStepResult** can handle process specific results that would be accesible any time in the **DichotomyResults**. It is the role of **NetworkValidator** to fill them. 
 
 ## Quick implementations example
 
-#### Implement a StepResult
+#### Dichotomy client
 ```java
-public class RaoStepResult implements StepResult {
-    private final double stepValue;
-    private final RaoResult raoResult;
+public DichotomyResult<RaoResponse> runDichotomy(Network network) {
+    DichotomyEngine<RaoResponse> engine = new DichotomyEngine<>(
+        new Index<>(0, 10000, 50), 
+        new StepsIndexStrategy(true, 650),
+        new LinearScaler(glsk, new SplittingFactors(splittingfactors)),
+        new MockNetworkValidator());
+    return engine.run(network);
+}
+```
+This could be a very simple implementation of a dichotomy. The index would be between 0 and 10.000, the dichotomy precison being 50. The index would start at the minimum index value incrementing by steps with a starting step of 650. Or you could also use a RangeDivisionStrategy that splits the available index interval in half at each iteration. To shift the network a basic LinearScaler is used based on a countryGlsk to associate groups/loads to a country variation and splitting factors are used to split the index (target value) between the countries. We will see what kind of Network Validator we could implement.
 
-    public RaoStepResult(double stepValue, RaoResult raoResult) {
-        this.stepValue = stepValue;
-        this.raoResult = raoResult;
+#### Implement a NetworkValidator
+
+```java
+public class RaoValidator implements NetworkValidator<RaoResponse> {
+    private final RaoRunnerClient raoRunnerClient;
+
+    public RaoValidator(RaoRunnerClient raoRunnerClient) {
+        this.raoRunnerClient = raoRunnerClient;
     }
 
     @Override
-    public boolean isSecure() {
-        if (raoResult.getComputationStatus() == ComputationStatus.FAILURE) {
-            return false;
+    public DichotomyStepResult<RaoResponse> validateNetwork(Network network) throws ValidationException {
+        RaoRequest raoRequest = buildRaoRequest(network);
+        try {
+            RaoResponse raoResponse = raoRunnerClient.runRao(raoRequest);
+            RaoResult raoResult = importRaoResult(raoResponse.getRaoResultFileUrl());
+            return DichotomyStepResult.fromNetworkValidationResult(raoResult, raoResponse);
+        } catch (RuntimeException | IOException e) {
+            throw new ValidationException("RAO run failed. Nested exception: " + e.getMessage());
         }
-        return raoResult.getFunctionalCost(OptimizationState.AFTER_CRA) <= 0;
     }
-
-    @Override
-    public double stepValue() {
-        return stepValue;
+    
+    private RaoRequest buildRaoRequest(Network network) {
+        ...
     }
-}
-```
-
-#### Implement a ValidationStrategy
-
-```java
-public class RaoValidationStrategy implements ValidationStrategy<RaoStepResult> {
-    private final Network network;
-    private final Crac crac;
-    private final ZonalData<Scalable> scalables;
-    private final Map<String, Double> splittingFactors;
-
-    public RaoValidationStrategy(Network network, Crac crac, ZonalData<Scalable> scalables, Map<String, Double> splittingFactors) {
-        this.network = network;
-        this.crac = crac;
-        this.scalables = scalables;
-        this.splittingFactors = splittingFactors;
-    }
-
-    @Override
-    public RaoStepResult validateStep(double stepValue) {
-        Network duplicatedNetwork = duplicateNetwork(network);
-        splittingFactors.forEach((zoneId, splittingFactor) -> scalables.getData(zoneId).scale(duplicatedNetwork, stepValue * splittingFactor));
-        RaoInput raoInput = RaoInput.build(duplicatedNetwork, crac).build();
-        RaoResult raoResult = Rao.run(raoInput);
-        return new RaoStepResult(stepValue, raoResult);
-    }
-
-    private Network duplicateNetwork(Network network) {
-        return NetworkXml.copy(network);
+    
+    private RaoResult importRaoResult(String raoResultUrl) {
+        ...
     }
 }
 ```
 
-Thanks to these basics implementation you could run a basic dichotomy on RAO runs.
+Thanks to this basic implementation you could run a basic dichotomy that runs a RAO at each dichotomy step and fills the DichotomyStepResult with a specific RaResult. This way you could for exemple retrieve some information about what occured during the RAO of the highest valid step at the end of the dichotomy.
 
 ## License
 
