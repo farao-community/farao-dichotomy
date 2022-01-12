@@ -49,7 +49,7 @@ class LinearScalerTest {
     }
 
     private <I> DichotomyStepResult<I> getStepResult(boolean secure) {
-        return DichotomyStepResult.fromNetworkValidationResult(new RaoResultMock(secure), null);
+        return DichotomyStepResult.fromNetworkValidationResult(secure, null);
     }
 
     @Test

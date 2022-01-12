@@ -24,14 +24,14 @@ class DichotomyStepResultTest {
 
     @Test
     void testWithSecureNetworkValidationResult() {
-        DichotomyStepResult<?> result = DichotomyStepResult.fromNetworkValidationResult(new RaoResultMock(true), null);
+        DichotomyStepResult<?> result = DichotomyStepResult.fromNetworkValidationResult(true, null);
         assertTrue(result.isValid());
         assertEquals(ReasonInvalid.NONE, result.getReasonInvalid());
     }
 
     @Test
     void testWithUnsecureNetworkValidationResult() {
-        DichotomyStepResult<?> result = DichotomyStepResult.fromNetworkValidationResult(new RaoResultMock(false), null);
+        DichotomyStepResult<?> result = DichotomyStepResult.fromNetworkValidationResult(false, null);
         assertFalse(result.isValid());
         assertEquals(ReasonInvalid.UNSECURE_AFTER_VALIDATION, result.getReasonInvalid());
         assertFalse(result.isValid());

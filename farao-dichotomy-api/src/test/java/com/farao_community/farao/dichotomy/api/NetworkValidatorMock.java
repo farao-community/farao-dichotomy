@@ -28,9 +28,9 @@ public class NetworkValidatorMock implements NetworkValidator<Object> {
             stepValue *= -1;
         }
         if (stepValue < limit) {
-            return DichotomyStepResult.fromNetworkValidationResult(new RaoResultMock(true), null);
+            return DichotomyStepResult.fromNetworkValidationResult(true, null);
         } else {
-            return DichotomyStepResult.fromNetworkValidationResult(new RaoResultMock(false), null);
+            return DichotomyStepResult.fromNetworkValidationResult(false, null);
         }
     }
 }
