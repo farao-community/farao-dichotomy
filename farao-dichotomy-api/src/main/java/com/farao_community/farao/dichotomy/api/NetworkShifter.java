@@ -9,6 +9,7 @@ package com.farao_community.farao.dichotomy.api;
 import com.farao_community.farao.dichotomy.api.exceptions.GlskLimitationException;
 import com.farao_community.farao.dichotomy.api.exceptions.ShiftingException;
 import com.powsybl.iidm.network.Network;
+import org.slf4j.Logger;
 
 /**
  * @author Joris Mancini {@literal <joris.mancini at rte-france.com>}
@@ -16,4 +17,6 @@ import com.powsybl.iidm.network.Network;
 public interface NetworkShifter {
 
     void shiftNetwork(double stepValue, Network network) throws GlskLimitationException, ShiftingException;
+
+    void shiftNetwork(double stepValue, Network network, Logger logger) throws GlskLimitationException, ShiftingException;
 }

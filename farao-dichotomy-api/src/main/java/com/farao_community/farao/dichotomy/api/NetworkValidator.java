@@ -9,6 +9,7 @@ package com.farao_community.farao.dichotomy.api;
 import com.farao_community.farao.dichotomy.api.exceptions.ValidationException;
 import com.farao_community.farao.dichotomy.api.results.DichotomyStepResult;
 import com.powsybl.iidm.network.Network;
+import org.slf4j.Logger;
 
 /**
  * @author Joris Mancini {@literal <joris.mancini at rte-france.com>}
@@ -16,4 +17,6 @@ import com.powsybl.iidm.network.Network;
 public interface NetworkValidator<I> {
 
     DichotomyStepResult<I> validateNetwork(Network network) throws ValidationException;
+
+    DichotomyStepResult<I> validateNetwork(Network network, Logger logger) throws ValidationException;
 }

@@ -29,7 +29,6 @@ import java.util.StringJoiner;
  * @author Joris Mancini {@literal <joris.mancini at rte-france.com>}
  */
 public final class LinearScaler implements NetworkShifter {
-    private static final Logger LOGGER = LoggerFactory.getLogger(LinearScaler.class);
     private static final double EPSILON = 1e-3;
 
     private final ZonalData<Scalable> zonalScalable;
@@ -42,16 +41,21 @@ public final class LinearScaler implements NetworkShifter {
 
     @Override
     public void shiftNetwork(double stepValue, Network network) throws GlskLimitationException, ShiftingException {
-        LOGGER.info("Scale network file");
+        shiftNetwork(stepValue, network, LoggerFactory.getLogger(LinearScaler.class));
+    }
+
+    @Override
+    public void shiftNetwork(double stepValue, Network network, Logger logger) throws GlskLimitationException, ShiftingException {
+        logger.info("Scale network file");
         Map<String, Double> scalingValuesByCountry = shiftDispatcher.dispatch(stepValue);
         List<String> limitingCountries = new ArrayList<>();
         for (Map.Entry<String, Double> entry : scalingValuesByCountry.entrySet()) {
             String zoneId = entry.getKey();
             double asked = entry.getValue();
-            LOGGER.info(String.format("Applying variation on zone %s (target: %.2f)", zoneId, asked));
+            logger.info(String.format("Applying variation on zone %s (target: %.2f)", zoneId, asked));
             double done = zonalScalable.getData(zoneId).scale(network, asked);
             if (Math.abs(done - asked) > EPSILON) {
-                LOGGER.warn(String.format("Incomplete variation on zone %s (target: %.2f, done: %.2f)", zoneId, asked, done));
+                logger.warn(String.format("Incomplete variation on zone %s (target: %.2f, done: %.2f)", zoneId, asked, done));
                 limitingCountries.add(zoneId);
             }
         }
