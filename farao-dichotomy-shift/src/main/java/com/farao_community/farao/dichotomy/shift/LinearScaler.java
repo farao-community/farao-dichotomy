@@ -29,14 +29,20 @@ import static com.farao_community.farao.dichotomy.api.logging.DichotomyLoggerPro
  * @author Joris Mancini {@literal <joris.mancini at rte-france.com>}
  */
 public final class LinearScaler implements NetworkShifter {
-    private static final double EPSILON = 1e-3;
+    private static final double DEFAULT_EPSILON = 1e-3;
 
     private final ZonalData<Scalable> zonalScalable;
     private final ShiftDispatcher shiftDispatcher;
+    private final double shiftEpsilon;
 
     public LinearScaler(ZonalData<Scalable> zonalScalable, ShiftDispatcher shiftDispatcher) {
+        this(zonalScalable, shiftDispatcher, DEFAULT_EPSILON);
+    }
+
+    public LinearScaler(ZonalData<Scalable> zonalScalable, ShiftDispatcher shiftDispatcher, double shiftEpsilon) {
         this.zonalScalable = zonalScalable;
         this.shiftDispatcher = shiftDispatcher;
+        this.shiftEpsilon = shiftEpsilon;
     }
 
     @Override
@@ -50,7 +56,7 @@ public final class LinearScaler implements NetworkShifter {
             double asked = entry.getValue();
             BUSINESS_LOGS.info(String.format("Applying variation on zone %s (target: %.2f)", zoneId, asked));
             double done = zonalScalable.getData(zoneId).scale(network, asked);
-            if (Math.abs(done - asked) > EPSILON) {
+            if (Math.abs(done - asked) > shiftEpsilon) {
                 BUSINESS_WARNS.warn(String.format("Incomplete variation on zone %s (target: %.2f, done: %.2f)",
                     zoneId, asked, done));
                 limitingCountries.add(zoneId);
