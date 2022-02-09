@@ -16,10 +16,10 @@ import com.farao_community.farao.dichotomy.api.results.DichotomyResult;
 import com.farao_community.farao.dichotomy.api.results.DichotomyStepResult;
 import com.farao_community.farao.dichotomy.api.results.ReasonInvalid;
 import com.powsybl.iidm.network.Network;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.util.Objects;
+
+import static com.farao_community.farao.dichotomy.api.logging.DichotomyLoggerProvider.*;
 
 /**
  * Dichotomy engine.
@@ -33,7 +33,6 @@ import java.util.Objects;
  * @author Sebastien Murgey {@literal <sebastien.murgey at rte-france.com>}
  */
 public class DichotomyEngine<T> {
-    private static final Logger LOGGER = LoggerFactory.getLogger(DichotomyEngine.class);
     private static final int DEFAULT_MAX_ITERATION_NUMBER = 100;
     private final Index<T> index;
     private final IndexStrategy indexStrategy;
@@ -61,14 +60,19 @@ public class DichotomyEngine<T> {
         String initialVariant = network.getVariantManager().getWorkingVariantId();
         while (!index.precisionReached() && iterationCounter < maxIteration) {
             double nextValue = indexStrategy.nextValue(index);
-            LOGGER.info("Validating step value '{}'", nextValue);
+            BUSINESS_LOGS.info(String.format("Next dichotomy step: %.2f", nextValue));
             DichotomyStepResult<T> dichotomyStepResult = validate(nextValue, network, initialVariant);
+            if (dichotomyStepResult.isValid()) {
+                BUSINESS_LOGS.info(String.format("Network at dichotomy step %.2f is secure", nextValue));
+            } else {
+                BUSINESS_LOGS.info(String.format("Network at dichotomy step %.2f is unsecure", nextValue));
+            }
             index.addDichotomyStepResult(nextValue, dichotomyStepResult);
             iterationCounter++;
         }
 
         if (iterationCounter == maxIteration) {
-            LOGGER.error("Max number of iteration reached during dichotomy, research precision has not been reached.");
+            BUSINESS_WARNS.warn("Max number of iteration {} reached during dichotomy, research precision has not been reached.", maxIteration);
         }
         return DichotomyResult.buildFromIndex(index);
     }
@@ -78,14 +82,13 @@ public class DichotomyEngine<T> {
         network.getVariantManager().cloneVariant(initialVariant, newVariant);
         network.getVariantManager().setWorkingVariant(newVariant);
         try {
-            LOGGER.debug("Shifting network");
             networkShifter.shiftNetwork(stepValue, network);
-            LOGGER.debug("Validating network");
             return networkValidator.validateNetwork(network);
         } catch (GlskLimitationException e) {
-            LOGGER.warn("GLSK limits have been reached for step value {}", stepValue);
+            BUSINESS_WARNS.warn(String.format("GLSK limits have been reached for step value %.2f", stepValue));
             return DichotomyStepResult.fromFailure(ReasonInvalid.GLSK_LIMITATION, e.getMessage());
         } catch (ShiftingException | ValidationException e) {
+            BUSINESS_WARNS.warn(String.format("Validation failed for step value %.2f", stepValue));
             return DichotomyStepResult.fromFailure(ReasonInvalid.VALIDATION_FAILED, e.getMessage());
         } finally {
             network.getVariantManager().setWorkingVariant(initialVariant);

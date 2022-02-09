@@ -12,13 +12,13 @@ import com.farao_community.farao.dichotomy.api.exceptions.GlskLimitationExceptio
 import com.farao_community.farao.dichotomy.api.exceptions.ShiftingException;
 import com.powsybl.action.util.Scalable;
 import com.powsybl.iidm.network.Network;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.StringJoiner;
+
+import static com.farao_community.farao.dichotomy.api.logging.DichotomyLoggerProvider.*;
 
 /**
  * This final implementation of network validation strategy use basic scaling strategy for network shifting. According
@@ -29,7 +29,6 @@ import java.util.StringJoiner;
  * @author Joris Mancini {@literal <joris.mancini at rte-france.com>}
  */
 public final class LinearScaler implements NetworkShifter {
-    private static final Logger LOGGER = LoggerFactory.getLogger(LinearScaler.class);
     private static final double EPSILON = 1e-3;
 
     private final ZonalData<Scalable> zonalScalable;
@@ -42,16 +41,18 @@ public final class LinearScaler implements NetworkShifter {
 
     @Override
     public void shiftNetwork(double stepValue, Network network) throws GlskLimitationException, ShiftingException {
-        LOGGER.info("Scale network file");
+        BUSINESS_LOGS.info(String.format("Starting linear scaling on network %s with step value %.2f",
+            network.getVariantManager().getWorkingVariantId(), stepValue));
         Map<String, Double> scalingValuesByCountry = shiftDispatcher.dispatch(stepValue);
         List<String> limitingCountries = new ArrayList<>();
         for (Map.Entry<String, Double> entry : scalingValuesByCountry.entrySet()) {
             String zoneId = entry.getKey();
             double asked = entry.getValue();
-            LOGGER.info(String.format("Applying variation on zone %s (target: %.2f)", zoneId, asked));
+            BUSINESS_LOGS.info(String.format("Applying variation on zone %s (target: %.2f)", zoneId, asked));
             double done = zonalScalable.getData(zoneId).scale(network, asked);
             if (Math.abs(done - asked) > EPSILON) {
-                LOGGER.warn(String.format("Incomplete variation on zone %s (target: %.2f, done: %.2f)", zoneId, asked, done));
+                BUSINESS_WARNS.warn(String.format("Incomplete variation on zone %s (target: %.2f, done: %.2f)",
+                    zoneId, asked, done));
                 limitingCountries.add(zoneId);
             }
         }
