@@ -13,7 +13,7 @@ package com.farao_community.farao.dichotomy.api.logging;
  * - INFO: high-level information about the RAO steps
  * - ERROR: information about fatal errors leading the RAO to interruption
  *
- * @author Peter Mitri {@literal <peter.mitri at rte-france.com>}
+ * @author Joris Mancini {@literal <joris.mancini at rte-france.com>}
  */
 public class DichotomyBusinessLogs extends AbstractDichotomyLogger {
     private static final String LOG_LEVEL_NOT_ALLOWED = "Log level not allowed in this logger";

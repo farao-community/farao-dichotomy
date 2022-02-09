@@ -60,12 +60,12 @@ public class DichotomyEngine<T> {
         String initialVariant = network.getVariantManager().getWorkingVariantId();
         while (!index.precisionReached() && iterationCounter < maxIteration) {
             double nextValue = indexStrategy.nextValue(index);
-            BUSINESS_LOGS.info("Next dichotomy step: {}", DECIMAL_FORMAT.format(nextValue));
+            BUSINESS_LOGS.info(String.format("Next dichotomy step: %.2f", nextValue));
             DichotomyStepResult<T> dichotomyStepResult = validate(nextValue, network, initialVariant);
             if (dichotomyStepResult.isValid()) {
-                BUSINESS_LOGS.info("Network at dichotomy step {} is secure", DECIMAL_FORMAT.format(nextValue));
+                BUSINESS_LOGS.info(String.format("Network at dichotomy step %.2f is secure", nextValue));
             } else {
-                BUSINESS_LOGS.info("Network at dichotomy step {} is unsecure", DECIMAL_FORMAT.format(nextValue));
+                BUSINESS_LOGS.info(String.format("Network at dichotomy step %.2f is unsecure", nextValue));
             }
             index.addDichotomyStepResult(nextValue, dichotomyStepResult);
             iterationCounter++;
@@ -85,10 +85,10 @@ public class DichotomyEngine<T> {
             networkShifter.shiftNetwork(stepValue, network);
             return networkValidator.validateNetwork(network);
         } catch (GlskLimitationException e) {
-            BUSINESS_WARNS.warn("GLSK limits have been reached for step value {}", DECIMAL_FORMAT.format(stepValue));
+            BUSINESS_WARNS.warn(String.format("GLSK limits have been reached for step value %.2f", stepValue));
             return DichotomyStepResult.fromFailure(ReasonInvalid.GLSK_LIMITATION, e.getMessage());
         } catch (ShiftingException | ValidationException e) {
-            BUSINESS_WARNS.warn("Validation failed for step value {}", DECIMAL_FORMAT.format(stepValue));
+            BUSINESS_WARNS.warn(String.format("Validation failed for step value %.2f", stepValue));
             return DichotomyStepResult.fromFailure(ReasonInvalid.VALIDATION_FAILED, e.getMessage());
         } finally {
             network.getVariantManager().setWorkingVariant(initialVariant);

@@ -11,7 +11,7 @@ package com.farao_community.farao.dichotomy.api.logging;
  * Dichotomy business warnings, containing important information understandable by the end user.
  * Only WARN level is allowed
  *
- * @author Peter Mitri {@literal <peter.mitri at rte-france.com>}
+ * @author Joris Mancini {@literal <joris.mancini at rte-france.com>}
  */
 public class DichotomyBusinessWarns extends AbstractDichotomyLogger {
     private static final String LOG_LEVEL_NOT_ALLOWED = "Log level not allowed in this logger";

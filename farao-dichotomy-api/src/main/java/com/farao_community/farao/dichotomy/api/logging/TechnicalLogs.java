@@ -11,7 +11,7 @@ package com.farao_community.farao.dichotomy.api.logging;
  * Technical logs, containing information understandable by the advanced users or maintainers.
  * All log levels are allowed.
  *
- * @author Peter Mitri {@literal <peter.mitri at rte-france.com>}
+ * @author Joris Mancini {@literal <joris.mancini at rte-france.com>}
  */
 public class TechnicalLogs extends AbstractDichotomyLogger {
     public TechnicalLogs() {

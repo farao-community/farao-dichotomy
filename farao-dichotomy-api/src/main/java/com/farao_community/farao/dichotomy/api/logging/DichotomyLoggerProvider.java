@@ -7,16 +7,13 @@
 
 package com.farao_community.farao.dichotomy.api.logging;
 
-import java.text.DecimalFormat;
-
 /**
- * @author Peter Mitri {@literal <peter.mitri at rte-france.com>}
+ * @author Joris Mancini {@literal <joris.mancini at rte-france.com>}
  */
 public final class DichotomyLoggerProvider {
     public static final DichotomyLogger BUSINESS_LOGS = new DichotomyBusinessLogs();
     public static final DichotomyLogger BUSINESS_WARNS = new DichotomyBusinessWarns();
     public static final DichotomyLogger TECHNICAL_LOGS = new TechnicalLogs();
-    public static final DecimalFormat DECIMAL_FORMAT = new DecimalFormat("#.##");
 
     private DichotomyLoggerProvider() {
         // utility class

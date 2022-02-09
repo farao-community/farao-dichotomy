@@ -11,7 +11,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * @author Peter Mitri {@literal <peter.mitri at rte-france.com>}
+ * @author Joris Mancini {@literal <joris.mancini at rte-france.com>}
  */
 public abstract class AbstractDichotomyLogger implements DichotomyLogger {
     private final Logger logger = LoggerFactory.getLogger(this.getClass());

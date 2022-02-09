@@ -10,7 +10,7 @@ package com.farao_community.farao.dichotomy.api.logging;
 /**
  * An interface for custom logging
  *
- * @author Peter Mitri {@literal <peter.mitri at rte-france.com>}
+ * @author Joris Mancini {@literal <joris.mancini at rte-france.com>}
  */
 public interface DichotomyLogger {
     void trace(String format, Object... arguments);
