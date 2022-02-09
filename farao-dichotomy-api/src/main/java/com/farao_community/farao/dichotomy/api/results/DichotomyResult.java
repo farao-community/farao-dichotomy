@@ -15,7 +15,6 @@ import org.apache.commons.lang3.tuple.Pair;
  * @author Joris Mancini {@literal <joris.mancini at rte-france.com>}
  */
 public final class DichotomyResult<I> {
-
     private final Pair<Double, DichotomyStepResult<I>> highestValidStep;
     private final Pair<Double, DichotomyStepResult<I>> lowestInvalidStep;
     private final LimitingCause limitingCause;

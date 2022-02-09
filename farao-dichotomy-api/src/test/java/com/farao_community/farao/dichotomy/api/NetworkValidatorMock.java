@@ -8,7 +8,6 @@ package com.farao_community.farao.dichotomy.api;
 
 import com.farao_community.farao.dichotomy.api.results.DichotomyStepResult;
 import com.powsybl.iidm.network.Network;
-import org.slf4j.Logger;
 
 /**
  * @author Joris Mancini {@literal <joris.mancini at rte-france.com>}
@@ -22,11 +21,6 @@ public class NetworkValidatorMock implements NetworkValidator<Object> {
 
     @Override
     public DichotomyStepResult<Object> validateNetwork(Network network) {
-        return null;
-    }
-
-    @Override
-    public DichotomyStepResult<Object> validateNetwork(Network network, Logger logger) {
         String[] parsedVariantId = network.getVariantManager().getWorkingVariantId().split("-");
         double stepValue = Double.parseDouble(parsedVariantId[parsedVariantId.length - 1]);
         if (parsedVariantId[parsedVariantId.length - 2].equals("")) {

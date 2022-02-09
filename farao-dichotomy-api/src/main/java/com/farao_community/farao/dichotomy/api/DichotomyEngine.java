@@ -16,10 +16,10 @@ import com.farao_community.farao.dichotomy.api.results.DichotomyResult;
 import com.farao_community.farao.dichotomy.api.results.DichotomyStepResult;
 import com.farao_community.farao.dichotomy.api.results.ReasonInvalid;
 import com.powsybl.iidm.network.Network;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.util.Objects;
+
+import static com.farao_community.farao.dichotomy.api.logging.DichotomyLoggerProvider.*;
 
 /**
  * Dichotomy engine.
@@ -39,21 +39,12 @@ public class DichotomyEngine<T> {
     private final NetworkShifter networkShifter;
     private final NetworkValidator<T> networkValidator;
     private final int maxIteration;
-    private final Logger logger;
 
     public DichotomyEngine(Index<T> index, IndexStrategy indexStrategy, NetworkShifter networkShifter, NetworkValidator<T> networkValidator) {
-        this(index, indexStrategy, networkShifter, networkValidator, DEFAULT_MAX_ITERATION_NUMBER, LoggerFactory.getLogger(DichotomyEngine.class));
+        this(index, indexStrategy, networkShifter, networkValidator, DEFAULT_MAX_ITERATION_NUMBER);
     }
 
     public DichotomyEngine(Index<T> index, IndexStrategy indexStrategy, NetworkShifter networkShifter, NetworkValidator<T> networkValidator, int maxIteration) {
-        this(index, indexStrategy, networkShifter, networkValidator, maxIteration, LoggerFactory.getLogger(DichotomyEngine.class));
-    }
-
-    public DichotomyEngine(Index<T> index, IndexStrategy indexStrategy, NetworkShifter networkShifter, NetworkValidator<T> networkValidator, Logger logger) {
-        this(index, indexStrategy, networkShifter, networkValidator, DEFAULT_MAX_ITERATION_NUMBER, logger);
-    }
-
-    public DichotomyEngine(Index<T> index, IndexStrategy indexStrategy, NetworkShifter networkShifter, NetworkValidator<T> networkValidator, int maxIteration, Logger logger) {
         if (maxIteration < 3) {
             throw new DichotomyException("Max number of iterations of the dichotomy engine should be at least 3.");
         }
@@ -62,7 +53,6 @@ public class DichotomyEngine<T> {
         this.networkShifter = networkShifter;
         this.networkValidator = Objects.requireNonNull(networkValidator);
         this.maxIteration = maxIteration;
-        this.logger = logger;
     }
 
     public DichotomyResult<T> run(Network network) {
@@ -70,14 +60,14 @@ public class DichotomyEngine<T> {
         String initialVariant = network.getVariantManager().getWorkingVariantId();
         while (!index.precisionReached() && iterationCounter < maxIteration) {
             double nextValue = indexStrategy.nextValue(index);
-            logger.info("Validating step value '{}'", nextValue);
+            BUSINESS_LOGS.info("Next dichotomy step: {}", DECIMAL_FORMAT.format(nextValue));
             DichotomyStepResult<T> dichotomyStepResult = validate(nextValue, network, initialVariant);
             index.addDichotomyStepResult(nextValue, dichotomyStepResult);
             iterationCounter++;
         }
 
         if (iterationCounter == maxIteration) {
-            logger.error("Max number of iteration reached during dichotomy, research precision has not been reached.");
+            BUSINESS_WARNS.warn("Max number of iteration {} reached during dichotomy, research precision has not been reached.", maxIteration);
         }
         return DichotomyResult.buildFromIndex(index);
     }
@@ -87,12 +77,10 @@ public class DichotomyEngine<T> {
         network.getVariantManager().cloneVariant(initialVariant, newVariant);
         network.getVariantManager().setWorkingVariant(newVariant);
         try {
-            logger.debug("Shifting network");
-            networkShifter.shiftNetwork(stepValue, network, logger);
-            logger.debug("Validating network");
-            return networkValidator.validateNetwork(network, logger);
+            networkShifter.shiftNetwork(stepValue, network);
+            return networkValidator.validateNetwork(network);
         } catch (GlskLimitationException e) {
-            logger.warn("GLSK limits have been reached for step value {}", stepValue);
+            BUSINESS_WARNS.warn("GLSK limits have been reached for step value {}", DECIMAL_FORMAT.format(stepValue));
             return DichotomyStepResult.fromFailure(ReasonInvalid.GLSK_LIMITATION, e.getMessage());
         } catch (ShiftingException | ValidationException e) {
             return DichotomyStepResult.fromFailure(ReasonInvalid.VALIDATION_FAILED, e.getMessage());

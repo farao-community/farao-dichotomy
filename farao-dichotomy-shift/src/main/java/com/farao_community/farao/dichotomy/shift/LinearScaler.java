@@ -12,13 +12,13 @@ import com.farao_community.farao.dichotomy.api.exceptions.GlskLimitationExceptio
 import com.farao_community.farao.dichotomy.api.exceptions.ShiftingException;
 import com.powsybl.action.util.Scalable;
 import com.powsybl.iidm.network.Network;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.StringJoiner;
+
+import static com.farao_community.farao.dichotomy.api.logging.DichotomyLoggerProvider.*;
 
 /**
  * This final implementation of network validation strategy use basic scaling strategy for network shifting. According
@@ -41,21 +41,18 @@ public final class LinearScaler implements NetworkShifter {
 
     @Override
     public void shiftNetwork(double stepValue, Network network) throws GlskLimitationException, ShiftingException {
-        shiftNetwork(stepValue, network, LoggerFactory.getLogger(LinearScaler.class));
-    }
-
-    @Override
-    public void shiftNetwork(double stepValue, Network network, Logger logger) throws GlskLimitationException, ShiftingException {
-        logger.info("Scale network file");
+        BUSINESS_LOGS.info("Starting linear scaling on network {} with step value {}",
+            network.getVariantManager().getWorkingVariantId(), DECIMAL_FORMAT.format(stepValue));
         Map<String, Double> scalingValuesByCountry = shiftDispatcher.dispatch(stepValue);
         List<String> limitingCountries = new ArrayList<>();
         for (Map.Entry<String, Double> entry : scalingValuesByCountry.entrySet()) {
             String zoneId = entry.getKey();
             double asked = entry.getValue();
-            logger.info(String.format("Applying variation on zone %s (target: %.2f)", zoneId, asked));
+            BUSINESS_LOGS.info("Applying variation on zone {} (target: {})", zoneId, DECIMAL_FORMAT.format(asked));
             double done = zonalScalable.getData(zoneId).scale(network, asked);
             if (Math.abs(done - asked) > EPSILON) {
-                logger.warn(String.format("Incomplete variation on zone %s (target: %.2f, done: %.2f)", zoneId, asked, done));
+                BUSINESS_WARNS.warn("Incomplete variation on zone {} (target: {}, done: {})",
+                    zoneId, DECIMAL_FORMAT.format(asked), DECIMAL_FORMAT.format(done));
                 limitingCountries.add(zoneId);
             }
         }
