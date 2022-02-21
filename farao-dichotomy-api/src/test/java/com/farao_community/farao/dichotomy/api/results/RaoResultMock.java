@@ -129,7 +129,7 @@ public class RaoResultMock implements RaoResult {
     }
 
     @Override
-    public Set<RangeAction> getActivatedRangeActionsDuringState(State state) {
+    public Set<RangeAction<?>> getActivatedRangeActionsDuringState(State state) {
         return null;
     }
 
@@ -139,7 +139,7 @@ public class RaoResultMock implements RaoResult {
     }
 
     @Override
-    public Map<RangeAction, Double> getOptimizedSetPointsOnState(State state) {
+    public Map<RangeAction<?>, Double> getOptimizedSetPointsOnState(State state) {
         return null;
     }
 }
