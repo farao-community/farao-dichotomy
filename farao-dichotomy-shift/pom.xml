@@ -25,20 +25,18 @@
             <groupId>com.powsybl</groupId>
             <artifactId>powsybl-action-util</artifactId>
         </dependency>
+        <dependency>
+            <groupId>com.powsybl</groupId>
+            <artifactId>powsybl-glsk-document-io-api</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.powsybl</groupId>
+            <artifactId>powsybl-glsk-document-cse</artifactId>
+        </dependency>
 
         <dependency>
             <groupId>ch.qos.logback</groupId>
             <artifactId>logback-classic</artifactId>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>com.farao-community.farao</groupId>
-            <artifactId>farao-glsk-document-io-api</artifactId>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>com.farao-community.farao</groupId>
-            <artifactId>farao-glsk-document-cse</artifactId>
             <scope>test</scope>
         </dependency>
         <dependency>
