@@ -1,6 +1,7 @@
 package com.farao_community.farao.dichotomy.api.results;
 
 import com.farao_community.farao.commons.Unit;
+import com.farao_community.farao.data.crac_api.RemedialAction;
 import com.farao_community.farao.data.crac_api.State;
 import com.farao_community.farao.data.crac_api.cnec.FlowCnec;
 import com.farao_community.farao.data.crac_api.network_action.NetworkAction;
@@ -86,6 +87,11 @@ public class RaoResultMock implements RaoResult {
     @Override
     public double getVirtualCost(OptimizationState optimizationState, String s) {
         return 0;
+    }
+
+    @Override
+    public boolean isActivatedDuringState(State state, RemedialAction<?> remedialAction) {
+        return false;
     }
 
     @Override
