@@ -72,7 +72,7 @@ public class Index<T> {
                 throw new AssertionError("Step result tested is secure but its value is lower than highest secure step one. Should not happen");
             }
             highestValidStep = Pair.of(stepValue, stepResult);
-        } else if (!stepResult.isValid()) {
+        } else {
             if (lowestInvalidStep != null && lowestInvalidStep.getLeft() < stepValue) {
                 throw new AssertionError("Step result tested is unsecure but its value is higher than lowest unsecure step one. Should not happen");
             }
