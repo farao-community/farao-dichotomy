@@ -9,6 +9,7 @@ package com.farao_community.farao.dichotomy.shift;
 import com.farao_community.farao.commons.Unit;
 import com.farao_community.farao.data.crac_api.RemedialAction;
 import com.farao_community.farao.data.crac_api.State;
+import com.farao_community.farao.data.crac_api.cnec.AngleCnec;
 import com.farao_community.farao.data.crac_api.cnec.FlowCnec;
 import com.farao_community.farao.data.crac_api.network_action.NetworkAction;
 import com.farao_community.farao.data.crac_api.range_action.PstRangeAction;
@@ -42,7 +43,17 @@ public class RaoResultMock implements RaoResult {
     }
 
     @Override
+    public double getAngle(OptimizationState optimizationState, AngleCnec angleCnec, Unit unit) {
+        return 0;
+    }
+
+    @Override
     public double getMargin(OptimizationState optimizationState, FlowCnec flowCnec, Unit unit) {
+        return 0;
+    }
+
+    @Override
+    public double getMargin(OptimizationState optimizationState, AngleCnec angleCnec, Unit unit) {
         return 0;
     }
 
