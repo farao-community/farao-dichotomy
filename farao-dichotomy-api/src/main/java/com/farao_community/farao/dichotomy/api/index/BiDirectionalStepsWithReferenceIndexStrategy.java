@@ -18,6 +18,8 @@ public class BiDirectionalStepsWithReferenceIndexStrategy implements IndexStrate
     private final double stepSize;
     private final double referenceExchange;
     private Pair<Double, ? extends DichotomyStepResult<?>> closestGlskLimitationBelowReference;
+    private Pair<Double, ? extends DichotomyStepResult<?>> lowestUnsecureStep;
+    private Pair<Double, ? extends DichotomyStepResult<?>> highestSecureStep;
 
     public BiDirectionalStepsWithReferenceIndexStrategy(double startIndex, double stepSize, double referenceExchange) {
         this.startIndex = startIndex;
@@ -27,14 +29,26 @@ public class BiDirectionalStepsWithReferenceIndexStrategy implements IndexStrate
 
     @Override
     public double nextValue(Index<?> index) {
+        if (index.lowestInvalidStep().getRight().getReasonInvalid().equals(ReasonInvalid.UNSECURE_AFTER_VALIDATION)) {
+            lowestUnsecureStep = index.lowestInvalidStep();
+        }
+        if (index.highestValidStep() != null) {
+            highestSecureStep = index.highestValidStep();
+        }
+
+        if (index.lowestInvalidStep().getRight().getReasonInvalid().equals(ReasonInvalid.GLSK_LIMITATION)
+            && index.lowestInvalidStep().getLeft() < referenceExchange) {
+            closestGlskLimitationBelowReference = index.lowestInvalidStep();
+        }
+
         if (!index.lowestInvalidStep().getRight().getReasonInvalid().equals(ReasonInvalid.GLSK_LIMITATION)
-            && precisionReached(index.highestValidStep(), index.lowestInvalidStep(), index)) {
+            && index.precisionReached(index.highestValidStep(), index.lowestInvalidStep(), index)) {
             throw new AssertionError("Dichotomy engine should not ask for next value if precision is reached");
         }
 
         if (closestGlskLimitationBelowReference != null
             && index.lowestInvalidStep().getRight().getReasonInvalid().equals(ReasonInvalid.UNSECURE_AFTER_VALIDATION)
-            && precisionReached(closestGlskLimitationBelowReference, index.lowestInvalidStep(), index)) {
+            && index.precisionReached(closestGlskLimitationBelowReference, index.lowestInvalidStep(), index)) {
             throw new AssertionError("Dichotomy engine should not ask for next value if precision is reached");
         }
 
@@ -42,20 +56,22 @@ public class BiDirectionalStepsWithReferenceIndexStrategy implements IndexStrate
             return startIndex;
         } else if (index.highestValidStep() == null) {
 
-            if (index.lowestInvalidStep().getRight().getReasonInvalid().equals(ReasonInvalid.GLSK_LIMITATION)
-                && index.lowestInvalidStep().getLeft() < referenceExchange) {
-                closestGlskLimitationBelowReference = index.lowestInvalidStep();
-                return Math.min(index.maxValue(), index.lowestInvalidStep().getLeft() + stepSize);
+            if (index.lowestInvalidStep().equals(closestGlskLimitationBelowReference)) {
+                if (lowestUnsecureStep != null) {
+                    return (closestGlskLimitationBelowReference.getLeft() + lowestUnsecureStep.getLeft()) / 2;
+                } else {
+                    return Math.min(index.maxValue(), index.lowestInvalidStep().getLeft() + stepSize);
+                }
             }
             return Math.max(index.minValue(), index.lowestInvalidStep().getLeft() - (stepSize / 2));
 
         } else if (index.lowestInvalidStep() == null) {
-            return Math.min(index.maxValue(), index.highestValidStep().getLeft() + stepSize);
+            return Math.min(index.maxValue(), highestSecureStep.getLeft() + stepSize);
         } else {
-            if (closestGlskLimitationBelowReference != null && closestGlskLimitationBelowReference.equals(index.lowestInvalidStep())) {
-                return Math.min(index.maxValue(), index.highestValidStep().getLeft() + stepSize);
+            if (lowestUnsecureStep != null) {
+                return (lowestUnsecureStep.getLeft() + highestSecureStep.getLeft()) / 2;
             } else {
-                return (index.lowestInvalidStep().getLeft() + index.highestValidStep().getLeft()) / 2;
+                return Math.min(index.maxValue(), index.highestValidStep().getLeft() + stepSize);
             }
         }
     }

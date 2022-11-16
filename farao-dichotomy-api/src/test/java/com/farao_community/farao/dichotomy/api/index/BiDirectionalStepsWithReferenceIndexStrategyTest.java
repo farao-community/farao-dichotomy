@@ -27,6 +27,19 @@ class BiDirectionalStepsWithReferenceIndexStrategyTest {
     private final DichotomyStepResult<RaoResult> stepResultGlskLim = DichotomyStepResult.fromFailure(ReasonInvalid.GLSK_LIMITATION, "");
 
     @Test
+    void testIndexAfterFirstInvalid() {
+        double startingIndex = 2000;
+        double stepSize = 650;
+
+        Index<RaoResult> index = new Index<>(0, 5000, 50);
+        IndexStrategy indexStrategy = new BiDirectionalStepsIndexStrategy(startingIndex, stepSize);
+
+        index.addDichotomyStepResult(startingIndex, stepResultNOk);
+
+        assertEquals(startingIndex - stepSize, indexStrategy.nextValue(index));
+    }
+
+    @Test
     void testIndexAfterGlskLimBelowReferenceThenUnsecureBelowReference() {
         double startingIndex = 2000;
         double stepSize = 650;
@@ -84,6 +97,23 @@ class BiDirectionalStepsWithReferenceIndexStrategyTest {
         IndexStrategy indexStrategy = new BiDirectionalStepsWithReferenceIndexStrategy(startingIndex, stepSize, 1500);
         index.addDichotomyStepResult(startingIndex, stepResultGlskLim);
         assertEquals(2000 - (650. / 2), indexStrategy.nextValue(index));
+    }
+
+    @Test
+    void testIndexAfterGlskLimBelowReferenceThenUnsecureThenGlskLimThenSecure() {
+        double startingIndex = 2000;
+        double stepSize = 650;
+        Index<RaoResult> index = new Index<>(0, 5000, 50);
+        IndexStrategy indexStrategy = new BiDirectionalStepsWithReferenceIndexStrategy(startingIndex, stepSize, 2500);
+        index.addDichotomyStepResult(startingIndex, stepResultGlskLim);
+        assertEquals(2000 + 650, indexStrategy.nextValue(index));
+        index.addDichotomyStepResult(2650, stepResultNOk);
+        assertEquals(2650 - (650. / 2), indexStrategy.nextValue(index));
+        index.addDichotomyStepResult(2650 - (650. / 2), stepResultGlskLim);
+        assertEquals((2650. + 2325) / 2, indexStrategy.nextValue(index));
+
+        index.addDichotomyStepResult(2487.5, stepResultOk);
+        assertEquals((2650. + 2487.5) / 2, indexStrategy.nextValue(index));
     }
 
 }

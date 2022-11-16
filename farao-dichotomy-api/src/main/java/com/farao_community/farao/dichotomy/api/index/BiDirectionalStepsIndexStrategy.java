@@ -20,7 +20,7 @@ public class BiDirectionalStepsIndexStrategy implements IndexStrategy {
 
     @Override
     public double nextValue(Index<?> index) {
-        if (precisionReached(index.highestValidStep(), index.lowestInvalidStep(), index)) {
+        if (index.precisionReached(index.highestValidStep(), index.lowestInvalidStep(), index)) {
             throw new AssertionError("Dichotomy engine should not ask for next value if precision is reached");
         }
 

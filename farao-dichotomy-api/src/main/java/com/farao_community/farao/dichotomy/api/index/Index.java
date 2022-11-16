@@ -26,6 +26,7 @@ import java.util.List;
  * @author Sebastien Murgey {@literal <sebastien.murgey at rte-france.com>}
  */
 public class Index<T> {
+    private static final double EPSILON = 1e-3;
     private final double minValue;
     private final double maxValue;
     private final double precision;
@@ -82,4 +83,17 @@ public class Index<T> {
         stepResults.add(Pair.of(stepValue, stepResult));
     }
 
+    public boolean precisionReached(Pair<Double, ? extends DichotomyStepResult<?>> startInterval, Pair<Double, ? extends DichotomyStepResult<?>> endInterval, Index<?> index) {
+        if (endInterval != null
+            && endInterval.getLeft() - index.maxValue() >= EPSILON) {
+            return true;
+        } else if (startInterval != null
+            && index.minValue() - startInterval.getLeft() >= EPSILON) {
+            return true;
+        } else if (startInterval != null && endInterval != null) {
+            return endInterval.getLeft() - startInterval.getLeft() < index.precision();
+        } else {
+            return false;
+        }
+    }
 }
