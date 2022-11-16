@@ -29,6 +29,7 @@ public class Index<T> {
     private final double minValue;
     private final double maxValue;
     private final double precision;
+    private double exchangeReference = 0;
     private final List<Pair<Double, DichotomyStepResult<T>>> stepResults = new ArrayList<>();
     private Pair<Double, DichotomyStepResult<T>> highestValidStep;
     private Pair<Double, DichotomyStepResult<T>> lowestInvalidStep;
@@ -42,6 +43,16 @@ public class Index<T> {
         this.precision = precision;
     }
 
+    public Index(double minValue, double maxValue, double precision, double exchangeReference) {
+        if (minValue > maxValue) {
+            throw new DichotomyException("Index creation impossible, minValue is supposed to be lower than maxValue.");
+        }
+        this.minValue = minValue;
+        this.maxValue = maxValue;
+        this.precision = precision;
+        this.exchangeReference = exchangeReference;
+    }
+
     public double minValue() {
         return minValue;
     }
@@ -52,6 +63,10 @@ public class Index<T> {
 
     public double precision() {
         return precision;
+    }
+
+    public double getExchangeReference() {
+        return exchangeReference;
     }
 
     public Pair<Double, DichotomyStepResult<T>> highestValidStep() {
@@ -67,7 +82,7 @@ public class Index<T> {
     }
 
     public void addDichotomyStepResult(double stepValue, DichotomyStepResult<T> stepResult) {
-        if (stepResult.isValid()) {
+        if (stepResult.isValid(stepValue, exchangeReference)) {
             if (highestValidStep != null && highestValidStep.getLeft() > stepValue) {
                 throw new AssertionError("Step result tested is secure but its value is lower than highest secure step one. Should not happen");
             }

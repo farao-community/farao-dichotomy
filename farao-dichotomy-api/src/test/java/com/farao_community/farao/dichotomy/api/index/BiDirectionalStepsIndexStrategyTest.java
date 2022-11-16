@@ -9,6 +9,7 @@ package com.farao_community.farao.dichotomy.api.index;
 import com.farao_community.farao.data.rao_result_api.RaoResult;
 import com.farao_community.farao.dichotomy.api.RaoResultMock;
 import com.farao_community.farao.dichotomy.api.results.DichotomyStepResult;
+import com.farao_community.farao.dichotomy.api.results.ReasonInvalid;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -22,15 +23,75 @@ class BiDirectionalStepsIndexStrategyTest {
         new RaoResultMock(true), null);
     private final DichotomyStepResult<RaoResult> stepResultNOk = DichotomyStepResult.fromNetworkValidationResult(
         new RaoResultMock(false), null);
+    private final DichotomyStepResult<RaoResult> stepResultGlskLim = DichotomyStepResult.fromFailure(ReasonInvalid.GLSK_LIMITATION, "");
+
 
     @Test
     void testStartingIndex() {
         double startingIndex = 2000;
-
-        Index<?> index = new Index<>(0, 5000, 50);
+        Index<?> index = new Index<>(0, 5000, 50, 1500);
         IndexStrategy indexStrategy = new BiDirectionalStepsIndexStrategy(startingIndex, 650);
-
         assertEquals(startingIndex, indexStrategy.nextValue(index));
+    }
+
+    @Test
+    void testIndexAfterGlskLimBelowReferenceThenUnsecureBelowReference() {
+        double startingIndex = 2000;
+        double stepSize = 650;
+        Index<RaoResult> index = new Index<>(0, 5000, 50, 3000);
+        IndexStrategy indexStrategy = new BiDirectionalStepsIndexStrategy(startingIndex, stepSize);
+        index.addDichotomyStepResult(startingIndex, stepResultGlskLim);
+        assertEquals(2000 + 650, indexStrategy.nextValue(index));
+        index.addDichotomyStepResult(2650, stepResultNOk);
+        assertEquals(2650 - (650. / 2), indexStrategy.nextValue(index));
+    }
+
+    @Test
+    void testIndexAfterGlskLimBelowReferenceThenUnsecureAboveReference() {
+        double startingIndex = 2000;
+        double stepSize = 650;
+        Index<RaoResult> index = new Index<>(0, 5000, 50, 2500);
+        IndexStrategy indexStrategy = new BiDirectionalStepsIndexStrategy(startingIndex, stepSize);
+        index.addDichotomyStepResult(startingIndex, stepResultGlskLim);
+        assertEquals(2000 + 650, indexStrategy.nextValue(index));
+        index.addDichotomyStepResult(2650, stepResultNOk);
+        assertEquals(2650 - (650. / 2), indexStrategy.nextValue(index));
+    }
+
+    @Test
+    void testIndexAfterTwoGlskLimBelowReferenceThenGlskLimAboveReference() {
+        double startingIndex = 2000;
+        double stepSize = 650;
+        Index<RaoResult> index = new Index<>(0, 5000, 50, 3000);
+        IndexStrategy indexStrategy = new BiDirectionalStepsIndexStrategy(startingIndex, stepSize);
+        index.addDichotomyStepResult(startingIndex, stepResultGlskLim);
+        assertEquals(2000 + 650, indexStrategy.nextValue(index));
+        index.addDichotomyStepResult(2650, stepResultGlskLim);
+        assertEquals(2650 + 650, indexStrategy.nextValue(index));
+        index.addDichotomyStepResult(3300, stepResultGlskLim);
+        assertEquals(3300 - 325, indexStrategy.nextValue(index));
+    }
+
+    @Test
+    void testIndexAfterGlskLimBelowReferenceThenSecure() {
+        double startingIndex = 2000;
+        double stepSize = 650;
+        Index<RaoResult> index = new Index<>(0, 5000, 50, 3000);
+        IndexStrategy indexStrategy = new BiDirectionalStepsIndexStrategy(startingIndex, stepSize);
+        index.addDichotomyStepResult(startingIndex, stepResultGlskLim);
+        assertEquals(2000 + 650, indexStrategy.nextValue(index));
+        index.addDichotomyStepResult(2650, stepResultOk);
+        assertEquals(2650 + 650, indexStrategy.nextValue(index));
+    }
+
+    @Test
+    void testIndexAfterGlskLimAboveReference() {
+        double startingIndex = 2000;
+        double stepSize = 650;
+        Index<RaoResult> index = new Index<>(0, 5000, 50, 1500);
+        IndexStrategy indexStrategy = new BiDirectionalStepsIndexStrategy(startingIndex, stepSize);
+        index.addDichotomyStepResult(startingIndex, stepResultGlskLim);
+        assertEquals(2000 - 650, indexStrategy.nextValue(index));
     }
 
     @Test

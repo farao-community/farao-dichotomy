@@ -79,12 +79,20 @@ public final class DichotomyStepResult<I> {
         return reasonInvalid == ReasonInvalid.GLSK_LIMITATION || reasonInvalid == ReasonInvalid.VALIDATION_FAILED;
     }
 
+    public boolean isFailed(double stepValue, double exchangeReference) {
+        return reasonInvalid == ReasonInvalid.VALIDATION_FAILED || reasonInvalid == ReasonInvalid.GLSK_LIMITATION && stepValue < exchangeReference;
+    }
+
     public String getFailureMessage() {
         return failureMessage;
     }
 
     public boolean isValid() {
         return reasonInvalid == ReasonInvalid.NONE;
+    }
+
+    public boolean isValid(double stepValue, double exchangeReference) {
+        return reasonInvalid == ReasonInvalid.NONE || (reasonInvalid == ReasonInvalid.GLSK_LIMITATION && stepValue < exchangeReference);
     }
 
     public ReasonInvalid getReasonInvalid() {
