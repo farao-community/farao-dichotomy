@@ -26,15 +26,6 @@ class BiDirectionalStepsWithReferenceIndexStrategyTest {
 
     private final DichotomyStepResult<RaoResult> stepResultGlskLim = DichotomyStepResult.fromFailure(ReasonInvalid.GLSK_LIMITATION, "");
 
-   /* @Test
-    void testStartingIndex() {
-        double startingIndex = 2000;
-
-        Index<?> index = new Index<>(0, 5000, 50);
-        IndexStrategy indexStrategy = new BiDirectionalStepsWithReferenceIndexStrategy(startingIndex, 650, 1500);
-        assertEquals(startingIndex, indexStrategy.nextValue(index));
-    }
-*/
     @Test
     void testIndexAfterGlskLimBelowReferenceThenUnsecureBelowReference() {
         double startingIndex = 2000;
@@ -94,58 +85,5 @@ class BiDirectionalStepsWithReferenceIndexStrategyTest {
         index.addDichotomyStepResult(startingIndex, stepResultGlskLim);
         assertEquals(2000 - (650. / 2), indexStrategy.nextValue(index));
     }
-/*
-    @Test
-    void testIndexAfterFirstValid() {
-        double startingIndex = 2000;
-        double stepSize = 650;
-        Index<RaoResult> index = new Index<>(0, 5000, 50);
-        IndexStrategy indexStrategy = new BiDirectionalStepsWithReferenceIndexStrategy(startingIndex, stepSize, 100);
-        index.addDichotomyStepResult(startingIndex, stepResultOk);
-        assertEquals(startingIndex + stepSize, indexStrategy.nextValue(index));
-    }
 
-    @Test
-    void testIndexAfterInvalidCloseToMaximum() {
-        double startingIndex = 2000;
-        double stepSize = 650;
-        double maxValue = 5000;
-
-        Index<RaoResult> index = new Index<>(0, maxValue, 50);
-        IndexStrategy indexStrategy = new BiDirectionalStepsWithReferenceIndexStrategy(startingIndex, stepSize, 100);
-
-        index.addDichotomyStepResult(maxValue - 100, stepResultOk);
-
-        assertEquals(maxValue, indexStrategy.nextValue(index));
-    }
-
-    @Test
-    void testIndexAfterValidAndInvalidSteps() {
-        double startingIndex = 2000;
-        double stepSize = 650;
-
-        Index<RaoResult> index = new Index<>(0, 5000, 50);
-        IndexStrategy indexStrategy = new BiDirectionalStepsWithReferenceIndexStrategy(startingIndex, stepSize, 100);
-
-        index.addDichotomyStepResult(2000, stepResultOk);
-        index.addDichotomyStepResult(3000, stepResultNOk);
-
-        assertEquals(2500, indexStrategy.nextValue(index));
-    }
-
-    @Test
-    void testIndexAfterPrecisionReached() {
-        double startingIndex = 2000;
-        double stepSize = 650;
-
-        Index<RaoResult> index = new Index<>(0, 5000, 50);
-        IndexStrategy indexStrategy = new BiDirectionalStepsWithReferenceIndexStrategy(startingIndex, stepSize, 100);
-
-        index.addDichotomyStepResult(2000, stepResultOk);
-        index.addDichotomyStepResult(2020, stepResultNOk);
-
-        assertThrows(AssertionError.class, () -> indexStrategy.nextValue(index));
-    }
-
- */
 }

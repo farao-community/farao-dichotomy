@@ -52,8 +52,8 @@ public class BiDirectionalStepsWithReferenceIndexStrategy implements IndexStrate
         } else if (index.lowestInvalidStep() == null) {
             return Math.min(index.maxValue(), index.highestValidStep().getLeft() + stepSize);
         } else {
-            if (closestGlskLimitationBelowReference.equals(index.lowestInvalidStep())) {
-                return index.highestValidStep().getLeft() + stepSize;
+            if (closestGlskLimitationBelowReference != null && closestGlskLimitationBelowReference.equals(index.lowestInvalidStep())) {
+                return Math.min(index.maxValue(), index.highestValidStep().getLeft() + stepSize);
             } else {
                 return (index.lowestInvalidStep().getLeft() + index.highestValidStep().getLeft()) / 2;
             }
