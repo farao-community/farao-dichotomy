@@ -42,7 +42,6 @@ public class BiDirectionalStepsWithReferenceIndexStrategy implements IndexStrate
             return startIndex;
         } else if (index.highestValidStep() == null) {
 
-
             if (index.lowestInvalidStep().getRight().getReasonInvalid().equals(ReasonInvalid.GLSK_LIMITATION)
                 && index.lowestInvalidStep().getLeft() < referenceExchange) {
                 closestGlskLimitationBelowReference = index.lowestInvalidStep();
@@ -50,11 +49,14 @@ public class BiDirectionalStepsWithReferenceIndexStrategy implements IndexStrate
             }
             return Math.max(index.minValue(), index.lowestInvalidStep().getLeft() - (stepSize / 2));
 
-
         } else if (index.lowestInvalidStep() == null) {
             return Math.min(index.maxValue(), index.highestValidStep().getLeft() + stepSize);
         } else {
-            return (index.lowestInvalidStep().getLeft() + index.highestValidStep().getLeft()) / 2;
+            if (closestGlskLimitationBelowReference.equals(index.lowestInvalidStep())) {
+                return index.highestValidStep().getLeft() + stepSize;
+            } else {
+                return (index.lowestInvalidStep().getLeft() + index.highestValidStep().getLeft()) / 2;
+            }
         }
     }
 }

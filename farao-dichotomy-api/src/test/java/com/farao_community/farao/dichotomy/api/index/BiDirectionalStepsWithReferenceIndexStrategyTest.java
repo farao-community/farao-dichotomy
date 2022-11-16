@@ -26,7 +26,7 @@ class BiDirectionalStepsWithReferenceIndexStrategyTest {
 
     private final DichotomyStepResult<RaoResult> stepResultGlskLim = DichotomyStepResult.fromFailure(ReasonInvalid.GLSK_LIMITATION, "");
 
-    @Test
+   /* @Test
     void testStartingIndex() {
         double startingIndex = 2000;
 
@@ -34,7 +34,7 @@ class BiDirectionalStepsWithReferenceIndexStrategyTest {
         IndexStrategy indexStrategy = new BiDirectionalStepsWithReferenceIndexStrategy(startingIndex, 650, 1500);
         assertEquals(startingIndex, indexStrategy.nextValue(index));
     }
-
+*/
     @Test
     void testIndexAfterGlskLimBelowReferenceThenUnsecureBelowReference() {
         double startingIndex = 2000;
