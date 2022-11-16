@@ -25,7 +25,6 @@ class BiDirectionalStepsIndexStrategyTest {
         new RaoResultMock(false), null);
     private final DichotomyStepResult<RaoResult> stepResultGlskLim = DichotomyStepResult.fromFailure(ReasonInvalid.GLSK_LIMITATION, "");
 
-
     @Test
     void testStartingIndex() {
         double startingIndex = 2000;
