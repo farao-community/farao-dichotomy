@@ -29,19 +29,22 @@ public class BiDirectionalStepsWithReferenceIndexStrategy implements IndexStrate
 
     @Override
     public double nextValue(Index<?> index) {
-        if (index.lowestInvalidStep().getRight().getReasonInvalid().equals(ReasonInvalid.UNSECURE_AFTER_VALIDATION)) {
+        if (index.lowestInvalidStep() != null &&
+            index.lowestInvalidStep().getRight().getReasonInvalid().equals(ReasonInvalid.UNSECURE_AFTER_VALIDATION)) {
             lowestUnsecureStep = index.lowestInvalidStep();
         }
         if (index.highestValidStep() != null) {
             highestSecureStep = index.highestValidStep();
         }
 
-        if (index.lowestInvalidStep().getRight().getReasonInvalid().equals(ReasonInvalid.GLSK_LIMITATION)
-            && index.lowestInvalidStep().getLeft() < referenceExchange) {
+        if (index.lowestInvalidStep() != null &&
+            index.lowestInvalidStep().getRight().getReasonInvalid().equals(ReasonInvalid.GLSK_LIMITATION) &&
+            index.lowestInvalidStep().getLeft() < referenceExchange) {
             closestGlskLimitationBelowReference = index.lowestInvalidStep();
         }
 
-        if (!index.lowestInvalidStep().getRight().getReasonInvalid().equals(ReasonInvalid.GLSK_LIMITATION)
+        if (index.lowestInvalidStep() != null &&
+            !index.lowestInvalidStep().getRight().getReasonInvalid().equals(ReasonInvalid.GLSK_LIMITATION)
             && index.precisionReached(index.highestValidStep(), index.lowestInvalidStep(), index)) {
             throw new AssertionError("Dichotomy engine should not ask for next value if precision is reached");
         }
@@ -56,7 +59,7 @@ public class BiDirectionalStepsWithReferenceIndexStrategy implements IndexStrate
             return startIndex;
         } else if (index.highestValidStep() == null) {
 
-            if (index.lowestInvalidStep().equals(closestGlskLimitationBelowReference)) {
+            if (closestGlskLimitationBelowReference != null && index.lowestInvalidStep().equals(closestGlskLimitationBelowReference)) {
                 if (lowestUnsecureStep != null) {
                     return (closestGlskLimitationBelowReference.getLeft() + lowestUnsecureStep.getLeft()) / 2;
                 } else {

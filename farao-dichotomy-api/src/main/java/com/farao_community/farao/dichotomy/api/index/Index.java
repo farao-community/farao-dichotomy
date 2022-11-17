@@ -96,4 +96,18 @@ public class Index<T> {
             return false;
         }
     }
+
+    public boolean precisionReached() {
+        if (lowestInvalidStep != null && Math.abs(lowestInvalidStep.getLeft() - minValue) < EPSILON) {
+            return true;
+        }
+        if (highestValidStep != null && Math.abs(highestValidStep.getLeft() - maxValue) < EPSILON) {
+            return true;
+        }
+        if (lowestInvalidStep == null || highestValidStep == null) {
+            return false;
+        }
+        return Math.abs(highestValidStep.getLeft() - lowestInvalidStep.getLeft()) < precision;
+    }
+
 }

@@ -32,7 +32,7 @@ public class StepsIndexStrategy implements IndexStrategy {
 
     @Override
     public double nextValue(Index<?> index) {
-        if (index.precisionReached(index.highestValidStep(), index.lowestInvalidStep(), index)) {
+        if (index.precisionReached()) {
             throw new AssertionError("Dichotomy engine should not ask for next value if precision is reached");
         }
 

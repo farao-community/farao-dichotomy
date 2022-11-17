@@ -58,7 +58,7 @@ public class DichotomyEngine<T> {
     public DichotomyResult<T> run(Network network) {
         int iterationCounter = 0;
         String initialVariant = network.getVariantManager().getWorkingVariantId();
-        while (!index.precisionReached(index.highestValidStep(), index.lowestInvalidStep(), index) && iterationCounter < maxIteration) {
+        while (!index.precisionReached() && iterationCounter < maxIteration) {
             double nextValue = indexStrategy.nextValue(index);
             BUSINESS_LOGS.info(String.format("Next dichotomy step: %.2f", nextValue));
             DichotomyStepResult<T> dichotomyStepResult = validate(nextValue, network, initialVariant);
