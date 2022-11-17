@@ -96,7 +96,7 @@ class BiDirectionalStepsWithReferenceIndexStrategyTest {
         Index<RaoResult> index = new Index<>(0, 5000, 50);
         IndexStrategy indexStrategy = new BiDirectionalStepsWithReferenceIndexStrategy(startingIndex, stepSize, 1500);
         index.addDichotomyStepResult(startingIndex, stepResultGlskLim);
-        assertEquals(2000 - (650. / 2), indexStrategy.nextValue(index));
+        assertEquals(2000 - 650, indexStrategy.nextValue(index));
     }
 
     @Test
