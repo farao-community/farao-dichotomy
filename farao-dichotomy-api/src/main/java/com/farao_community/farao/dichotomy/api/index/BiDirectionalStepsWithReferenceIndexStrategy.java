@@ -45,13 +45,13 @@ public class BiDirectionalStepsWithReferenceIndexStrategy implements IndexStrate
 
         if (index.lowestInvalidStep() != null &&
             !index.lowestInvalidStep().getRight().getReasonInvalid().equals(ReasonInvalid.GLSK_LIMITATION)
-            && index.precisionReached(index.highestValidStep(), index.lowestInvalidStep(), index)) {
+            && precisionReached(index)) {
             throw new AssertionError("Dichotomy engine should not ask for next value if precision is reached");
         }
 
         if (closestGlskLimitationBelowReference != null
             && index.lowestInvalidStep().getRight().getReasonInvalid().equals(ReasonInvalid.UNSECURE_AFTER_VALIDATION)
-            && index.precisionReached(closestGlskLimitationBelowReference, index.lowestInvalidStep(), index)) {
+            && precisionReached(index)) {
             throw new AssertionError("Dichotomy engine should not ask for next value if precision is reached");
         }
 
@@ -78,4 +78,46 @@ public class BiDirectionalStepsWithReferenceIndexStrategy implements IndexStrate
             }
         }
     }
+
+    @Override
+    public boolean precisionReached(Index<?> index) {
+        Pair<Double, ? extends DichotomyStepResult<?>> startInterval = getStartInterval(index);
+        Pair<Double, ? extends DichotomyStepResult<?>> endInterval = getEndInterval(index);
+        if (startInterval == null && endInterval == null) {
+            return false;
+        } else if (startInterval == null) {
+            return Math.abs(endInterval.getLeft() - index.minValue()) <= EPSILON;
+        } else if (endInterval == null) {
+            return Math.abs(startInterval.getLeft() - index.maxValue()) <= EPSILON;
+        } else {
+            return Math.abs(endInterval.getLeft() - startInterval.getLeft()) <= index.precision();
+        }
+    }
+
+    private Pair<Double, ? extends DichotomyStepResult<?>> getStartInterval(Index<?> index) {
+        if (closestGlskLimitationBelowReference == null && highestSecureStep == null) {
+            return null;
+        } else if (closestGlskLimitationBelowReference == null) {
+            return highestSecureStep;
+        } else if (highestSecureStep == null) {
+            return closestGlskLimitationBelowReference;
+        } else {
+            if (closestGlskLimitationBelowReference.getLeft() > highestSecureStep.getLeft()) {
+                return closestGlskLimitationBelowReference;
+            } else {
+                return index.highestValidStep();
+            }
+        }
+    }
+
+    private Pair<Double, ? extends DichotomyStepResult<?>> getEndInterval(Index<?> index) {
+        if (lowestUnsecureStep == null && index.lowestInvalidStep() == null) {
+            return null;
+        } else if (lowestUnsecureStep != null && index.lowestInvalidStep() == null) {
+            return lowestUnsecureStep;
+        } else {
+            return null;
+        }
+    }
+
 }

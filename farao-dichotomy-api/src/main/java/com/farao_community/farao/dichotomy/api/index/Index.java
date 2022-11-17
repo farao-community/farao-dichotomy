@@ -83,31 +83,4 @@ public class Index<T> {
         stepResults.add(Pair.of(stepValue, stepResult));
     }
 
-    public boolean precisionReached(Pair<Double, ? extends DichotomyStepResult<?>> startInterval, Pair<Double, ? extends DichotomyStepResult<?>> endInterval, Index<?> index) {
-        if (endInterval != null
-            && endInterval.getLeft() - index.maxValue() >= EPSILON) {
-            return true;
-        } else if (startInterval != null
-            && index.minValue() - startInterval.getLeft() >= EPSILON) {
-            return true;
-        } else if (startInterval != null && endInterval != null) {
-            return endInterval.getLeft() - startInterval.getLeft() < index.precision();
-        } else {
-            return false;
-        }
-    }
-
-    public boolean precisionReached() {
-        if (lowestInvalidStep != null && Math.abs(lowestInvalidStep.getLeft() - minValue) < EPSILON) {
-            return true;
-        }
-        if (highestValidStep != null && Math.abs(highestValidStep.getLeft() - maxValue) < EPSILON) {
-            return true;
-        }
-        if (lowestInvalidStep == null || highestValidStep == null) {
-            return false;
-        }
-        return Math.abs(highestValidStep.getLeft() - lowestInvalidStep.getLeft()) < precision;
-    }
-
 }
