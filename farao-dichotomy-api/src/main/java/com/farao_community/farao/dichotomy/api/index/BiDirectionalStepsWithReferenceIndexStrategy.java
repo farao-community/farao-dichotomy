@@ -49,8 +49,8 @@ public class BiDirectionalStepsWithReferenceIndexStrategy implements IndexStrate
             }
         }
 
-        Pair<Double, ? extends DichotomyStepResult<?>> startInterval = getStartInterval();
-        Pair<Double, ? extends DichotomyStepResult<?>> endInterval = getEndInterval();
+        Pair<Double, ? extends DichotomyStepResult<?>> startInterval = getLowestAdmissibleStep();
+        Pair<Double, ? extends DichotomyStepResult<?>> endInterval = getHighestAdmissibleStep();
 
         if (startInterval == null && endInterval == null) {
             return startIndex;
@@ -65,8 +65,8 @@ public class BiDirectionalStepsWithReferenceIndexStrategy implements IndexStrate
 
     @Override
     public boolean precisionReached(Index<?> index) {
-        Pair<Double, ? extends DichotomyStepResult<?>> startInterval = getStartInterval();
-        Pair<Double, ? extends DichotomyStepResult<?>> endInterval = getEndInterval();
+        Pair<Double, ? extends DichotomyStepResult<?>> startInterval = getLowestAdmissibleStep();
+        Pair<Double, ? extends DichotomyStepResult<?>> endInterval = getHighestAdmissibleStep();
         if (startInterval == null && endInterval == null) {
             return false;
         } else if (startInterval == null) {
@@ -78,15 +78,15 @@ public class BiDirectionalStepsWithReferenceIndexStrategy implements IndexStrate
         }
     }
 
-    private Pair<Double, ? extends DichotomyStepResult<?>> getStartInterval() {
-        return getDoublePair(closestGlskLimitationBelowReference, highestSecureStep, (t, u) -> t > u);
+    private Pair<Double, ? extends DichotomyStepResult<?>> getLowestAdmissibleStep() {
+        return testAndGetAdmissibleValue(closestGlskLimitationBelowReference, highestSecureStep, (t, u) -> t > u);
     }
 
-    private Pair<Double, ? extends DichotomyStepResult<?>> getEndInterval() {
-        return getDoublePair(lowestUnsecureStep, closestGlskLimitationAboveReference, (t, u) -> t < u);
+    private Pair<Double, ? extends DichotomyStepResult<?>> getHighestAdmissibleStep() {
+        return testAndGetAdmissibleValue(lowestUnsecureStep, closestGlskLimitationAboveReference, (t, u) -> t < u);
     }
 
-    private Pair<Double, ? extends DichotomyStepResult<?>> getDoublePair(Pair<Double, ? extends DichotomyStepResult<?>> step1, Pair<Double, ? extends DichotomyStepResult<?>> step2, BiPredicate<Double, Double> biPredicate) {
+    private Pair<Double, ? extends DichotomyStepResult<?>> testAndGetAdmissibleValue(Pair<Double, ? extends DichotomyStepResult<?>> step1, Pair<Double, ? extends DichotomyStepResult<?>> step2, BiPredicate<Double, Double> biPredicate) {
         if (step1 == null && step2 == null) {
             return null;
         } else if (step1 == null) {
