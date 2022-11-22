@@ -20,7 +20,7 @@ public class NetworkValidatorMock implements NetworkValidator<Object> {
     }
 
     @Override
-    public DichotomyStepResult<Object> validateNetwork(Network network) {
+    public DichotomyStepResult<Object> validateNetwork(Network network, DichotomyStepResult dichotomyStepResult) {
         String[] parsedVariantId = network.getVariantManager().getWorkingVariantId().split("-");
         double stepValue = Double.parseDouble(parsedVariantId[parsedVariantId.length - 1]);
         if (parsedVariantId[parsedVariantId.length - 2].equals("")) {
