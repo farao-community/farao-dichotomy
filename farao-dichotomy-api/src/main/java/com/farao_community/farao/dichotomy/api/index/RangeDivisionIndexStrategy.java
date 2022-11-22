@@ -22,7 +22,7 @@ public class RangeDivisionIndexStrategy implements IndexStrategy {
 
     @Override
     public double nextValue(Index<?> index) {
-        if (index.precisionReached()) {
+        if (precisionReached(index)) {
             throw new AssertionError("Dichotomy engine should not ask for next value if precision is reached");
         }
         if (startWithMin) {

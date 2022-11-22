@@ -8,6 +8,7 @@ package com.farao_community.farao.dichotomy.api.index;
 
 import com.farao_community.farao.dichotomy.api.exceptions.DichotomyException;
 import com.farao_community.farao.dichotomy.api.results.DichotomyStepResult;
+import com.farao_community.farao.dichotomy.api.results.ReasonInvalid;
 import org.apache.commons.lang3.tuple.Pair;
 
 import java.util.ArrayList;
@@ -73,7 +74,8 @@ public class Index<T> {
             }
             highestValidStep = Pair.of(stepValue, stepResult);
         } else {
-            if (lowestInvalidStep != null && lowestInvalidStep.getLeft() < stepValue) {
+            if (lowestInvalidStep != null && lowestInvalidStep.getRight().getReasonInvalid().equals(ReasonInvalid.UNSECURE_AFTER_VALIDATION)
+                && lowestInvalidStep.getLeft() < stepValue) {
                 throw new AssertionError("Step result tested is unsecure but its value is higher than lowest unsecure step one. Should not happen");
             }
             lowestInvalidStep = Pair.of(stepValue, stepResult);
@@ -81,16 +83,4 @@ public class Index<T> {
         stepResults.add(Pair.of(stepValue, stepResult));
     }
 
-    public boolean precisionReached() {
-        if (lowestInvalidStep != null && Math.abs(lowestInvalidStep.getLeft() - minValue) < EPSILON) {
-            return true;
-        }
-        if (highestValidStep != null && Math.abs(highestValidStep.getLeft() - maxValue) < EPSILON) {
-            return true;
-        }
-        if (lowestInvalidStep == null || highestValidStep == null) {
-            return false;
-        }
-        return Math.abs(highestValidStep.getLeft() - lowestInvalidStep.getLeft()) < precision;
-    }
 }
