@@ -15,5 +15,6 @@ import com.powsybl.iidm.network.Network;
  */
 public interface NetworkValidator<I> {
 
-    DichotomyStepResult<I> validateNetwork(Network network) throws ValidationException;
+    DichotomyStepResult<I> validateNetwork(Network network, DichotomyStepResult<I> lastDichotomyStepResult) throws ValidationException;
+
 }
