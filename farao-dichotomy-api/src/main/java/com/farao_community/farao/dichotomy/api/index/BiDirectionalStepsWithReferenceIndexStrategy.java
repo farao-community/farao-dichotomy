@@ -25,7 +25,7 @@ public class BiDirectionalStepsWithReferenceIndexStrategy implements IndexStrate
     private Pair<Double, ? extends DichotomyStepResult<?>> closestGlskLimitationBelowReference;
     private Pair<Double, ? extends DichotomyStepResult<?>> closestGlskLimitationAboveReference;
 
-    private Pair<Double, ? extends DichotomyStepResult<?>> highetAdmissibleStep;
+    private Pair<Double, ? extends DichotomyStepResult<?>> highestAdmissibleStep;
     private Pair<Double, ? extends DichotomyStepResult<?>> lowestInadmissibleStep;
 
     public BiDirectionalStepsWithReferenceIndexStrategy(double startIndex, double stepSize, double referenceExchange) {
@@ -37,28 +37,28 @@ public class BiDirectionalStepsWithReferenceIndexStrategy implements IndexStrate
     @Override
     public double nextValue(Index<?> index) {
         updateDichotomyIntervalLimits(index);
-        if (highetAdmissibleStep == null && lowestInadmissibleStep == null) {
+        if (highestAdmissibleStep == null && lowestInadmissibleStep == null) {
             return startIndex;
-        } else if (highetAdmissibleStep == null) {
+        } else if (highestAdmissibleStep == null) {
             return Math.max(index.minValue(), lowestInadmissibleStep.getLeft() - stepSize);
         } else if (lowestInadmissibleStep == null) {
-            return Math.min(index.maxValue(), highetAdmissibleStep.getLeft() + stepSize);
+            return Math.min(index.maxValue(), highestAdmissibleStep.getLeft() + stepSize);
         } else {
-            return (lowestInadmissibleStep.getLeft() + highetAdmissibleStep.getLeft()) / 2;
+            return (lowestInadmissibleStep.getLeft() + highestAdmissibleStep.getLeft()) / 2;
         }
     }
 
     @Override
     public boolean precisionReached(Index<?> index) {
         updateDichotomyIntervalLimits(index);
-        if (highetAdmissibleStep == null && lowestInadmissibleStep == null) {
+        if (highestAdmissibleStep == null && lowestInadmissibleStep == null) {
             return false;
-        } else if (highetAdmissibleStep == null) {
+        } else if (highestAdmissibleStep == null) {
             return Math.abs(lowestInadmissibleStep.getLeft() - index.minValue()) < EPSILON;
         } else if (lowestInadmissibleStep == null) {
-            return Math.abs(highetAdmissibleStep.getLeft() - index.maxValue()) < EPSILON;
+            return Math.abs(highestAdmissibleStep.getLeft() - index.maxValue()) < EPSILON;
         } else {
-            return Math.abs(highetAdmissibleStep.getLeft() - lowestInadmissibleStep.getLeft()) < index.precision();
+            return Math.abs(highestAdmissibleStep.getLeft() - lowestInadmissibleStep.getLeft()) < index.precision();
         }
     }
 
@@ -78,7 +78,7 @@ public class BiDirectionalStepsWithReferenceIndexStrategy implements IndexStrate
                 closestGlskLimitationAboveReference = index.lowestInvalidStep();
             }
         }
-        highetAdmissibleStep = getHighestAdmissibleStep(closestGlskLimitationBelowReference, highestSecureStep);
+        highestAdmissibleStep = getHighestAdmissibleStep(closestGlskLimitationBelowReference, highestSecureStep);
         lowestInadmissibleStep = getLowestInAdmissibleStep(lowestUnsecureStep, closestGlskLimitationAboveReference);
     }
 
