@@ -67,11 +67,11 @@ class LinearScalerTest {
         Mockito.when(shiftDispatcher.dispatch(200)).thenReturn(Map.of(
                 "10YCH-SWISSGRIDZ", 200.
         ));
-        Mockito.when(networkValidator.validateNetwork(network)).thenReturn(getStepResult(true));
+        Mockito.when(networkValidator.validateNetwork(network, null)).thenReturn(getStepResult(true));
 
         LinearScaler linearScaler = new LinearScaler(zonalScalable, shiftDispatcher);
         linearScaler.shiftNetwork(200, network);
-        DichotomyStepResult<?> networkStepResult = networkValidator.validateNetwork(network);
+        DichotomyStepResult<?> networkStepResult = networkValidator.validateNetwork(network, null);
         assertTrue(networkStepResult.isValid());
     }
 
@@ -80,11 +80,11 @@ class LinearScalerTest {
         Mockito.when(shiftDispatcher.dispatch(200)).thenReturn(Map.of(
                 "10YCH-SWISSGRIDZ", 200.
         ));
-        Mockito.when(networkValidator.validateNetwork(network)).thenReturn(getStepResult(false));
+        Mockito.when(networkValidator.validateNetwork(network, null)).thenReturn(getStepResult(false));
 
         LinearScaler linearScaler = new LinearScaler(zonalScalable, shiftDispatcher);
         linearScaler.shiftNetwork(200, network);
-        DichotomyStepResult<?> networkStepResult = networkValidator.validateNetwork(network);
+        DichotomyStepResult<?> networkStepResult = networkValidator.validateNetwork(network, null);
         assertFalse(networkStepResult.isValid());
     }
 
@@ -93,11 +93,11 @@ class LinearScalerTest {
         Mockito.when(shiftDispatcher.dispatch(200)).thenReturn(Map.of(
                 "10YCH-SWISSGRIDZ", 200.
         ));
-        Mockito.when(networkValidator.validateNetwork(network)).thenThrow(new ValidationException("RAO failure"));
+        Mockito.when(networkValidator.validateNetwork(network, null)).thenThrow(new ValidationException("RAO failure"));
 
         LinearScaler linearScaler = new LinearScaler(zonalScalable, shiftDispatcher);
         linearScaler.shiftNetwork(200, network);
-        assertThrows(ValidationException.class, () -> networkValidator.validateNetwork(network));
+        assertThrows(ValidationException.class, () -> networkValidator.validateNetwork(network, null));
     }
 
     @Test

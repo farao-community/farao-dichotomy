@@ -58,10 +58,11 @@ public class DichotomyEngine<T> {
     public DichotomyResult<T> run(Network network) {
         int iterationCounter = 0;
         String initialVariant = network.getVariantManager().getWorkingVariantId();
-        while (!index.precisionReached() && iterationCounter < maxIteration) {
+        while (!indexStrategy.precisionReached(index) && iterationCounter < maxIteration) {
             double nextValue = indexStrategy.nextValue(index);
             BUSINESS_LOGS.info(String.format("Next dichotomy step: %.2f", nextValue));
-            DichotomyStepResult<T> dichotomyStepResult = validate(nextValue, network, initialVariant);
+            DichotomyStepResult<T> lastDichotomyStepResult = !index.testedSteps().isEmpty() ? index.testedSteps().get(index.testedSteps().size() - 1).getRight() : null;
+            DichotomyStepResult<T> dichotomyStepResult = validate(nextValue, network, initialVariant, lastDichotomyStepResult);
             if (dichotomyStepResult.isValid()) {
                 BUSINESS_LOGS.info(String.format("Network at dichotomy step %.2f is secure", nextValue));
             } else {
@@ -77,13 +78,13 @@ public class DichotomyEngine<T> {
         return DichotomyResult.buildFromIndex(index);
     }
 
-    private DichotomyStepResult<T> validate(double stepValue, Network network, String initialVariant) {
+    private DichotomyStepResult<T> validate(double stepValue, Network network, String initialVariant, DichotomyStepResult<T> lastDichotomyStepResult) {
         String newVariant = variantName(stepValue, initialVariant);
         network.getVariantManager().cloneVariant(initialVariant, newVariant);
         network.getVariantManager().setWorkingVariant(newVariant);
         try {
             networkShifter.shiftNetwork(stepValue, network);
-            return networkValidator.validateNetwork(network);
+            return networkValidator.validateNetwork(network, lastDichotomyStepResult);
         } catch (GlskLimitationException e) {
             BUSINESS_WARNS.warn(String.format("GLSK limits have been reached for step value %.2f", stepValue));
             return DichotomyStepResult.fromFailure(ReasonInvalid.GLSK_LIMITATION, e.getMessage());
