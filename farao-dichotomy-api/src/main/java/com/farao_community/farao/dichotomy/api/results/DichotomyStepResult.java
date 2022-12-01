@@ -36,6 +36,15 @@ public final class DichotomyStepResult<I> {
         this.failureMessage = "None";
     }
 
+    private DichotomyStepResult(RaoResult raoResult, I validationData, boolean secure) {
+        this.raoResult = raoResult;
+        this.validationData = validationData;
+        this.secure = secure;
+        this.reasonInvalid = this.secure ? ReasonInvalid.NONE : ReasonInvalid.UNSECURE_AFTER_VALIDATION;
+        this.failureMessage = "None";
+    }
+
+
     /**
      * In case the network validation fails, we suppose that no {@link RaoResult} are available. To remain consistent
      * either {@code GLSK_LIMITATION} or {@code VALIDATION_FAILURE} must be used here in {@link ReasonInvalid} because
@@ -61,6 +70,23 @@ public final class DichotomyStepResult<I> {
     public static <J> DichotomyStepResult<J> fromNetworkValidationResult(RaoResult raoResult,
                                                                          J validationData) {
         return new DichotomyStepResult<>(raoResult, validationData);
+    }
+
+
+    /**
+     * When there are several consecutive validations, but we need all validation data and {@link RaoResult},
+     * we can specify the validation is secure result as an input parameter, rather that just basing the is secure on
+     * the single rao validation.
+     * In case network validation works properly there are only two wys out, either it is secured or unsecured.
+     * According to that corresponding {@link ReasonInvalid} would be chosen: {@code NONE} for a secured network --
+     * which is then valid -- and {@code UNSECURE_AFTER_VALIDATION} for an unsecured network.
+     *
+     * @return A network dichotomy step result containing validation data and meta-data about its security
+     */
+    public static <J> DichotomyStepResult<J> fromNetworkValidationResult(RaoResult raoResult,
+                                                                         J validationData,
+                                                                         boolean passedValidationAsSecure) {
+        return new DichotomyStepResult<>(raoResult, validationData, passedValidationAsSecure);
     }
 
     private static boolean raoResultIsSecure(RaoResult raoResult) {
