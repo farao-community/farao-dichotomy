@@ -44,7 +44,6 @@ public final class DichotomyStepResult<I> {
         this.failureMessage = "None";
     }
 
-
     /**
      * In case the network validation fails, we suppose that no {@link RaoResult} are available. To remain consistent
      * either {@code GLSK_LIMITATION} or {@code VALIDATION_FAILURE} must be used here in {@link ReasonInvalid} because
@@ -71,7 +70,6 @@ public final class DichotomyStepResult<I> {
                                                                          J validationData) {
         return new DichotomyStepResult<>(raoResult, validationData);
     }
-
 
     /**
      * When there are several consecutive validations, but we need all validation data and {@link RaoResult},
