@@ -11,7 +11,6 @@ import com.farao_community.farao.dichotomy.api.index.Index;
 import com.farao_community.farao.dichotomy.api.index.IndexStrategy;
 import com.farao_community.farao.dichotomy.api.index.RangeDivisionIndexStrategy;
 import com.farao_community.farao.dichotomy.api.index.StepsIndexStrategy;
-import com.powsybl.iidm.import_.Importers;
 import com.powsybl.iidm.network.Network;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -30,7 +29,7 @@ class DichotomyEngineTest {
     @BeforeEach
     void setUp() {
         String networkFilename = "20210901_2230_test_network.uct";
-        initialNetwork = Importers.loadNetwork(networkFilename, getClass().getResourceAsStream(networkFilename));
+        initialNetwork = Network.read(networkFilename, getClass().getResourceAsStream(networkFilename));
     }
 
     @Test
