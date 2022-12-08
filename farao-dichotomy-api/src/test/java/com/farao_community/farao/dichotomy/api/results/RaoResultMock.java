@@ -1,3 +1,9 @@
+/*
+ * Copyright (c) 2021, RTE (http://www.rte-france.com)
+ * This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at http://mozilla.org/MPL/2.0/.
+ */
 package com.farao_community.farao.dichotomy.api.results;
 
 import com.farao_community.farao.commons.Unit;
@@ -5,6 +11,7 @@ import com.farao_community.farao.data.crac_api.RemedialAction;
 import com.farao_community.farao.data.crac_api.State;
 import com.farao_community.farao.data.crac_api.cnec.AngleCnec;
 import com.farao_community.farao.data.crac_api.cnec.FlowCnec;
+import com.farao_community.farao.data.crac_api.cnec.Side;
 import com.farao_community.farao.data.crac_api.cnec.VoltageCnec;
 import com.farao_community.farao.data.crac_api.network_action.NetworkAction;
 import com.farao_community.farao.data.crac_api.range_action.PstRangeAction;
@@ -33,7 +40,7 @@ public class RaoResultMock implements RaoResult {
     }
 
     @Override
-    public double getFlow(OptimizationState optimizationState, FlowCnec flowCnec, Unit unit) {
+    public double getFlow(OptimizationState optimizationState, FlowCnec flowCnec, Side side, Unit unit) {
         return 0;
     }
 
@@ -68,17 +75,17 @@ public class RaoResultMock implements RaoResult {
     }
 
     @Override
-    public double getCommercialFlow(OptimizationState optimizationState, FlowCnec flowCnec, Unit unit) {
+    public double getCommercialFlow(OptimizationState optimizationState, FlowCnec flowCnec, Side side, Unit unit) {
         return 0;
     }
 
     @Override
-    public double getLoopFlow(OptimizationState optimizationState, FlowCnec flowCnec, Unit unit) {
+    public double getLoopFlow(OptimizationState optimizationState, FlowCnec flowCnec, Side side, Unit unit) {
         return 0;
     }
 
     @Override
-    public double getPtdfZonalSum(OptimizationState optimizationState, FlowCnec flowCnec) {
+    public double getPtdfZonalSum(OptimizationState optimizationState, FlowCnec flowCnec, Side side) {
         return 0;
     }
 

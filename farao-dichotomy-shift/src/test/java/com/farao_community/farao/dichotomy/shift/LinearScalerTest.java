@@ -13,7 +13,6 @@ import com.farao_community.farao.dichotomy.api.exceptions.ValidationException;
 import com.farao_community.farao.dichotomy.api.results.DichotomyStepResult;
 import com.powsybl.glsk.api.io.GlskDocumentImporters;
 import com.powsybl.glsk.commons.ZonalData;
-import com.powsybl.iidm.import_.Importers;
 import com.powsybl.iidm.modification.scalable.Scalable;
 import com.powsybl.iidm.network.Network;
 import org.junit.jupiter.api.BeforeEach;
@@ -37,7 +36,7 @@ class LinearScalerTest {
     @BeforeEach
     void setUp() {
         String networkFilename = "20210901_2230_test_network.uct";
-        network = Importers.loadNetwork(networkFilename, getClass().getResourceAsStream(networkFilename));
+        network = Network.read(networkFilename, getClass().getResourceAsStream(networkFilename));
 
         String glskFilename = "20210901_2230_213_GSK_CO_CSE1.xml";
         zonalScalable = GlskDocumentImporters

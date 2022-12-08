@@ -11,7 +11,6 @@ import com.farao_community.farao.dichotomy.api.index.Index;
 import com.farao_community.farao.dichotomy.api.index.IndexStrategy;
 import com.farao_community.farao.dichotomy.api.index.RangeDivisionIndexStrategy;
 import com.farao_community.farao.dichotomy.api.index.StepsIndexStrategy;
-import com.powsybl.iidm.import_.Importers;
 import com.powsybl.iidm.network.Network;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -30,7 +29,7 @@ class DichotomyEngineTest {
     @BeforeEach
     void setUp() {
         String networkFilename = "20210901_2230_test_network.uct";
-        initialNetwork = Importers.loadNetwork(networkFilename, getClass().getResourceAsStream(networkFilename));
+        initialNetwork = Network.read(networkFilename, getClass().getResourceAsStream(networkFilename));
     }
 
     @Test
@@ -112,12 +111,12 @@ class DichotomyEngineTest {
         DichotomyEngine<Object> engine = new DichotomyEngine<>(index, indexStrategy, Mockito.mock(NetworkShifter.class), networkValidator);
         engine.run(initialNetwork);
 
-        assertEquals(5, index.testedSteps().size());
+        assertEquals(4, index.testedSteps().size());
 
         assertTrue(index.highestValidStep().getRight().isValid());
         assertEquals(-400, index.highestValidStep().getLeft(), EPSILON);
         assertFalse(index.lowestInvalidStep().getRight().isValid());
-        assertEquals(-300, index.lowestInvalidStep().getLeft(), EPSILON);
+        assertEquals(-200, index.lowestInvalidStep().getLeft(), EPSILON);
 
         assertEquals(-1000, index.testedSteps().get(0).getLeft(), EPSILON);
         assertTrue(index.testedSteps().get(0).getRight().isValid());
@@ -127,8 +126,6 @@ class DichotomyEngineTest {
         assertFalse(index.testedSteps().get(2).getRight().isValid());
         assertEquals(-400, index.testedSteps().get(3).getLeft(), EPSILON);
         assertTrue(index.testedSteps().get(3).getRight().isValid());
-        assertEquals(-300, index.testedSteps().get(4).getLeft(), EPSILON);
-        assertFalse(index.testedSteps().get(4).getRight().isValid());
     }
 
     @Test
@@ -144,12 +141,12 @@ class DichotomyEngineTest {
         DichotomyEngine<Object> engine = new DichotomyEngine<>(index, indexStrategy, Mockito.mock(NetworkShifter.class), networkValidator);
         engine.run(initialNetwork);
 
-        assertEquals(7, index.testedSteps().size());
+        assertEquals(6, index.testedSteps().size());
 
         assertTrue(index.highestValidStep().getRight().isValid());
         assertEquals(-400, index.highestValidStep().getLeft(), EPSILON);
         assertFalse(index.lowestInvalidStep().getRight().isValid());
-        assertEquals(-300, index.lowestInvalidStep().getLeft(), EPSILON);
+        assertEquals(-200, index.lowestInvalidStep().getLeft(), EPSILON);
 
         assertEquals(1000, index.testedSteps().get(0).getLeft(), EPSILON);
         assertFalse(index.testedSteps().get(0).getRight().isValid());
@@ -163,8 +160,6 @@ class DichotomyEngineTest {
         assertTrue(index.testedSteps().get(4).getRight().isValid());
         assertEquals(-400, index.testedSteps().get(5).getLeft(), EPSILON);
         assertTrue(index.testedSteps().get(5).getRight().isValid());
-        assertEquals(-300, index.testedSteps().get(6).getLeft(), EPSILON);
-        assertFalse(index.testedSteps().get(6).getRight().isValid());
     }
 
     @Test

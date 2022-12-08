@@ -29,7 +29,7 @@ public interface IndexStrategy {
         if (index.lowestInvalidStep() == null || index.highestValidStep() == null) {
             return false;
         }
-        return Math.abs(index.highestValidStep().getLeft() - index.lowestInvalidStep().getLeft()) < index.precision();
+        return Math.abs(index.highestValidStep().getLeft() - index.lowestInvalidStep().getLeft()) <= index.precision();
     }
 
 }
