@@ -64,7 +64,8 @@ public class BiDirectionalStepsWithReferenceIndexStrategy implements IndexStrate
 
     private void updateDichotomyIntervalLimits(Index<?> index) {
         if (index.lowestInvalidStep() != null &&
-            index.lowestInvalidStep().getRight().getReasonInvalid().equals(ReasonInvalid.UNSECURE_AFTER_VALIDATION)) {
+            (index.lowestInvalidStep().getRight().getReasonInvalid().equals(ReasonInvalid.UNSECURE_AFTER_VALIDATION)
+                || index.lowestInvalidStep().getRight().getReasonInvalid().equals(ReasonInvalid.VALIDATION_FAILED))) {
             lowestUnsecureStep = index.lowestInvalidStep();
         }
         if (index.highestValidStep() != null) {
