@@ -9,6 +9,7 @@ package com.farao_community.farao.dichotomy.api.index;
 import com.farao_community.farao.data.rao_result_api.RaoResult;
 import com.farao_community.farao.dichotomy.api.RaoResultMock;
 import com.farao_community.farao.dichotomy.api.results.DichotomyStepResult;
+import com.farao_community.farao.dichotomy.api.results.ReasonInvalid;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -22,6 +23,7 @@ class BiDirectionalStepsIndexStrategyTest {
         new RaoResultMock(true), null);
     private final DichotomyStepResult<RaoResult> stepResultNOk = DichotomyStepResult.fromNetworkValidationResult(
         new RaoResultMock(false), null);
+    private final DichotomyStepResult<RaoResult> stepResultFailed = DichotomyStepResult.fromFailure(ReasonInvalid.VALIDATION_FAILED, "");
 
     @Test
     void testStartingIndex() {
@@ -47,6 +49,19 @@ class BiDirectionalStepsIndexStrategyTest {
     }
 
     @Test
+    void testIndexAfterFirstFailed() {
+        double startingIndex = 2000;
+        double stepSize = 650;
+
+        Index<RaoResult> index = new Index<>(0, 5000, 50);
+        IndexStrategy indexStrategy = new BiDirectionalStepsIndexStrategy(startingIndex, stepSize);
+
+        index.addDichotomyStepResult(startingIndex, stepResultFailed);
+
+        assertEquals(startingIndex - stepSize, indexStrategy.nextValue(index));
+    }
+
+    @Test
     void testIndexAfterInvalidCloseToMinimum() {
         double startingIndex = 2000;
         double stepSize = 650;
@@ -56,6 +71,20 @@ class BiDirectionalStepsIndexStrategyTest {
         IndexStrategy indexStrategy = new BiDirectionalStepsIndexStrategy(startingIndex, stepSize);
 
         index.addDichotomyStepResult(minValue + 100, stepResultNOk);
+
+        assertEquals(minValue, indexStrategy.nextValue(index));
+    }
+
+    @Test
+    void testIndexAfterFailedCloseToMinimum() {
+        double startingIndex = 2000;
+        double stepSize = 650;
+        double minValue = 0;
+
+        Index<RaoResult> index = new Index<>(minValue, 5000, 50);
+        IndexStrategy indexStrategy = new BiDirectionalStepsIndexStrategy(startingIndex, stepSize);
+
+        index.addDichotomyStepResult(minValue + 100, stepResultFailed);
 
         assertEquals(minValue, indexStrategy.nextValue(index));
     }
@@ -74,7 +103,7 @@ class BiDirectionalStepsIndexStrategyTest {
     }
 
     @Test
-    void testIndexAfterInvalidCloseToMaximum() {
+    void testIndexAfterValidCloseToMaximum() {
         double startingIndex = 2000;
         double stepSize = 650;
         double maxValue = 5000;
@@ -97,6 +126,20 @@ class BiDirectionalStepsIndexStrategyTest {
 
         index.addDichotomyStepResult(2000, stepResultOk);
         index.addDichotomyStepResult(3000, stepResultNOk);
+
+        assertEquals(2500, indexStrategy.nextValue(index));
+    }
+
+    @Test
+    void testIndexAfterValidAndFailedSteps() {
+        double startingIndex = 2000;
+        double stepSize = 650;
+
+        Index<RaoResult> index = new Index<>(0, 5000, 50);
+        IndexStrategy indexStrategy = new BiDirectionalStepsIndexStrategy(startingIndex, stepSize);
+
+        index.addDichotomyStepResult(2000, stepResultOk);
+        index.addDichotomyStepResult(3000, stepResultFailed);
 
         assertEquals(2500, indexStrategy.nextValue(index));
     }
