@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021, RTE (http://www.rte-france.com)
+ * Copyright (c) 2023, RTE (http://www.rte-france.com)
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
@@ -13,12 +13,14 @@ import org.apache.commons.lang3.tuple.Pair;
 
 /**
  * @author Joris Mancini {@literal <joris.mancini at rte-france.com>}
+ * @author Vincent Bochet {@literal <vincent.bochet at rte-france.com>}
  */
 public final class DichotomyResult<I> {
     private final Pair<Double, DichotomyStepResult<I>> highestValidStep;
     private final Pair<Double, DichotomyStepResult<I>> lowestInvalidStep;
     private final LimitingCause limitingCause;
     private final String limitingFailureMessage;
+    private boolean interrupted;
 
     private DichotomyResult(Pair<Double, DichotomyStepResult<I>> highestValidStep,
                             Pair<Double, DichotomyStepResult<I>> lowestInvalidStep,
@@ -28,6 +30,7 @@ public final class DichotomyResult<I> {
         this.lowestInvalidStep = lowestInvalidStep;
         this.limitingCause = limitingCause;
         this.limitingFailureMessage = limitingFailureMessage;
+        this.interrupted = false;
     }
 
     public static <J> DichotomyResult<J> buildFromIndex(Index<J> index) {
@@ -80,6 +83,15 @@ public final class DichotomyResult<I> {
     @JsonIgnore
     public double getLowestInvalidStepValue() {
         return lowestInvalidStep != null ? lowestInvalidStep.getLeft() : Double.NaN;
+    }
+
+    @JsonIgnore
+    public boolean isInterrupted() {
+        return interrupted;
+    }
+
+    public void setInterrupted(boolean interrupted) {
+        this.interrupted = interrupted;
     }
 
     @Override
