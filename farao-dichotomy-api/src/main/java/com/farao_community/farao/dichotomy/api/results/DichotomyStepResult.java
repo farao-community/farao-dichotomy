@@ -28,11 +28,7 @@ public final class DichotomyStepResult<I> {
     }
 
     private DichotomyStepResult(RaoResult raoResult, I validationData) {
-        this.raoResult = raoResult;
-        this.validationData = validationData;
-        this.secure = raoResult.isSecure();
-        this.reasonInvalid = secure ? ReasonInvalid.NONE : ReasonInvalid.UNSECURE_AFTER_VALIDATION;
-        this.failureMessage = "None";
+        this(raoResult, validationData, raoResult.isSecure());
     }
 
     private DichotomyStepResult(RaoResult raoResult, I validationData, boolean secure) {
