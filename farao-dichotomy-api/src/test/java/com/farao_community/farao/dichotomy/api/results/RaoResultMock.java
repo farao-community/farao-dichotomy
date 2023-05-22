@@ -18,6 +18,7 @@ import com.farao_community.farao.data.crac_api.range_action.PstRangeAction;
 import com.farao_community.farao.data.crac_api.range_action.RangeAction;
 import com.farao_community.farao.data.rao_result_api.ComputationStatus;
 import com.farao_community.farao.data.rao_result_api.OptimizationState;
+import com.farao_community.farao.data.rao_result_api.OptimizationStepsExecuted;
 import com.farao_community.farao.data.rao_result_api.RaoResult;
 import org.apache.commons.lang3.NotImplementedException;
 
@@ -36,6 +37,11 @@ public class RaoResultMock implements RaoResult {
 
     @Override
     public ComputationStatus getComputationStatus() {
+        return null;
+    }
+
+    @Override
+    public ComputationStatus getComputationStatus(State state) {
         return null;
     }
 
@@ -176,5 +182,15 @@ public class RaoResultMock implements RaoResult {
     @Override
     public Map<RangeAction<?>, Double> getOptimizedSetPointsOnState(State state) {
         return null;
+    }
+
+    @Override
+    public OptimizationStepsExecuted getOptimizationStepsExecuted() {
+        return null;
+    }
+
+    @Override
+    public void setOptimizationStepsExecuted(OptimizationStepsExecuted optimizationStepsExecuted) {
+
     }
 }

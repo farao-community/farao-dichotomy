@@ -11,6 +11,7 @@ import com.farao_community.farao.dichotomy.api.exceptions.GlskLimitationExceptio
 import com.farao_community.farao.dichotomy.api.exceptions.ShiftingException;
 import com.powsybl.glsk.commons.ZonalData;
 import com.powsybl.iidm.modification.scalable.Scalable;
+import com.powsybl.iidm.modification.scalable.ScalingParameters;
 import com.powsybl.iidm.network.Network;
 
 import java.util.ArrayList;
@@ -55,7 +56,9 @@ public final class LinearScaler implements NetworkShifter {
             String zoneId = entry.getKey();
             double asked = entry.getValue();
             BUSINESS_LOGS.info(String.format("Applying variation on zone %s (target: %.2f)", zoneId, asked));
-            double done = zonalScalable.getData(zoneId).scale(network, asked);
+            ScalingParameters iterativeScalingParameters = new ScalingParameters();
+            iterativeScalingParameters.setIterative(true);
+            double done = zonalScalable.getData(zoneId).scale(network, asked, iterativeScalingParameters);
             if (Math.abs(done - asked) > shiftEpsilon) {
                 BUSINESS_WARNS.warn(String.format("Incomplete variation on zone %s (target: %.2f, done: %.2f)",
                     zoneId, asked, done));
