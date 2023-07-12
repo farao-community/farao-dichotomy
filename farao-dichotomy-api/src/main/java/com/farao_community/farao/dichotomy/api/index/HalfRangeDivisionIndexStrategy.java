@@ -45,4 +45,21 @@ public class HalfRangeDivisionIndexStrategy implements IndexStrategy {
         }
         return (index.lowestInvalidStep().getLeft() + index.highestValidStep().getLeft()) / 2;
     }
+
+    @Override
+    public boolean precisionReached(Index<?> index) {
+        if (index.lowestInvalidStep() != null && Math.abs(index.lowestInvalidStep().getLeft() - index.minValue()) < EPSILON) {
+            return true;
+        }
+        if (index.highestValidStep() != null && Math.abs(index.highestValidStep().getLeft() - index.maxValue()) < EPSILON) {
+            return true;
+        }
+        if (index.lowestInvalidStep() != null && index.highestValidStep() == null) {
+            return Math.abs(index.lowestInvalidStep().getLeft() - index.minValue()) <= index.precision();
+        }
+        if (index.lowestInvalidStep() == null) {
+            return false;
+        }
+        return Math.abs(index.highestValidStep().getLeft() - index.lowestInvalidStep().getLeft()) <= index.precision();
+    }
 }
