@@ -11,7 +11,7 @@
     </parent>
 
     <artifactId>farao-dichotomy</artifactId>
-    <version>4.11.0-SNAPSHOT</version>
+    <version>4.12.0-SNAPSHOT</version>
     <name>FARAO dichotomy</name>
     <description>Parent pom for dichotomy related FARAO processes</description>
     <packaging>pom</packaging>
