@@ -24,11 +24,11 @@ class IndexStrategyTest {
     private static final DichotomyStepResult<Boolean> STEP_RESULT_SUCCESS = DichotomyStepResult.fromNetworkValidationResult(new RaoResultMock(true), null);
     private static final DichotomyStepResult<Boolean> STEP_RESULT_FAIL = DichotomyStepResult.fromFailure(ReasonInvalid.VALIDATION_FAILED, "test");
 
-    RangeDivisionIndexStrategy strategy;
+    IndexStrategyImpl strategy;
 
     @BeforeEach
     void setup() {
-        strategy = Mockito.mock(RangeDivisionIndexStrategy.class);
+        strategy = Mockito.mock(IndexStrategyImpl.class);
         Mockito.when(strategy.precisionReached(Mockito.any())).thenCallRealMethod();
     }
 
