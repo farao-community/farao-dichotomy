@@ -7,6 +7,7 @@
 package com.farao_community.farao.dichotomy.api.results;
 
 import com.farao_community.farao.commons.Unit;
+import com.farao_community.farao.data.crac_api.Instant;
 import com.farao_community.farao.data.crac_api.RemedialAction;
 import com.farao_community.farao.data.crac_api.State;
 import com.farao_community.farao.data.crac_api.cnec.AngleCnec;
@@ -17,7 +18,6 @@ import com.farao_community.farao.data.crac_api.network_action.NetworkAction;
 import com.farao_community.farao.data.crac_api.range_action.PstRangeAction;
 import com.farao_community.farao.data.crac_api.range_action.RangeAction;
 import com.farao_community.farao.data.rao_result_api.ComputationStatus;
-import com.farao_community.farao.data.rao_result_api.OptimizationState;
 import com.farao_community.farao.data.rao_result_api.OptimizationStepsExecuted;
 import com.farao_community.farao.data.rao_result_api.RaoResult;
 import org.apache.commons.lang3.NotImplementedException;
@@ -46,63 +46,63 @@ public class RaoResultMock implements RaoResult {
     }
 
     @Override
-    public double getFlow(OptimizationState optimizationState, FlowCnec flowCnec, Side side, Unit unit) {
+    public double getFlow(Instant optimizedInstant, FlowCnec flowCnec, Side side, Unit unit) {
         return 0;
     }
 
     @Override
-    public double getAngle(OptimizationState optimizationState, AngleCnec angleCnec, Unit unit) {
+    public double getAngle(Instant optimizedInstant, AngleCnec angleCnec, Unit unit) {
         return 0;
     }
 
     @Override
-    public double getVoltage(OptimizationState optimizationState, VoltageCnec voltageCnec, Unit unit) {
+    public double getVoltage(Instant optimizedInstante, VoltageCnec voltageCnec, Unit unit) {
         return 0;
     }
 
     @Override
-    public double getMargin(OptimizationState optimizationState, FlowCnec flowCnec, Unit unit) {
+    public double getMargin(Instant optimizedInstant, FlowCnec flowCnec, Unit unit) {
         return 0;
     }
 
     @Override
-    public double getMargin(OptimizationState optimizationState, AngleCnec angleCnec, Unit unit) {
+    public double getMargin(Instant optimizedInstant, AngleCnec angleCnec, Unit unit) {
         return 0;
     }
 
     @Override
-    public double getMargin(OptimizationState optimizationState, VoltageCnec voltageCnec, Unit unit) {
+    public double getMargin(Instant optimizedInstant, VoltageCnec voltageCnec, Unit unit) {
         return 0;
     }
 
     @Override
-    public double getRelativeMargin(OptimizationState optimizationState, FlowCnec flowCnec, Unit unit) {
+    public double getRelativeMargin(Instant optimizedInstant, FlowCnec flowCnec, Unit unit) {
         return 0;
     }
 
     @Override
-    public double getCommercialFlow(OptimizationState optimizationState, FlowCnec flowCnec, Side side, Unit unit) {
+    public double getCommercialFlow(Instant optimizedInstant, FlowCnec flowCnec, Side side, Unit unit) {
         return 0;
     }
 
     @Override
-    public double getLoopFlow(OptimizationState optimizationState, FlowCnec flowCnec, Side side, Unit unit) {
+    public double getLoopFlow(Instant optimizedInstant, FlowCnec flowCnec, Side side, Unit unit) {
         return 0;
     }
 
     @Override
-    public double getPtdfZonalSum(OptimizationState optimizationState, FlowCnec flowCnec, Side side) {
+    public double getPtdfZonalSum(Instant optimizedInstant, FlowCnec flowCnec, Side side) {
         return 0;
     }
 
     @Override
-    public double getCost(OptimizationState optimizationState) {
+    public double getCost(Instant optimizedInstant) {
         return 0;
     }
 
     @Override
-    public double getFunctionalCost(OptimizationState optimizationState) {
-        if (optimizationState == OptimizationState.AFTER_CRA) {
+    public double getFunctionalCost(Instant optimizedInstant) {
+        if (optimizedInstant == Instant.CURATIVE) {
             return cost;
         } else {
             throw new NotImplementedException("Only after CRA is handled");
@@ -110,7 +110,7 @@ public class RaoResultMock implements RaoResult {
     }
 
     @Override
-    public double getVirtualCost(OptimizationState optimizationState) {
+    public double getVirtualCost(Instant optimizedInstant) {
         return 0;
     }
 
@@ -120,7 +120,7 @@ public class RaoResultMock implements RaoResult {
     }
 
     @Override
-    public double getVirtualCost(OptimizationState optimizationState, String s) {
+    public double getVirtualCost(Instant optimizedInstant, String s) {
         return 0;
     }
 
