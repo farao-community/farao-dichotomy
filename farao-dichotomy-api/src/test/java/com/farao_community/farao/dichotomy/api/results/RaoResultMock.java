@@ -56,7 +56,7 @@ public class RaoResultMock implements RaoResult {
     }
 
     @Override
-    public double getVoltage(Instant optimizedInstante, VoltageCnec voltageCnec, Unit unit) {
+    public double getVoltage(Instant optimizedInstant, VoltageCnec voltageCnec, Unit unit) {
         return 0;
     }
 
