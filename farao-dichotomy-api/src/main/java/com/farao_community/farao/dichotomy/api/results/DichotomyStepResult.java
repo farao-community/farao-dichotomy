@@ -6,7 +6,7 @@
  */
 package com.farao_community.farao.dichotomy.api.results;
 
-import com.farao_community.farao.data.rao_result_api.OptimizationState;
+import com.farao_community.farao.data.crac_api.Instant;
 import com.farao_community.farao.data.rao_result_api.RaoResult;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 
@@ -88,7 +88,7 @@ public final class DichotomyStepResult<I> {
     }
 
     private static boolean raoResultIsSecure(RaoResult raoResult) {
-        return raoResult.getFunctionalCost(OptimizationState.AFTER_CRA) <= 0;
+        return raoResult.getFunctionalCost(Instant.CURATIVE) <= 0;
     }
 
     public RaoResult getRaoResult() {
