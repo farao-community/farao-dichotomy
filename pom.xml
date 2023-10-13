@@ -48,7 +48,7 @@
     <properties>
         <logback.classic.version>1.2.3</logback.classic.version>
         <mockito.core.version>3.5.10</mockito.core.version>
-        <farao.dependencies.version>1.20.1-SNAPSHOT</farao.dependencies.version>
+        <farao.dependencies.version>1.20.1</farao.dependencies.version>
     </properties>
 
     <dependencyManagement>
