@@ -14,4 +14,8 @@ public class GlskLimitationException extends Exception {
     public GlskLimitationException(String message) {
         super(message);
     }
+
+    public GlskLimitationException(String message, Throwable cause) {
+        super(message, cause);
+    }
 }
