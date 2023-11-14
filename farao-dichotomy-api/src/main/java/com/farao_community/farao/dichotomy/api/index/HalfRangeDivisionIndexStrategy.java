@@ -15,7 +15,7 @@ package com.farao_community.farao.dichotomy.api.index;
  *
  * @author Marc Schwitzguebel {@literal <marc.schwitzguebel at rte-france.com>}
  */
-public class HalfRangeDivisionIndexStrategy implements IndexStrategy {
+public class HalfRangeDivisionIndexStrategy<U extends DichotomyStep<U>> implements IndexStrategy<U> {
 
     private final boolean startWithMin;
 
@@ -24,7 +24,7 @@ public class HalfRangeDivisionIndexStrategy implements IndexStrategy {
     }
 
     @Override
-    public double nextValue(Index<?> index) {
+    public U nextValue(Index<?, U> index) {
         if (precisionReached(index)) {
             throw new AssertionError("Dichotomy engine should not ask for next value if precision is reached");
         }
@@ -33,33 +33,33 @@ public class HalfRangeDivisionIndexStrategy implements IndexStrategy {
                 return index.minValue();
             }
             if (index.lowestInvalidStep() == null) {
-                return (index.maxValue() + index.highestValidStep().getLeft()) / 2;
+                return index.maxValue().halfRangeWith(index.highestValidStep().getLeft());
             }
         } else {
             if (index.lowestInvalidStep() == null) {
                 return index.maxValue();
             }
             if (index.highestValidStep() == null) {
-                return (index.lowestInvalidStep().getLeft() + index.minValue()) / 2;
+                return index.lowestInvalidStep().getLeft().halfRangeWith(index.minValue());
             }
         }
-        return (index.lowestInvalidStep().getLeft() + index.highestValidStep().getLeft()) / 2;
+        return index.lowestInvalidStep().getLeft().halfRangeWith(index.highestValidStep().getLeft());
     }
 
     @Override
-    public boolean precisionReached(Index<?> index) {
-        if (index.lowestInvalidStep() != null && Math.abs(index.lowestInvalidStep().getLeft() - index.minValue()) < EPSILON) {
+    public boolean precisionReached(Index<?, U> index) {
+        if (index.lowestInvalidStep() != null && index.lowestInvalidStep().getLeft().distanceTo(index.minValue()) < EPSILON) {
             return true;
         }
-        if (index.highestValidStep() != null && Math.abs(index.highestValidStep().getLeft() - index.maxValue()) < EPSILON) {
+        if (index.highestValidStep() != null && index.highestValidStep().getLeft().distanceTo(index.maxValue()) < EPSILON) {
             return true;
         }
         if (index.lowestInvalidStep() != null && index.highestValidStep() == null) {
-            return Math.abs(index.lowestInvalidStep().getLeft() - index.minValue()) <= index.precision();
+            return index.lowestInvalidStep().getLeft().distanceTo(index.minValue()) <= index.precision();
         }
         if (index.lowestInvalidStep() == null) {
             return false;
         }
-        return Math.abs(index.highestValidStep().getLeft() - index.lowestInvalidStep().getLeft()) <= index.precision();
+        return index.highestValidStep().getLeft().distanceTo(index.lowestInvalidStep().getLeft()) <= index.precision();
     }
 }

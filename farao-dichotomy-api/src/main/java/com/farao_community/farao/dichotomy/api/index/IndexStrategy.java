@@ -7,29 +7,29 @@
 package com.farao_community.farao.dichotomy.api.index;
 
 /**
- * Interface responsible of defining which index value should be tested next by the dichotomy engine
- * based on current Index state (which contains previously tested values information.
+ * Interface responsible for defining which index value should be tested next by the dichotomy engine
+ * based on current Index state (which contains previously tested values information).
  *
  * @see RangeDivisionIndexStrategy
  * @see StepsIndexStrategy
  * @author Sebastien Murgey {@literal <sebastien.murgey at rte-france.com>}
  */
-public interface IndexStrategy {
+public interface IndexStrategy<U extends DichotomyStep<U>> {
     double EPSILON = 1e-3;
 
-    double nextValue(Index<?> index);
+    U nextValue(Index<?, U> index);
 
-    default boolean precisionReached(Index<?> index) {
-        if (index.lowestInvalidStep() != null && Math.abs(index.lowestInvalidStep().getLeft() - index.minValue()) < EPSILON) {
+    default boolean precisionReached(Index<?, U> index) {
+        if (index.lowestInvalidStep() != null && index.lowestInvalidStep().getLeft() .distanceTo(index.minValue()) < EPSILON) {
             return true;
         }
-        if (index.highestValidStep() != null && Math.abs(index.highestValidStep().getLeft() - index.maxValue()) < EPSILON) {
+        if (index.highestValidStep() != null && index.highestValidStep().getLeft().distanceTo(index.maxValue()) < EPSILON) {
             return true;
         }
         if (index.lowestInvalidStep() == null || index.highestValidStep() == null) {
             return false;
         }
-        return Math.abs(index.highestValidStep().getLeft() - index.lowestInvalidStep().getLeft()) <= index.precision();
+        return index.highestValidStep().getLeft().distanceTo(index.lowestInvalidStep().getLeft()) <= index.precision();
     }
 
 }

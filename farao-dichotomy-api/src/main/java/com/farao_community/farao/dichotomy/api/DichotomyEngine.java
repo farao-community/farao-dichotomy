@@ -10,6 +10,7 @@ import com.farao_community.farao.dichotomy.api.exceptions.DichotomyException;
 import com.farao_community.farao.dichotomy.api.exceptions.GlskLimitationException;
 import com.farao_community.farao.dichotomy.api.exceptions.ShiftingException;
 import com.farao_community.farao.dichotomy.api.exceptions.ValidationException;
+import com.farao_community.farao.dichotomy.api.index.DichotomyStep;
 import com.farao_community.farao.dichotomy.api.index.Index;
 import com.farao_community.farao.dichotomy.api.index.IndexStrategy;
 import com.farao_community.farao.dichotomy.api.results.DichotomyResult;
@@ -32,19 +33,19 @@ import static com.farao_community.farao.dichotomy.api.logging.DichotomyLoggerPro
  *
  * @author Sebastien Murgey {@literal <sebastien.murgey at rte-france.com>}
  */
-public class DichotomyEngine<T> {
+public class DichotomyEngine<T, U extends DichotomyStep<U>> {
     private static final int DEFAULT_MAX_ITERATION_NUMBER = 100;
-    private final Index<T> index;
-    private final IndexStrategy indexStrategy;
-    private final NetworkShifter networkShifter;
+    private final Index<T, U> index;
+    private final IndexStrategy<U> indexStrategy;
+    private final NetworkShifter<U> networkShifter;
     private final NetworkValidator<T> networkValidator;
     private final int maxIteration;
 
-    public DichotomyEngine(Index<T> index, IndexStrategy indexStrategy, NetworkShifter networkShifter, NetworkValidator<T> networkValidator) {
+    public DichotomyEngine(Index<T, U> index, IndexStrategy<U> indexStrategy, NetworkShifter<U> networkShifter, NetworkValidator<T> networkValidator) {
         this(index, indexStrategy, networkShifter, networkValidator, DEFAULT_MAX_ITERATION_NUMBER);
     }
 
-    public DichotomyEngine(Index<T> index, IndexStrategy indexStrategy, NetworkShifter networkShifter, NetworkValidator<T> networkValidator, int maxIteration) {
+    public DichotomyEngine(Index<T, U> index, IndexStrategy<U> indexStrategy, NetworkShifter<U> networkShifter, NetworkValidator<T> networkValidator, int maxIteration) {
         if (maxIteration < 3) {
             throw new DichotomyException("Max number of iterations of the dichotomy engine should be at least 3.");
         }
@@ -55,18 +56,18 @@ public class DichotomyEngine<T> {
         this.maxIteration = maxIteration;
     }
 
-    public DichotomyResult<T> run(Network network) {
+    public DichotomyResult<T, U> run(Network network) {
         int iterationCounter = 0;
         String initialVariant = network.getVariantManager().getWorkingVariantId();
         while (!indexStrategy.precisionReached(index) && iterationCounter < maxIteration) {
-            double nextValue = indexStrategy.nextValue(index);
-            BUSINESS_LOGS.info(String.format("Next dichotomy step: %.2f", nextValue));
+            U nextValue = indexStrategy.nextValue(index);
+            BUSINESS_LOGS.info(String.format("Next dichotomy step: %s", nextValue.print()));
             DichotomyStepResult<T> lastDichotomyStepResult = !index.testedSteps().isEmpty() ? index.testedSteps().get(index.testedSteps().size() - 1).getRight() : null;
             DichotomyStepResult<T> dichotomyStepResult = validate(nextValue, network, initialVariant, lastDichotomyStepResult);
             if (dichotomyStepResult.isValid()) {
-                BUSINESS_LOGS.info(String.format("Network at dichotomy step %.2f is secure", nextValue));
+                BUSINESS_LOGS.info(String.format("Network at dichotomy step %s is secure", nextValue.print()));
             } else {
-                BUSINESS_LOGS.info(String.format("Network at dichotomy step %.2f is unsecure", nextValue));
+                BUSINESS_LOGS.info(String.format("Network at dichotomy step %s is unsecure", nextValue.print()));
             }
             index.addDichotomyStepResult(nextValue, dichotomyStepResult);
             iterationCounter++;
@@ -78,7 +79,7 @@ public class DichotomyEngine<T> {
         return DichotomyResult.buildFromIndex(index);
     }
 
-    private DichotomyStepResult<T> validate(double stepValue, Network network, String initialVariant, DichotomyStepResult<T> lastDichotomyStepResult) {
+    private DichotomyStepResult<T> validate(U stepValue, Network network, String initialVariant, DichotomyStepResult<T> lastDichotomyStepResult) {
         String newVariant = variantName(stepValue, initialVariant);
         network.getVariantManager().cloneVariant(initialVariant, newVariant);
         network.getVariantManager().setWorkingVariant(newVariant);
@@ -86,10 +87,10 @@ public class DichotomyEngine<T> {
             networkShifter.shiftNetwork(stepValue, network);
             return networkValidator.validateNetwork(network, lastDichotomyStepResult);
         } catch (GlskLimitationException e) {
-            BUSINESS_WARNS.warn(String.format("GLSK limits have been reached for step value %.2f", stepValue));
+            BUSINESS_WARNS.warn(String.format("GLSK limits have been reached for step value %s", stepValue.print()));
             return DichotomyStepResult.fromFailure(ReasonInvalid.GLSK_LIMITATION, e.getMessage());
         } catch (ShiftingException | ValidationException e) {
-            BUSINESS_WARNS.warn(String.format("Validation failed for step value %.2f", stepValue));
+            BUSINESS_WARNS.warn(String.format("Validation failed for step value %s", stepValue.print()));
             return DichotomyStepResult.fromFailure(ReasonInvalid.VALIDATION_FAILED, e.getMessage());
         } finally {
             network.getVariantManager().setWorkingVariant(initialVariant);
@@ -97,7 +98,7 @@ public class DichotomyEngine<T> {
         }
     }
 
-    private String variantName(double stepValue, String initialVariant) {
-        return String.format("%s-ScaledBy-%d", initialVariant, (int) stepValue);
+    private String variantName(U stepValue, String initialVariant) {
+        return String.format("%s-ScaledBy-%s", initialVariant, stepValue.print());
     }
 }

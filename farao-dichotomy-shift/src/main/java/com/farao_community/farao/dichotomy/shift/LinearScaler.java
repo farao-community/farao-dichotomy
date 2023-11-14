@@ -9,6 +9,7 @@ package com.farao_community.farao.dichotomy.shift;
 import com.farao_community.farao.dichotomy.api.NetworkShifter;
 import com.farao_community.farao.dichotomy.api.exceptions.GlskLimitationException;
 import com.farao_community.farao.dichotomy.api.exceptions.ShiftingException;
+import com.farao_community.farao.dichotomy.api.index.SingleValueDichotomyStep;
 import com.powsybl.glsk.commons.ZonalData;
 import com.powsybl.iidm.modification.scalable.Scalable;
 import com.powsybl.iidm.modification.scalable.ScalingParameters;
@@ -29,7 +30,7 @@ import static com.farao_community.farao.dichotomy.api.logging.DichotomyLoggerPro
  *
  * @author Joris Mancini {@literal <joris.mancini at rte-france.com>}
  */
-public final class LinearScaler implements NetworkShifter {
+public final class LinearScaler implements NetworkShifter<SingleValueDichotomyStep> {
     private static final double DEFAULT_EPSILON = 1e-3;
 
     private final ZonalData<Scalable> zonalScalable;
@@ -47,17 +48,17 @@ public final class LinearScaler implements NetworkShifter {
     }
 
     @Override
-    public void shiftNetwork(double stepValue, Network network) throws GlskLimitationException, ShiftingException {
+    public void shiftNetwork(SingleValueDichotomyStep stepValue, Network network) throws GlskLimitationException, ShiftingException {
         BUSINESS_LOGS.info(String.format("Starting linear scaling on network %s with step value %.2f",
-            network.getVariantManager().getWorkingVariantId(), stepValue));
-        Map<String, Double> scalingValuesByCountry = shiftDispatcher.dispatch(stepValue);
+            network.getVariantManager().getWorkingVariantId(), stepValue.value()));
+        Map<String, Double> scalingValuesByCountry = shiftDispatcher.dispatch(stepValue.value());
         List<String> limitingCountries = new ArrayList<>();
         for (Map.Entry<String, Double> entry : scalingValuesByCountry.entrySet()) {
             String zoneId = entry.getKey();
             double asked = entry.getValue();
             BUSINESS_LOGS.info(String.format("Applying variation on zone %s (target: %.2f)", zoneId, asked));
             ScalingParameters scalingParameters = new ScalingParameters();
-            scalingParameters.setIterative(true);
+            scalingParameters.setIterative(true); // TODO : deprecated, replace this
             scalingParameters.setReconnect(true);
             double done = zonalScalable.getData(zoneId).scale(network, asked, scalingParameters);
             if (Math.abs(done - asked) > shiftEpsilon) {

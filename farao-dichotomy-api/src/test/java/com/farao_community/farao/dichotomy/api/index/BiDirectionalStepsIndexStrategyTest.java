@@ -29,10 +29,10 @@ class BiDirectionalStepsIndexStrategyTest {
     void testStartingIndex() {
         double startingIndex = 2000;
 
-        Index<?> index = new Index<>(0, 5000, 50);
-        IndexStrategy indexStrategy = new BiDirectionalStepsIndexStrategy(startingIndex, 650);
+        Index<RaoResult, SingleValueDichotomyStep> index = new Index<>(new SingleValueDichotomyStep(0), new SingleValueDichotomyStep(5000), 50);
+        IndexStrategy<SingleValueDichotomyStep> indexStrategy = new BiDirectionalStepsIndexStrategy(startingIndex, 650);
 
-        assertEquals(startingIndex, indexStrategy.nextValue(index));
+        assertEquals(startingIndex, indexStrategy.nextValue(index).value());
     }
 
     @Test
@@ -40,12 +40,12 @@ class BiDirectionalStepsIndexStrategyTest {
         double startingIndex = 2000;
         double stepSize = 650;
 
-        Index<RaoResult> index = new Index<>(0, 5000, 50);
-        IndexStrategy indexStrategy = new BiDirectionalStepsIndexStrategy(startingIndex, stepSize);
+        Index<RaoResult, SingleValueDichotomyStep> index = new Index<>(new SingleValueDichotomyStep(0), new SingleValueDichotomyStep(5000), 50);
+        IndexStrategy<SingleValueDichotomyStep> indexStrategy = new BiDirectionalStepsIndexStrategy(startingIndex, stepSize);
 
-        index.addDichotomyStepResult(startingIndex, stepResultNOk);
+        index.addDichotomyStepResult(new SingleValueDichotomyStep(startingIndex), stepResultNOk);
 
-        assertEquals(startingIndex - stepSize, indexStrategy.nextValue(index));
+        assertEquals(startingIndex - stepSize, indexStrategy.nextValue(index).value());
     }
 
     @Test
@@ -53,12 +53,12 @@ class BiDirectionalStepsIndexStrategyTest {
         double startingIndex = 2000;
         double stepSize = 650;
 
-        Index<RaoResult> index = new Index<>(0, 5000, 50);
-        IndexStrategy indexStrategy = new BiDirectionalStepsIndexStrategy(startingIndex, stepSize);
+        Index<RaoResult, SingleValueDichotomyStep> index = new Index<>(new SingleValueDichotomyStep(0), new SingleValueDichotomyStep(5000), 50);
+        IndexStrategy<SingleValueDichotomyStep> indexStrategy = new BiDirectionalStepsIndexStrategy(startingIndex, stepSize);
 
-        index.addDichotomyStepResult(startingIndex, stepResultFailed);
+        index.addDichotomyStepResult(new SingleValueDichotomyStep(startingIndex), stepResultFailed);
 
-        assertEquals(startingIndex - stepSize, indexStrategy.nextValue(index));
+        assertEquals(startingIndex - stepSize, indexStrategy.nextValue(index).value());
     }
 
     @Test
@@ -67,12 +67,12 @@ class BiDirectionalStepsIndexStrategyTest {
         double stepSize = 650;
         double minValue = 0;
 
-        Index<RaoResult> index = new Index<>(minValue, 5000, 50);
-        IndexStrategy indexStrategy = new BiDirectionalStepsIndexStrategy(startingIndex, stepSize);
+        Index<RaoResult, SingleValueDichotomyStep> index = new Index<>(new SingleValueDichotomyStep(minValue), new SingleValueDichotomyStep(5000), 50);
+        IndexStrategy<SingleValueDichotomyStep> indexStrategy = new BiDirectionalStepsIndexStrategy(startingIndex, stepSize);
 
-        index.addDichotomyStepResult(minValue + 100, stepResultNOk);
+        index.addDichotomyStepResult(new SingleValueDichotomyStep(minValue + 100), stepResultNOk);
 
-        assertEquals(minValue, indexStrategy.nextValue(index));
+        assertEquals(minValue, indexStrategy.nextValue(index).value());
     }
 
     @Test
@@ -81,12 +81,12 @@ class BiDirectionalStepsIndexStrategyTest {
         double stepSize = 650;
         double minValue = 0;
 
-        Index<RaoResult> index = new Index<>(minValue, 5000, 50);
-        IndexStrategy indexStrategy = new BiDirectionalStepsIndexStrategy(startingIndex, stepSize);
+        Index<RaoResult, SingleValueDichotomyStep> index = new Index<>(new SingleValueDichotomyStep(minValue), new SingleValueDichotomyStep(5000), 50);
+        IndexStrategy<SingleValueDichotomyStep> indexStrategy = new BiDirectionalStepsIndexStrategy(startingIndex, stepSize);
 
-        index.addDichotomyStepResult(minValue + 100, stepResultFailed);
+        index.addDichotomyStepResult(new SingleValueDichotomyStep(minValue + 100), stepResultFailed);
 
-        assertEquals(minValue, indexStrategy.nextValue(index));
+        assertEquals(minValue, indexStrategy.nextValue(index).value());
     }
 
     @Test
@@ -94,12 +94,12 @@ class BiDirectionalStepsIndexStrategyTest {
         double startingIndex = 2000;
         double stepSize = 650;
 
-        Index<RaoResult> index = new Index<>(0, 5000, 50);
-        IndexStrategy indexStrategy = new BiDirectionalStepsIndexStrategy(startingIndex, stepSize);
+        Index<RaoResult, SingleValueDichotomyStep> index = new Index<>(new SingleValueDichotomyStep(0), new SingleValueDichotomyStep(5000), 50);
+        IndexStrategy<SingleValueDichotomyStep> indexStrategy = new BiDirectionalStepsIndexStrategy(startingIndex, stepSize);
 
-        index.addDichotomyStepResult(startingIndex, stepResultOk);
+        index.addDichotomyStepResult(new SingleValueDichotomyStep(startingIndex), stepResultOk);
 
-        assertEquals(startingIndex + stepSize, indexStrategy.nextValue(index));
+        assertEquals(startingIndex + stepSize, indexStrategy.nextValue(index).value());
     }
 
     @Test
@@ -108,12 +108,12 @@ class BiDirectionalStepsIndexStrategyTest {
         double stepSize = 650;
         double maxValue = 5000;
 
-        Index<RaoResult> index = new Index<>(0, maxValue, 50);
-        IndexStrategy indexStrategy = new BiDirectionalStepsIndexStrategy(startingIndex, stepSize);
+        Index<RaoResult, SingleValueDichotomyStep> index = new Index<>(new SingleValueDichotomyStep(0), new SingleValueDichotomyStep(maxValue), 50);
+        IndexStrategy<SingleValueDichotomyStep> indexStrategy = new BiDirectionalStepsIndexStrategy(startingIndex, stepSize);
 
-        index.addDichotomyStepResult(maxValue - 100, stepResultOk);
+        index.addDichotomyStepResult(new SingleValueDichotomyStep(maxValue - 100), stepResultOk);
 
-        assertEquals(maxValue, indexStrategy.nextValue(index));
+        assertEquals(maxValue, indexStrategy.nextValue(index).value());
     }
 
     @Test
@@ -121,13 +121,13 @@ class BiDirectionalStepsIndexStrategyTest {
         double startingIndex = 2000;
         double stepSize = 650;
 
-        Index<RaoResult> index = new Index<>(0, 5000, 50);
-        IndexStrategy indexStrategy = new BiDirectionalStepsIndexStrategy(startingIndex, stepSize);
+        Index<RaoResult, SingleValueDichotomyStep> index = new Index<>(new SingleValueDichotomyStep(0), new SingleValueDichotomyStep(5000), 50);
+        IndexStrategy<SingleValueDichotomyStep> indexStrategy = new BiDirectionalStepsIndexStrategy(startingIndex, stepSize);
 
-        index.addDichotomyStepResult(2000, stepResultOk);
-        index.addDichotomyStepResult(3000, stepResultNOk);
+        index.addDichotomyStepResult(new SingleValueDichotomyStep(2000), stepResultOk);
+        index.addDichotomyStepResult(new SingleValueDichotomyStep(3000), stepResultNOk);
 
-        assertEquals(2500, indexStrategy.nextValue(index));
+        assertEquals(2500, indexStrategy.nextValue(index).value());
     }
 
     @Test
@@ -135,13 +135,13 @@ class BiDirectionalStepsIndexStrategyTest {
         double startingIndex = 2000;
         double stepSize = 650;
 
-        Index<RaoResult> index = new Index<>(0, 5000, 50);
-        IndexStrategy indexStrategy = new BiDirectionalStepsIndexStrategy(startingIndex, stepSize);
+        Index<RaoResult, SingleValueDichotomyStep> index = new Index<>(new SingleValueDichotomyStep(0), new SingleValueDichotomyStep(5000), 50);
+        IndexStrategy<SingleValueDichotomyStep> indexStrategy = new BiDirectionalStepsIndexStrategy(startingIndex, stepSize);
 
-        index.addDichotomyStepResult(2000, stepResultOk);
-        index.addDichotomyStepResult(3000, stepResultFailed);
+        index.addDichotomyStepResult(new SingleValueDichotomyStep(2000), stepResultOk);
+        index.addDichotomyStepResult(new SingleValueDichotomyStep(3000), stepResultFailed);
 
-        assertEquals(2500, indexStrategy.nextValue(index));
+        assertEquals(2500, indexStrategy.nextValue(index).value());
     }
 
     @Test
@@ -149,12 +149,13 @@ class BiDirectionalStepsIndexStrategyTest {
         double startingIndex = 2000;
         double stepSize = 650;
 
-        Index<RaoResult> index = new Index<>(0, 5000, 50);
-        IndexStrategy indexStrategy = new BiDirectionalStepsIndexStrategy(startingIndex, stepSize);
+        Index<RaoResult, SingleValueDichotomyStep> index = new Index<>(new SingleValueDichotomyStep(0), new SingleValueDichotomyStep(5000), 50);
+        IndexStrategy<SingleValueDichotomyStep> indexStrategy = new BiDirectionalStepsIndexStrategy(startingIndex, stepSize);
 
-        index.addDichotomyStepResult(2000, stepResultOk);
-        index.addDichotomyStepResult(2020, stepResultNOk);
+        index.addDichotomyStepResult(new SingleValueDichotomyStep(2000), stepResultOk);
+        index.addDichotomyStepResult(new SingleValueDichotomyStep(2020), stepResultNOk);
 
-        assertThrows(AssertionError.class, () -> indexStrategy.nextValue(index));
+        AssertionError e = assertThrows(AssertionError.class, () -> indexStrategy.nextValue(index));
+        assertEquals("Dichotomy engine should not ask for next value if precision is reached", e.getMessage());
     }
 }

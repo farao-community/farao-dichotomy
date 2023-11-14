@@ -25,76 +25,77 @@ class HalfRangeDivisionIndexStrategyTest {
     private static final double MIN_VALUE = 200.0;
     private static final double MAX_VALUE = 6400.0;
     private static final double PRECISION = 50.0;
+    private static final double DOUBLE_TOLERANCE = 1.0;
     private static final DichotomyStepResult<Boolean> STEP_RESULT_SUCCESS = DichotomyStepResult.fromNetworkValidationResult(new RaoResultMock(true), null);
     private static final DichotomyStepResult<Boolean> STEP_RESULT_FAIL = DichotomyStepResult.fromFailure(ReasonInvalid.VALIDATION_FAILED, "test");
 
     @Test
     void nextValueStartWithMinTest() {
-        Index<Boolean> index = new Index<>(MIN_VALUE, MAX_VALUE, PRECISION);
-        HalfRangeDivisionIndexStrategy strategy = new HalfRangeDivisionIndexStrategy(true);
-        assertEquals(MIN_VALUE, strategy.nextValue(index), PRECISION);
+        Index<Boolean, SingleValueDichotomyStep> index = new Index<>(new SingleValueDichotomyStep(MIN_VALUE), new SingleValueDichotomyStep(MAX_VALUE), PRECISION);
+        HalfRangeDivisionIndexStrategy<SingleValueDichotomyStep> strategy = new HalfRangeDivisionIndexStrategy<>(true);
+        assertEquals(MIN_VALUE, strategy.nextValue(index).value(), DOUBLE_TOLERANCE);
         // if min is insecure the process stops otherwise we have a lowestValid
         DichotomyStepResult<Boolean> result = DichotomyStepResult.fromNetworkValidationResult(new RaoResultMock(true), true);
-        index.addDichotomyStepResult(MIN_VALUE, result);
-        assertEquals((MIN_VALUE + MAX_VALUE) / 2, strategy.nextValue(index), PRECISION);
+        index.addDichotomyStepResult(new SingleValueDichotomyStep(MIN_VALUE), result);
+        assertEquals((MIN_VALUE + MAX_VALUE) / 2, strategy.nextValue(index).value(), DOUBLE_TOLERANCE);
         //we now have two options either valid or not: here we test valid
         DichotomyStepResult<Boolean> result2 = DichotomyStepResult.fromNetworkValidationResult(new RaoResultMock(true), true);
-        index.addDichotomyStepResult((MIN_VALUE + MAX_VALUE) / 2, result2);
-        assertEquals(((MIN_VALUE + MAX_VALUE) / 2 + MAX_VALUE) / 2, strategy.nextValue(index), PRECISION);
+        index.addDichotomyStepResult(new SingleValueDichotomyStep((MIN_VALUE + MAX_VALUE) / 2), result2);
+        assertEquals(((MIN_VALUE + MAX_VALUE) / 2 + MAX_VALUE) / 2, strategy.nextValue(index).value(), DOUBLE_TOLERANCE);
     }
 
     @Test
     void nextValueStartWithMinTest2() {
-        Index<Boolean> index = new Index<>(MIN_VALUE, MAX_VALUE, PRECISION);
-        HalfRangeDivisionIndexStrategy strategy = new HalfRangeDivisionIndexStrategy(true);
-        assertEquals(MIN_VALUE, strategy.nextValue(index), PRECISION);
+        Index<Boolean, SingleValueDichotomyStep> index = new Index<>(new SingleValueDichotomyStep(MIN_VALUE), new SingleValueDichotomyStep(MAX_VALUE), PRECISION);
+        HalfRangeDivisionIndexStrategy<SingleValueDichotomyStep> strategy = new HalfRangeDivisionIndexStrategy<>(true);
+        assertEquals(MIN_VALUE, strategy.nextValue(index).value(), DOUBLE_TOLERANCE);
         // if min is insecure the process stops otherwise we have a lowestValid
         DichotomyStepResult<Boolean> result = DichotomyStepResult.fromNetworkValidationResult(new RaoResultMock(true), true);
-        index.addDichotomyStepResult(MIN_VALUE, result);
-        assertEquals((MIN_VALUE + MAX_VALUE) / 2, strategy.nextValue(index), PRECISION);
+        index.addDichotomyStepResult(new SingleValueDichotomyStep(MIN_VALUE), result);
+        assertEquals((MIN_VALUE + MAX_VALUE) / 2, strategy.nextValue(index).value(), DOUBLE_TOLERANCE);
         //we now have two options either valid or not: here we test invalid
         DichotomyStepResult<Boolean> result2 = DichotomyStepResult.fromNetworkValidationResult(new RaoResultMock(false), false);
-        index.addDichotomyStepResult((MIN_VALUE + MAX_VALUE) / 2, result2);
-        assertEquals(((MIN_VALUE + MAX_VALUE) / 2 + MIN_VALUE) / 2, strategy.nextValue(index), PRECISION);
+        index.addDichotomyStepResult(new SingleValueDichotomyStep((MIN_VALUE + MAX_VALUE) / 2), result2);
+        assertEquals(((MIN_VALUE + MAX_VALUE) / 2 + MIN_VALUE) / 2, strategy.nextValue(index).value(), DOUBLE_TOLERANCE);
     }
 
     @Test
     void nextValueStartWithMaxTest() {
-        Index<Boolean> index = new Index<>(MIN_VALUE, MAX_VALUE, PRECISION);
-        HalfRangeDivisionIndexStrategy strategy = new HalfRangeDivisionIndexStrategy(false);
-        assertEquals(MAX_VALUE, strategy.nextValue(index), PRECISION);
+        Index<Boolean, SingleValueDichotomyStep> index = new Index<>(new SingleValueDichotomyStep(MIN_VALUE), new SingleValueDichotomyStep(MAX_VALUE), PRECISION);
+        HalfRangeDivisionIndexStrategy<SingleValueDichotomyStep> strategy = new HalfRangeDivisionIndexStrategy<>(false);
+        assertEquals(MAX_VALUE, strategy.nextValue(index).value(), DOUBLE_TOLERANCE);
         // if max is secure the process stops otherwise we have a highesInvalid
         DichotomyStepResult<Boolean> result = DichotomyStepResult.fromNetworkValidationResult(new RaoResultMock(false), false);
-        index.addDichotomyStepResult(MAX_VALUE, result);
-        assertEquals((MIN_VALUE + MAX_VALUE) / 2, strategy.nextValue(index), PRECISION);
+        index.addDichotomyStepResult(new SingleValueDichotomyStep(MAX_VALUE), result);
+        assertEquals((MIN_VALUE + MAX_VALUE) / 2, strategy.nextValue(index).value(), DOUBLE_TOLERANCE);
         //we now have two options either valid or not: here we test valid
         DichotomyStepResult<Boolean> result2 = DichotomyStepResult.fromNetworkValidationResult(new RaoResultMock(true), true);
-        index.addDichotomyStepResult((MIN_VALUE + MAX_VALUE) / 2, result2);
-        assertEquals(((MIN_VALUE + MAX_VALUE) / 2 + MAX_VALUE) / 2, strategy.nextValue(index), PRECISION);
+        index.addDichotomyStepResult(new SingleValueDichotomyStep((MIN_VALUE + MAX_VALUE) / 2), result2);
+        assertEquals(((MIN_VALUE + MAX_VALUE) / 2 + MAX_VALUE) / 2, strategy.nextValue(index).value(), DOUBLE_TOLERANCE);
     }
 
     @Test
     void nextValueStartWithMaxTest2() {
-        Index<Boolean> index = new Index<>(MIN_VALUE, MAX_VALUE, PRECISION);
-        HalfRangeDivisionIndexStrategy strategy = new HalfRangeDivisionIndexStrategy(false);
-        assertEquals(MAX_VALUE, strategy.nextValue(index), PRECISION);
+        Index<Boolean, SingleValueDichotomyStep> index = new Index<>(new SingleValueDichotomyStep(MIN_VALUE), new SingleValueDichotomyStep(MAX_VALUE), PRECISION);
+        HalfRangeDivisionIndexStrategy<SingleValueDichotomyStep> strategy = new HalfRangeDivisionIndexStrategy<>(false);
+        assertEquals(MAX_VALUE, strategy.nextValue(index).value(), DOUBLE_TOLERANCE);
         // if  max is secure the process stops otherwise we have a highesInvalid
         DichotomyStepResult<Boolean> result = DichotomyStepResult.fromNetworkValidationResult(new RaoResultMock(false), false);
-        index.addDichotomyStepResult(MAX_VALUE, result);
-        assertEquals((MIN_VALUE + MAX_VALUE) / 2, strategy.nextValue(index), PRECISION);
+        index.addDichotomyStepResult(new SingleValueDichotomyStep(MAX_VALUE), result);
+        assertEquals((MIN_VALUE + MAX_VALUE) / 2, strategy.nextValue(index).value(), DOUBLE_TOLERANCE);
         //we now have two options either valid or not: here we test invalid
         DichotomyStepResult<Boolean> result2 = DichotomyStepResult.fromNetworkValidationResult(new RaoResultMock(false), false);
-        index.addDichotomyStepResult((MIN_VALUE + MAX_VALUE) / 2, result2);
-        assertEquals(((MIN_VALUE + MAX_VALUE) / 2 + MIN_VALUE) / 2, strategy.nextValue(index), PRECISION);
+        index.addDichotomyStepResult(new SingleValueDichotomyStep((MIN_VALUE + MAX_VALUE) / 2), result2);
+        assertEquals(((MIN_VALUE + MAX_VALUE) / 2 + MIN_VALUE) / 2, strategy.nextValue(index).value(), DOUBLE_TOLERANCE);
     }
 
     @Test
     void nextValuePrecisionReached() {
-        Index<Boolean> index = new Index<>(MIN_VALUE, MAX_VALUE, PRECISION);
-        HalfRangeDivisionIndexStrategy strategy = new HalfRangeDivisionIndexStrategy(false);
-        assertEquals(MAX_VALUE, strategy.nextValue(index), PRECISION);
+        Index<Boolean, SingleValueDichotomyStep> index = new Index<>(new SingleValueDichotomyStep(MIN_VALUE), new SingleValueDichotomyStep(MAX_VALUE), PRECISION);
+        HalfRangeDivisionIndexStrategy<SingleValueDichotomyStep> strategy = new HalfRangeDivisionIndexStrategy<>(false);
+        assertEquals(MAX_VALUE, strategy.nextValue(index).value(), DOUBLE_TOLERANCE);
 
-        index.addDichotomyStepResult(MAX_VALUE, STEP_RESULT_SUCCESS);
+        index.addDichotomyStepResult(new SingleValueDichotomyStep(MAX_VALUE), STEP_RESULT_SUCCESS);
         assertTrue(strategy.precisionReached(index));
 
         assertThrows(AssertionError.class, () -> strategy.nextValue(index));
@@ -102,69 +103,60 @@ class HalfRangeDivisionIndexStrategyTest {
 
     @Test
     void precisionReachedHighestStep() {
-        Index<Boolean> index = new Index<>(0, 160, 50);
-        HalfRangeDivisionIndexStrategy strategy = new HalfRangeDivisionIndexStrategy(false);
+        Index<Boolean, SingleValueDichotomyStep> index = new Index<>(new SingleValueDichotomyStep(0), new SingleValueDichotomyStep(160), 50);
+        HalfRangeDivisionIndexStrategy<SingleValueDichotomyStep> strategy = new HalfRangeDivisionIndexStrategy<>(false);
 
-        double nextValue = strategy.nextValue(index); // 160
-        index.addDichotomyStepResult(nextValue, STEP_RESULT_SUCCESS);
+        index.addDichotomyStepResult(strategy.nextValue(index), STEP_RESULT_SUCCESS); // 160
         assertTrue(strategy.precisionReached(index));
     }
 
     @Test
     void precisionReachedLowestStep() {
-        Index<Boolean> index = new Index<>(0, 160, 50);
-        HalfRangeDivisionIndexStrategy strategy = new HalfRangeDivisionIndexStrategy(true);
+        Index<Boolean, SingleValueDichotomyStep> index = new Index<>(new SingleValueDichotomyStep(0), new SingleValueDichotomyStep(160), 50);
+        HalfRangeDivisionIndexStrategy<SingleValueDichotomyStep> strategy = new HalfRangeDivisionIndexStrategy<>(true);
 
-        double nextValue = strategy.nextValue(index); // 0
-        index.addDichotomyStepResult(nextValue, STEP_RESULT_FAIL);
+        index.addDichotomyStepResult(strategy.nextValue(index), STEP_RESULT_FAIL); // 0
         assertTrue(strategy.precisionReached(index));
     }
 
     @Test
     void precisionReachedIfAllStepsAreUnsecure() {
-        Index<Boolean> index = new Index<>(0, 160, 50);
-        HalfRangeDivisionIndexStrategy strategy = new HalfRangeDivisionIndexStrategy(false);
+        Index<Boolean, SingleValueDichotomyStep> index = new Index<>(new SingleValueDichotomyStep(0), new SingleValueDichotomyStep(160), 50);
+        HalfRangeDivisionIndexStrategy<SingleValueDichotomyStep> strategy = new HalfRangeDivisionIndexStrategy<>(false);
 
-        double nextValue = strategy.nextValue(index); // 160
-        index.addDichotomyStepResult(nextValue, STEP_RESULT_FAIL);
+        index.addDichotomyStepResult(strategy.nextValue(index), STEP_RESULT_FAIL); // 160
         assertFalse(strategy.precisionReached(index));
 
-        nextValue = strategy.nextValue(index); // 80
-        index.addDichotomyStepResult(nextValue, STEP_RESULT_FAIL);
+        index.addDichotomyStepResult(strategy.nextValue(index), STEP_RESULT_FAIL); // 80
         assertFalse(strategy.precisionReached(index));
 
-        nextValue = strategy.nextValue(index); // 40
-        index.addDichotomyStepResult(nextValue, STEP_RESULT_FAIL);
+        index.addDichotomyStepResult(strategy.nextValue(index), STEP_RESULT_FAIL); // 40
         assertTrue(strategy.precisionReached(index));
     }
 
     @Test
     void precisionReachedNoStepResult() {
-        Index<Boolean> index = new Index<>(0, 160, 50);
-        HalfRangeDivisionIndexStrategy strategy = new HalfRangeDivisionIndexStrategy(false);
+        Index<Boolean, SingleValueDichotomyStep> index = new Index<>(new SingleValueDichotomyStep(0), new SingleValueDichotomyStep(160), 50);
+        HalfRangeDivisionIndexStrategy<SingleValueDichotomyStep> strategy = new HalfRangeDivisionIndexStrategy<>(false);
 
         assertFalse(strategy.precisionReached(index));
     }
 
     @Test
     void precisionReached() {
-        Index<Boolean> index = new Index<>(0, 220, 50);
-        HalfRangeDivisionIndexStrategy strategy = new HalfRangeDivisionIndexStrategy(false);
+        Index<Boolean, SingleValueDichotomyStep> index = new Index<>(new SingleValueDichotomyStep(0), new SingleValueDichotomyStep(220), 50);
+        HalfRangeDivisionIndexStrategy<SingleValueDichotomyStep> strategy = new HalfRangeDivisionIndexStrategy<>(false);
 
-        double nextValue = strategy.nextValue(index); // 220
-        index.addDichotomyStepResult(nextValue, STEP_RESULT_FAIL);
+        index.addDichotomyStepResult(strategy.nextValue(index), STEP_RESULT_FAIL); // 220
         assertFalse(strategy.precisionReached(index));
 
-        nextValue = strategy.nextValue(index); // 110
-        index.addDichotomyStepResult(nextValue, STEP_RESULT_FAIL);
+        index.addDichotomyStepResult(strategy.nextValue(index), STEP_RESULT_FAIL); // 110
         assertFalse(strategy.precisionReached(index));
 
-        nextValue = strategy.nextValue(index); // 55
-        index.addDichotomyStepResult(nextValue, STEP_RESULT_SUCCESS);
+        index.addDichotomyStepResult(strategy.nextValue(index), STEP_RESULT_SUCCESS); // 55
         assertFalse(strategy.precisionReached(index));
 
-        nextValue = strategy.nextValue(index); // 82.5
-        index.addDichotomyStepResult(nextValue, STEP_RESULT_FAIL);
+        index.addDichotomyStepResult(strategy.nextValue(index), STEP_RESULT_FAIL); // 82.5
         assertTrue(strategy.precisionReached(index));
     }
 }

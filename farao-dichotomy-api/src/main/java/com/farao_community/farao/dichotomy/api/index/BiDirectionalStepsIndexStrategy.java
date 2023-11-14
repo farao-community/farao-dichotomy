@@ -9,7 +9,8 @@ package com.farao_community.farao.dichotomy.api.index;
 /**
  * @author Joris Mancini {@literal <joris.mancini at rte-france.com>}
  */
-public class BiDirectionalStepsIndexStrategy implements IndexStrategy {
+// TODO : rendre générique
+public class BiDirectionalStepsIndexStrategy implements IndexStrategy<SingleValueDichotomyStep> {
     private final double startIndex;
     private final double stepSize;
 
@@ -19,19 +20,19 @@ public class BiDirectionalStepsIndexStrategy implements IndexStrategy {
     }
 
     @Override
-    public double nextValue(Index<?> index) {
+    public SingleValueDichotomyStep nextValue(Index<?, SingleValueDichotomyStep> index) {
         if (precisionReached(index)) {
             throw new AssertionError("Dichotomy engine should not ask for next value if precision is reached");
         }
 
         if (index.highestValidStep() == null && index.lowestInvalidStep() == null) {
-            return startIndex;
+            return new SingleValueDichotomyStep(startIndex);
         } else if (index.highestValidStep() == null) {
-            return Math.max(index.minValue(), index.lowestInvalidStep().getLeft() - stepSize);
+            return new SingleValueDichotomyStep(Math.max(index.minValue().value(), index.lowestInvalidStep().getLeft().value() - stepSize));
         } else if (index.lowestInvalidStep() == null) {
-            return Math.min(index.maxValue(), index.highestValidStep().getLeft() + stepSize);
+            return new SingleValueDichotomyStep(Math.min(index.maxValue().value(), index.highestValidStep().getLeft().value() + stepSize));
         } else {
-            return (index.lowestInvalidStep().getLeft() + index.highestValidStep().getLeft()) / 2;
+            return new SingleValueDichotomyStep((index.lowestInvalidStep().getLeft().value() + index.highestValidStep().getLeft().value()) / 2);
         }
     }
 }

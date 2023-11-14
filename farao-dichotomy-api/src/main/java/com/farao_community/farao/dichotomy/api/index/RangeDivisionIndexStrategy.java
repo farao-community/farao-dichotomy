@@ -13,7 +13,8 @@ package com.farao_community.farao.dichotomy.api.index;
  *
  * @author Sebastien Murgey {@literal <sebastien.murgey at rte-france.com>}
  */
-public class RangeDivisionIndexStrategy implements IndexStrategy {
+// TODO : rendre générique
+public class RangeDivisionIndexStrategy implements IndexStrategy<SingleValueDichotomyStep> {
     private final boolean startWithMin;
 
     public RangeDivisionIndexStrategy(boolean startWithMin) {
@@ -21,7 +22,7 @@ public class RangeDivisionIndexStrategy implements IndexStrategy {
     }
 
     @Override
-    public double nextValue(Index<?> index) {
+    public SingleValueDichotomyStep nextValue(Index<?, SingleValueDichotomyStep> index) {
         if (precisionReached(index)) {
             throw new AssertionError("Dichotomy engine should not ask for next value if precision is reached");
         }
@@ -40,6 +41,6 @@ public class RangeDivisionIndexStrategy implements IndexStrategy {
                 return index.minValue();
             }
         }
-        return (index.lowestInvalidStep().getLeft() + index.highestValidStep().getLeft()) / 2;
+        return new SingleValueDichotomyStep((index.lowestInvalidStep().getLeft().value() + index.highestValidStep().getLeft().value()) / 2);
     }
 }

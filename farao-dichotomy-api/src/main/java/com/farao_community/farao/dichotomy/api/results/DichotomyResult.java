@@ -6,6 +6,7 @@
  */
 package com.farao_community.farao.dichotomy.api.results;
 
+import com.farao_community.farao.dichotomy.api.index.DichotomyStep;
 import com.farao_community.farao.dichotomy.api.index.Index;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import org.apache.commons.lang3.builder.ToStringBuilder;
@@ -14,14 +15,14 @@ import org.apache.commons.lang3.tuple.Pair;
 /**
  * @author Joris Mancini {@literal <joris.mancini at rte-france.com>}
  */
-public final class DichotomyResult<I> {
-    private final Pair<Double, DichotomyStepResult<I>> highestValidStep;
-    private final Pair<Double, DichotomyStepResult<I>> lowestInvalidStep;
+public final class DichotomyResult<I, U extends DichotomyStep<U>> {
+    private final Pair<U, DichotomyStepResult<I>> highestValidStep;
+    private final Pair<U, DichotomyStepResult<I>> lowestInvalidStep;
     private final LimitingCause limitingCause;
     private final String limitingFailureMessage;
 
-    private DichotomyResult(Pair<Double, DichotomyStepResult<I>> highestValidStep,
-                            Pair<Double, DichotomyStepResult<I>> lowestInvalidStep,
+    private DichotomyResult(Pair<U, DichotomyStepResult<I>> highestValidStep,
+                            Pair<U, DichotomyStepResult<I>> lowestInvalidStep,
                             LimitingCause limitingCause,
                             String limitingFailureMessage) {
         this.highestValidStep = highestValidStep;
@@ -30,7 +31,7 @@ public final class DichotomyResult<I> {
         this.limitingFailureMessage = limitingFailureMessage;
     }
 
-    public static <J> DichotomyResult<J> buildFromIndex(Index<J> index) {
+    public static <J, V extends DichotomyStep<V>> DichotomyResult<J, V> buildFromIndex(Index<J, V> index) {
         // If one the steps are null it means that it stops due to index evaluation otherwise it could have continued.
         // If both are present, it is the expected case we just have to differentiate if the invalid step failed or if
         // it is just unsecure.
@@ -46,8 +47,8 @@ public final class DichotomyResult<I> {
             }
         }
 
-        Pair<Double, DichotomyStepResult<J>> highestValidStepResponse = index.highestValidStep();
-        Pair<Double, DichotomyStepResult<J>> lowestInvalidStepResponse = index.lowestInvalidStep();
+        Pair<V, DichotomyStepResult<J>> highestValidStepResponse = index.highestValidStep();
+        Pair<V, DichotomyStepResult<J>> lowestInvalidStepResponse = index.lowestInvalidStep();
         return new DichotomyResult<>(highestValidStepResponse, lowestInvalidStepResponse, limitingCause, failureMessage);
     }
 
@@ -73,13 +74,13 @@ public final class DichotomyResult<I> {
     }
 
     @JsonIgnore
-    public double getHighestValidStepValue() {
-        return highestValidStep != null ? highestValidStep.getLeft() : Double.NaN;
+    public U getHighestValidStepValue() {
+        return highestValidStep != null ? highestValidStep.getLeft() : null;
     }
 
     @JsonIgnore
-    public double getLowestInvalidStepValue() {
-        return lowestInvalidStep != null ? lowestInvalidStep.getLeft() : Double.NaN;
+    public U getLowestInvalidStepValue() {
+        return lowestInvalidStep != null ? lowestInvalidStep.getLeft() : null;
     }
 
     @Override
