@@ -15,7 +15,7 @@ package com.farao_community.farao.dichotomy.api.index;
  *
  * @author Marc Schwitzguebel {@literal <marc.schwitzguebel at rte-france.com>}
  */
-public class HalfRangeDivisionIndexStrategy<U extends DichotomyStep<U>> implements IndexStrategy<U> {
+public class HalfRangeDivisionIndexStrategy<U extends DichotomyVariable<U>> implements IndexStrategy<U> {
 
     private final boolean startWithMin;
 

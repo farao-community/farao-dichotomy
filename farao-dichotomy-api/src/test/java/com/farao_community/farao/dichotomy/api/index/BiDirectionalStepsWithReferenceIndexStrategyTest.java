@@ -29,78 +29,78 @@ class BiDirectionalStepsWithReferenceIndexStrategyTest {
 
     @Test
     void testIndexAfterGlskLimBelowReferenceThenUnsecureBelowReference() {
-        SingleValueDichotomyStep startingIndex = new SingleValueDichotomyStep(2000);
+        SingleDichotomyVariable startingIndex = new SingleDichotomyVariable(2000);
         double stepSize = 650;
-        Index<RaoResult, SingleValueDichotomyStep> index = new Index<>(new SingleValueDichotomyStep(0), new SingleValueDichotomyStep(5000), 50);
-        IndexStrategy<SingleValueDichotomyStep> indexStrategy = new BiDirectionalStepsWithReferenceIndexStrategy(startingIndex.value(), stepSize, 3000);
+        Index<RaoResult, SingleDichotomyVariable> index = new Index<>(new SingleDichotomyVariable(0), new SingleDichotomyVariable(5000), 50);
+        IndexStrategy<SingleDichotomyVariable> indexStrategy = new BiDirectionalStepsWithReferenceIndexStrategy(startingIndex.value(), stepSize, 3000);
         index.addDichotomyStepResult(startingIndex, stepResultGlskLim);
         assertEquals(2000 + 650, indexStrategy.nextValue(index).value());
-        index.addDichotomyStepResult(new SingleValueDichotomyStep(2650), stepResultNOk);
+        index.addDichotomyStepResult(new SingleDichotomyVariable(2650), stepResultNOk);
         assertEquals(2650 - (650. / 2), indexStrategy.nextValue(index).value());
     }
 
     @Test
     void testIndexAfterGlskLimBelowReferenceThenUnsecureAboveReference() {
-        SingleValueDichotomyStep startingIndex = new SingleValueDichotomyStep(2000);
+        SingleDichotomyVariable startingIndex = new SingleDichotomyVariable(2000);
         double stepSize = 650;
-        Index<RaoResult, SingleValueDichotomyStep> index = new Index<>(new SingleValueDichotomyStep(0), new SingleValueDichotomyStep(5000), 50);
-        IndexStrategy<SingleValueDichotomyStep> indexStrategy = new BiDirectionalStepsWithReferenceIndexStrategy(startingIndex.value(), stepSize, 2500);
+        Index<RaoResult, SingleDichotomyVariable> index = new Index<>(new SingleDichotomyVariable(0), new SingleDichotomyVariable(5000), 50);
+        IndexStrategy<SingleDichotomyVariable> indexStrategy = new BiDirectionalStepsWithReferenceIndexStrategy(startingIndex.value(), stepSize, 2500);
         index.addDichotomyStepResult(startingIndex, stepResultGlskLim);
         assertEquals(2000 + 650, indexStrategy.nextValue(index).value());
-        index.addDichotomyStepResult(new SingleValueDichotomyStep(2650), stepResultNOk);
+        index.addDichotomyStepResult(new SingleDichotomyVariable(2650), stepResultNOk);
         assertEquals(2650 - (650. / 2), indexStrategy.nextValue(index).value());
     }
 
     @Test
     void testIndexAfterTwoGlskLimBelowReferenceThenGlskLimAboveReference() {
-        SingleValueDichotomyStep startingIndex = new SingleValueDichotomyStep(2000);
+        SingleDichotomyVariable startingIndex = new SingleDichotomyVariable(2000);
         double stepSize = 650;
-        Index<RaoResult, SingleValueDichotomyStep> index = new Index<>(new SingleValueDichotomyStep(0), new SingleValueDichotomyStep(5000), 50);
-        IndexStrategy<SingleValueDichotomyStep> indexStrategy = new BiDirectionalStepsWithReferenceIndexStrategy(startingIndex.value(), stepSize, 3000);
+        Index<RaoResult, SingleDichotomyVariable> index = new Index<>(new SingleDichotomyVariable(0), new SingleDichotomyVariable(5000), 50);
+        IndexStrategy<SingleDichotomyVariable> indexStrategy = new BiDirectionalStepsWithReferenceIndexStrategy(startingIndex.value(), stepSize, 3000);
         index.addDichotomyStepResult(startingIndex, stepResultGlskLim);
         assertEquals(2000 + 650, indexStrategy.nextValue(index).value());
-        index.addDichotomyStepResult(new SingleValueDichotomyStep(2650), stepResultGlskLim);
+        index.addDichotomyStepResult(new SingleDichotomyVariable(2650), stepResultGlskLim);
         assertEquals(2650 + 650, indexStrategy.nextValue(index).value());
-        index.addDichotomyStepResult(new SingleValueDichotomyStep(3300), stepResultGlskLim);
+        index.addDichotomyStepResult(new SingleDichotomyVariable(3300), stepResultGlskLim);
         assertEquals(3300 - 325, indexStrategy.nextValue(index).value());
     }
 
     @Test
     void testIndexAfterGlskLimBelowReferenceThenSecure() {
-        SingleValueDichotomyStep startingIndex = new SingleValueDichotomyStep(2000);
+        SingleDichotomyVariable startingIndex = new SingleDichotomyVariable(2000);
         double stepSize = 650;
-        Index<RaoResult, SingleValueDichotomyStep> index = new Index<>(new SingleValueDichotomyStep(0), new SingleValueDichotomyStep(5000), 50);
-        IndexStrategy<SingleValueDichotomyStep> indexStrategy = new BiDirectionalStepsWithReferenceIndexStrategy(startingIndex.value(), stepSize, 3000);
+        Index<RaoResult, SingleDichotomyVariable> index = new Index<>(new SingleDichotomyVariable(0), new SingleDichotomyVariable(5000), 50);
+        IndexStrategy<SingleDichotomyVariable> indexStrategy = new BiDirectionalStepsWithReferenceIndexStrategy(startingIndex.value(), stepSize, 3000);
         index.addDichotomyStepResult(startingIndex, stepResultGlskLim);
         assertEquals(2000 + 650, indexStrategy.nextValue(index).value());
-        index.addDichotomyStepResult(new SingleValueDichotomyStep(2650), stepResultOk);
+        index.addDichotomyStepResult(new SingleDichotomyVariable(2650), stepResultOk);
         assertEquals(2650 + 650, indexStrategy.nextValue(index).value());
     }
 
     @Test
     void testIndexAfterGlskLimAboveReference() {
-        SingleValueDichotomyStep startingIndex = new SingleValueDichotomyStep(2000);
+        SingleDichotomyVariable startingIndex = new SingleDichotomyVariable(2000);
         double stepSize = 650;
-        Index<RaoResult, SingleValueDichotomyStep> index = new Index<>(new SingleValueDichotomyStep(0), new SingleValueDichotomyStep(5000), 50);
-        IndexStrategy<SingleValueDichotomyStep> indexStrategy = new BiDirectionalStepsWithReferenceIndexStrategy(startingIndex.value(), stepSize, 1500);
+        Index<RaoResult, SingleDichotomyVariable> index = new Index<>(new SingleDichotomyVariable(0), new SingleDichotomyVariable(5000), 50);
+        IndexStrategy<SingleDichotomyVariable> indexStrategy = new BiDirectionalStepsWithReferenceIndexStrategy(startingIndex.value(), stepSize, 1500);
         index.addDichotomyStepResult(startingIndex, stepResultGlskLim);
         assertEquals(2000 - 650, indexStrategy.nextValue(index).value());
     }
 
     @Test
     void testIndexAfterGlskLimBelowReferenceThenUnsecureThenGlskLimThenSecure() {
-        SingleValueDichotomyStep startingIndex = new SingleValueDichotomyStep(2000);
+        SingleDichotomyVariable startingIndex = new SingleDichotomyVariable(2000);
         double stepSize = 650;
-        Index<RaoResult, SingleValueDichotomyStep> index = new Index<>(new SingleValueDichotomyStep(0), new SingleValueDichotomyStep(5000), 50);
-        IndexStrategy<SingleValueDichotomyStep> indexStrategy = new BiDirectionalStepsWithReferenceIndexStrategy(startingIndex.value(), stepSize, 2500);
+        Index<RaoResult, SingleDichotomyVariable> index = new Index<>(new SingleDichotomyVariable(0), new SingleDichotomyVariable(5000), 50);
+        IndexStrategy<SingleDichotomyVariable> indexStrategy = new BiDirectionalStepsWithReferenceIndexStrategy(startingIndex.value(), stepSize, 2500);
         index.addDichotomyStepResult(startingIndex, stepResultGlskLim);
         assertEquals(2000 + 650, indexStrategy.nextValue(index).value());
-        index.addDichotomyStepResult(new SingleValueDichotomyStep(2650), stepResultNOk);
+        index.addDichotomyStepResult(new SingleDichotomyVariable(2650), stepResultNOk);
         assertEquals(2650 - (650. / 2), indexStrategy.nextValue(index).value());
-        index.addDichotomyStepResult(new SingleValueDichotomyStep(2650 - (650. / 2)), stepResultGlskLim);
+        index.addDichotomyStepResult(new SingleDichotomyVariable(2650 - (650. / 2)), stepResultGlskLim);
         assertEquals((2650. + 2325) / 2, indexStrategy.nextValue(index).value());
 
-        index.addDichotomyStepResult(new SingleValueDichotomyStep(2487.5), stepResultOk);
+        index.addDichotomyStepResult(new SingleDichotomyVariable(2487.5), stepResultOk);
         assertEquals((2650. + 2487.5) / 2, indexStrategy.nextValue(index).value());
     }
 
@@ -108,19 +108,19 @@ class BiDirectionalStepsWithReferenceIndexStrategyTest {
     void testStartingIndex() {
         double startingIndex = 2000;
 
-        Index<?, SingleValueDichotomyStep> index = new Index<>(new SingleValueDichotomyStep(0), new SingleValueDichotomyStep(5000), 50);
-        IndexStrategy<SingleValueDichotomyStep> indexStrategy = new BiDirectionalStepsWithReferenceIndexStrategy(startingIndex, 650, 2500);
+        Index<?, SingleDichotomyVariable> index = new Index<>(new SingleDichotomyVariable(0), new SingleDichotomyVariable(5000), 50);
+        IndexStrategy<SingleDichotomyVariable> indexStrategy = new BiDirectionalStepsWithReferenceIndexStrategy(startingIndex, 650, 2500);
 
         assertEquals(startingIndex, indexStrategy.nextValue(index).value());
     }
 
     @Test
     void testIndexAfterFirstInvalid() {
-        SingleValueDichotomyStep startingIndex = new SingleValueDichotomyStep(2000);
+        SingleDichotomyVariable startingIndex = new SingleDichotomyVariable(2000);
         double stepSize = 650;
 
-        Index<RaoResult, SingleValueDichotomyStep> index = new Index<>(new SingleValueDichotomyStep(0), new SingleValueDichotomyStep(5000), 50);
-        IndexStrategy<SingleValueDichotomyStep> indexStrategy = new BiDirectionalStepsWithReferenceIndexStrategy(startingIndex.value(), stepSize, 2500);
+        Index<RaoResult, SingleDichotomyVariable> index = new Index<>(new SingleDichotomyVariable(0), new SingleDichotomyVariable(5000), 50);
+        IndexStrategy<SingleDichotomyVariable> indexStrategy = new BiDirectionalStepsWithReferenceIndexStrategy(startingIndex.value(), stepSize, 2500);
 
         index.addDichotomyStepResult(startingIndex, stepResultNOk);
 
@@ -129,11 +129,11 @@ class BiDirectionalStepsWithReferenceIndexStrategyTest {
 
     @Test
     void testIndexAfterFirstFailed() {
-        SingleValueDichotomyStep startingIndex = new SingleValueDichotomyStep(2000);
+        SingleDichotomyVariable startingIndex = new SingleDichotomyVariable(2000);
         double stepSize = 650;
 
-        Index<RaoResult, SingleValueDichotomyStep> index = new Index<>(new SingleValueDichotomyStep(0), new SingleValueDichotomyStep(5000), 50);
-        IndexStrategy<SingleValueDichotomyStep> indexStrategy = new BiDirectionalStepsWithReferenceIndexStrategy(startingIndex.value(), stepSize, 2500);
+        Index<RaoResult, SingleDichotomyVariable> index = new Index<>(new SingleDichotomyVariable(0), new SingleDichotomyVariable(5000), 50);
+        IndexStrategy<SingleDichotomyVariable> indexStrategy = new BiDirectionalStepsWithReferenceIndexStrategy(startingIndex.value(), stepSize, 2500);
 
         index.addDichotomyStepResult(startingIndex, stepResultFailed);
 
@@ -142,39 +142,39 @@ class BiDirectionalStepsWithReferenceIndexStrategyTest {
 
     @Test
     void testIndexAfterInvalidCloseToMinimum() {
-        SingleValueDichotomyStep startingIndex = new SingleValueDichotomyStep(2000);
+        SingleDichotomyVariable startingIndex = new SingleDichotomyVariable(2000);
         double stepSize = 650;
         double minValue = 0;
 
-        Index<RaoResult, SingleValueDichotomyStep> index = new Index<>(new SingleValueDichotomyStep(minValue), new SingleValueDichotomyStep(5000), 50);
-        IndexStrategy<SingleValueDichotomyStep> indexStrategy = new BiDirectionalStepsWithReferenceIndexStrategy(startingIndex.value(), stepSize, 2500);
+        Index<RaoResult, SingleDichotomyVariable> index = new Index<>(new SingleDichotomyVariable(minValue), new SingleDichotomyVariable(5000), 50);
+        IndexStrategy<SingleDichotomyVariable> indexStrategy = new BiDirectionalStepsWithReferenceIndexStrategy(startingIndex.value(), stepSize, 2500);
 
-        index.addDichotomyStepResult(new SingleValueDichotomyStep(minValue + 100), stepResultNOk);
+        index.addDichotomyStepResult(new SingleDichotomyVariable(minValue + 100), stepResultNOk);
 
         assertEquals(minValue, indexStrategy.nextValue(index).value());
     }
 
     @Test
     void testIndexAfterFailedCloseToMinimum() {
-        SingleValueDichotomyStep startingIndex = new SingleValueDichotomyStep(2000);
+        SingleDichotomyVariable startingIndex = new SingleDichotomyVariable(2000);
         double stepSize = 650;
         double minValue = 0;
 
-        Index<RaoResult, SingleValueDichotomyStep> index = new Index<>(new SingleValueDichotomyStep(minValue), new SingleValueDichotomyStep(5000), 50);
-        IndexStrategy<SingleValueDichotomyStep> indexStrategy = new BiDirectionalStepsWithReferenceIndexStrategy(startingIndex.value(), stepSize, 2500);
+        Index<RaoResult, SingleDichotomyVariable> index = new Index<>(new SingleDichotomyVariable(minValue), new SingleDichotomyVariable(5000), 50);
+        IndexStrategy<SingleDichotomyVariable> indexStrategy = new BiDirectionalStepsWithReferenceIndexStrategy(startingIndex.value(), stepSize, 2500);
 
-        index.addDichotomyStepResult(new SingleValueDichotomyStep(minValue + 100), stepResultFailed);
+        index.addDichotomyStepResult(new SingleDichotomyVariable(minValue + 100), stepResultFailed);
 
         assertEquals(minValue, indexStrategy.nextValue(index).value());
     }
 
     @Test
     void testIndexAfterFirstValid() {
-        SingleValueDichotomyStep startingIndex = new SingleValueDichotomyStep(2000);
+        SingleDichotomyVariable startingIndex = new SingleDichotomyVariable(2000);
         double stepSize = 650;
 
-        Index<RaoResult, SingleValueDichotomyStep> index = new Index<>(new SingleValueDichotomyStep(0), new SingleValueDichotomyStep(5000), 50);
-        IndexStrategy<SingleValueDichotomyStep> indexStrategy = new BiDirectionalStepsWithReferenceIndexStrategy(startingIndex.value(), stepSize, 2500);
+        Index<RaoResult, SingleDichotomyVariable> index = new Index<>(new SingleDichotomyVariable(0), new SingleDichotomyVariable(5000), 50);
+        IndexStrategy<SingleDichotomyVariable> indexStrategy = new BiDirectionalStepsWithReferenceIndexStrategy(startingIndex.value(), stepSize, 2500);
 
         index.addDichotomyStepResult(startingIndex, stepResultOk);
 
@@ -183,42 +183,42 @@ class BiDirectionalStepsWithReferenceIndexStrategyTest {
 
     @Test
     void testIndexAfterValidCloseToMaximum() {
-        SingleValueDichotomyStep startingIndex = new SingleValueDichotomyStep(2000);
+        SingleDichotomyVariable startingIndex = new SingleDichotomyVariable(2000);
         double stepSize = 650;
         double maxValue = 5000;
 
-        Index<RaoResult, SingleValueDichotomyStep> index = new Index<>(new SingleValueDichotomyStep(0), new SingleValueDichotomyStep(maxValue), 50);
-        IndexStrategy<SingleValueDichotomyStep> indexStrategy = new BiDirectionalStepsWithReferenceIndexStrategy(startingIndex.value(), stepSize, 2500);
+        Index<RaoResult, SingleDichotomyVariable> index = new Index<>(new SingleDichotomyVariable(0), new SingleDichotomyVariable(maxValue), 50);
+        IndexStrategy<SingleDichotomyVariable> indexStrategy = new BiDirectionalStepsWithReferenceIndexStrategy(startingIndex.value(), stepSize, 2500);
 
-        index.addDichotomyStepResult(new SingleValueDichotomyStep(maxValue - 100), stepResultOk);
+        index.addDichotomyStepResult(new SingleDichotomyVariable(maxValue - 100), stepResultOk);
 
         assertEquals(maxValue, indexStrategy.nextValue(index).value());
     }
 
     @Test
     void testIndexAfterValidAndInvalidSteps() {
-        SingleValueDichotomyStep startingIndex = new SingleValueDichotomyStep(2000);
+        SingleDichotomyVariable startingIndex = new SingleDichotomyVariable(2000);
         double stepSize = 650;
 
-        Index<RaoResult, SingleValueDichotomyStep> index = new Index<>(new SingleValueDichotomyStep(0), new SingleValueDichotomyStep(5000), 50);
-        IndexStrategy<SingleValueDichotomyStep> indexStrategy = new BiDirectionalStepsWithReferenceIndexStrategy(startingIndex.value(), stepSize, 2500);
+        Index<RaoResult, SingleDichotomyVariable> index = new Index<>(new SingleDichotomyVariable(0), new SingleDichotomyVariable(5000), 50);
+        IndexStrategy<SingleDichotomyVariable> indexStrategy = new BiDirectionalStepsWithReferenceIndexStrategy(startingIndex.value(), stepSize, 2500);
 
-        index.addDichotomyStepResult(new SingleValueDichotomyStep(2000), stepResultOk);
-        index.addDichotomyStepResult(new SingleValueDichotomyStep(3000), stepResultNOk);
+        index.addDichotomyStepResult(new SingleDichotomyVariable(2000), stepResultOk);
+        index.addDichotomyStepResult(new SingleDichotomyVariable(3000), stepResultNOk);
 
         assertEquals(2500, indexStrategy.nextValue(index).value());
     }
 
     @Test
     void testIndexAfterValidAndFailedSteps() {
-        SingleValueDichotomyStep startingIndex = new SingleValueDichotomyStep(2000);
+        SingleDichotomyVariable startingIndex = new SingleDichotomyVariable(2000);
         double stepSize = 650;
 
-        Index<RaoResult, SingleValueDichotomyStep> index = new Index<>(new SingleValueDichotomyStep(0), new SingleValueDichotomyStep(5000), 50);
-        IndexStrategy<SingleValueDichotomyStep> indexStrategy = new BiDirectionalStepsWithReferenceIndexStrategy(startingIndex.value(), stepSize, 2500);
+        Index<RaoResult, SingleDichotomyVariable> index = new Index<>(new SingleDichotomyVariable(0), new SingleDichotomyVariable(5000), 50);
+        IndexStrategy<SingleDichotomyVariable> indexStrategy = new BiDirectionalStepsWithReferenceIndexStrategy(startingIndex.value(), stepSize, 2500);
 
-        index.addDichotomyStepResult(new SingleValueDichotomyStep(2000), stepResultOk);
-        index.addDichotomyStepResult(new SingleValueDichotomyStep(3000), stepResultFailed);
+        index.addDichotomyStepResult(new SingleDichotomyVariable(2000), stepResultOk);
+        index.addDichotomyStepResult(new SingleDichotomyVariable(3000), stepResultFailed);
 
         assertEquals(2500, indexStrategy.nextValue(index).value());
     }

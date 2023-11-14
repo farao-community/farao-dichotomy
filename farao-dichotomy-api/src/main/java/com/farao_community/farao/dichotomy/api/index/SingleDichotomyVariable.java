@@ -1,9 +1,9 @@
 package com.farao_community.farao.dichotomy.api.index;
 
-public class SingleValueDichotomyStep implements DichotomyStep<SingleValueDichotomyStep> {
+public class SingleDichotomyVariable implements DichotomyVariable<SingleDichotomyVariable> {
     private final double value;
 
-    public SingleValueDichotomyStep(double value) {
+    public SingleDichotomyVariable(double value) {
         this.value = value;
     }
 
@@ -12,7 +12,7 @@ public class SingleValueDichotomyStep implements DichotomyStep<SingleValueDichot
     }
 
     @Override
-    public boolean isGreaterThan(SingleValueDichotomyStep other) {
+    public boolean isGreaterThan(SingleDichotomyVariable other) {
         return this.value > other.value;
     }
 
@@ -21,13 +21,13 @@ public class SingleValueDichotomyStep implements DichotomyStep<SingleValueDichot
     }
 
     @Override
-    public double distanceTo(SingleValueDichotomyStep other) {
+    public double distanceTo(SingleDichotomyVariable other) {
         return distanceTo(other.value);
     }
 
     @Override
-    public SingleValueDichotomyStep halfRangeWith(SingleValueDichotomyStep other) {
-        return new SingleValueDichotomyStep((value + other.value) / 2);
+    public SingleDichotomyVariable halfRangeWith(SingleDichotomyVariable other) {
+        return new SingleDichotomyVariable((value + other.value) / 2);
     }
 
     @Override

@@ -9,7 +9,7 @@ package com.farao_community.farao.dichotomy.shift;
 import com.farao_community.farao.dichotomy.api.NetworkShifter;
 import com.farao_community.farao.dichotomy.api.exceptions.GlskLimitationException;
 import com.farao_community.farao.dichotomy.api.exceptions.ShiftingException;
-import com.farao_community.farao.dichotomy.api.index.SingleValueDichotomyStep;
+import com.farao_community.farao.dichotomy.api.index.SingleDichotomyVariable;
 import com.powsybl.glsk.commons.ZonalData;
 import com.powsybl.iidm.modification.scalable.Scalable;
 import com.powsybl.iidm.modification.scalable.ScalingParameters;
@@ -30,7 +30,7 @@ import static com.farao_community.farao.dichotomy.api.logging.DichotomyLoggerPro
  *
  * @author Joris Mancini {@literal <joris.mancini at rte-france.com>}
  */
-public final class LinearScaler implements NetworkShifter<SingleValueDichotomyStep> {
+public final class LinearScaler implements NetworkShifter<SingleDichotomyVariable> {
     private static final double DEFAULT_EPSILON = 1e-3;
 
     private final ZonalData<Scalable> zonalScalable;
@@ -48,7 +48,7 @@ public final class LinearScaler implements NetworkShifter<SingleValueDichotomySt
     }
 
     @Override
-    public void shiftNetwork(SingleValueDichotomyStep stepValue, Network network) throws GlskLimitationException, ShiftingException {
+    public void shiftNetwork(SingleDichotomyVariable stepValue, Network network) throws GlskLimitationException, ShiftingException {
         BUSINESS_LOGS.info(String.format("Starting linear scaling on network %s with step value %.2f",
             network.getVariantManager().getWorkingVariantId(), stepValue.value()));
         Map<String, Double> scalingValuesByCountry = shiftDispatcher.dispatch(stepValue.value());

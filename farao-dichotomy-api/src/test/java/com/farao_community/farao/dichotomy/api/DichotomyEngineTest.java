@@ -35,10 +35,10 @@ class DichotomyEngineTest {
         double minValue = -1000;
         double maxValue = 1000;
         double precision = 200;
-        Index<Object, SingleValueDichotomyStep> index = new Index<>(new SingleValueDichotomyStep(minValue), new SingleValueDichotomyStep(maxValue), precision);
-        IndexStrategy<SingleValueDichotomyStep> indexStrategy = new RangeDivisionIndexStrategy(true);
+        Index<Object, SingleDichotomyVariable> index = new Index<>(new SingleDichotomyVariable(minValue), new SingleDichotomyVariable(maxValue), precision);
+        IndexStrategy<SingleDichotomyVariable> indexStrategy = new RangeDivisionIndexStrategy(true);
         NetworkValidator<Object> networkValidator = new NetworkValidatorMock(limit);
-        DichotomyEngine<Object, SingleValueDichotomyStep> engine = new DichotomyEngine<Object, SingleValueDichotomyStep>(index, indexStrategy, Mockito.mock(NetworkShifter.class), networkValidator);
+        DichotomyEngine<Object, SingleDichotomyVariable> engine = new DichotomyEngine<Object, SingleDichotomyVariable>(index, indexStrategy, Mockito.mock(NetworkShifter.class), networkValidator);
         engine.run(initialNetwork);
 
         assertEquals(6, index.testedSteps().size());
@@ -68,10 +68,10 @@ class DichotomyEngineTest {
         double minValue = -1000;
         double maxValue = 1000;
         double precision = 200;
-        Index<Object, SingleValueDichotomyStep> index = new Index<>(new SingleValueDichotomyStep(minValue), new SingleValueDichotomyStep(maxValue), precision);
-        IndexStrategy<SingleValueDichotomyStep> indexStrategy = new RangeDivisionIndexStrategy(false);
+        Index<Object, SingleDichotomyVariable> index = new Index<>(new SingleDichotomyVariable(minValue), new SingleDichotomyVariable(maxValue), precision);
+        IndexStrategy<SingleDichotomyVariable> indexStrategy = new RangeDivisionIndexStrategy(false);
         NetworkValidator<Object> networkValidator = new NetworkValidatorMock(limit);
-        DichotomyEngine<Object, SingleValueDichotomyStep> engine = new DichotomyEngine<Object, SingleValueDichotomyStep>(index, indexStrategy, Mockito.mock(NetworkShifter.class), networkValidator);
+        DichotomyEngine<Object, SingleDichotomyVariable> engine = new DichotomyEngine<Object, SingleDichotomyVariable>(index, indexStrategy, Mockito.mock(NetworkShifter.class), networkValidator);
         engine.run(initialNetwork);
 
         assertEquals(6, index.testedSteps().size());
@@ -102,10 +102,10 @@ class DichotomyEngineTest {
         double maxValue = 1000;
         double precision = 200;
         double stepsSize = 400;
-        Index<Object, SingleValueDichotomyStep> index = new Index<>(new SingleValueDichotomyStep(minValue), new SingleValueDichotomyStep(maxValue), precision);
-        IndexStrategy<SingleValueDichotomyStep> indexStrategy = new StepsIndexStrategy(true, stepsSize);
+        Index<Object, SingleDichotomyVariable> index = new Index<>(new SingleDichotomyVariable(minValue), new SingleDichotomyVariable(maxValue), precision);
+        IndexStrategy<SingleDichotomyVariable> indexStrategy = new StepsIndexStrategy(true, stepsSize);
         NetworkValidator<Object> networkValidator = new NetworkValidatorMock(limit);
-        DichotomyEngine<Object, SingleValueDichotomyStep> engine = new DichotomyEngine<Object, SingleValueDichotomyStep>(index, indexStrategy, Mockito.mock(NetworkShifter.class), networkValidator);
+        DichotomyEngine<Object, SingleDichotomyVariable> engine = new DichotomyEngine<Object, SingleDichotomyVariable>(index, indexStrategy, Mockito.mock(NetworkShifter.class), networkValidator);
         engine.run(initialNetwork);
 
         assertEquals(4, index.testedSteps().size());
@@ -132,10 +132,10 @@ class DichotomyEngineTest {
         double maxValue = 1000;
         double precision = 200;
         double stepsSize = 400;
-        Index<Object, SingleValueDichotomyStep> index = new Index<>(new SingleValueDichotomyStep(minValue), new SingleValueDichotomyStep(maxValue), precision);
-        IndexStrategy<SingleValueDichotomyStep> indexStrategy = new StepsIndexStrategy(false, stepsSize);
+        Index<Object, SingleDichotomyVariable> index = new Index<>(new SingleDichotomyVariable(minValue), new SingleDichotomyVariable(maxValue), precision);
+        IndexStrategy<SingleDichotomyVariable> indexStrategy = new StepsIndexStrategy(false, stepsSize);
         NetworkValidator<Object> networkValidator = new NetworkValidatorMock(limit);
-        DichotomyEngine<Object, SingleValueDichotomyStep> engine = new DichotomyEngine<Object, SingleValueDichotomyStep>(index, indexStrategy, Mockito.mock(NetworkShifter.class), networkValidator);
+        DichotomyEngine<Object, SingleDichotomyVariable> engine = new DichotomyEngine<Object, SingleDichotomyVariable>(index, indexStrategy, Mockito.mock(NetworkShifter.class), networkValidator);
         engine.run(initialNetwork);
 
         assertEquals(6, index.testedSteps().size());
@@ -166,10 +166,10 @@ class DichotomyEngineTest {
         double maxValue = 1000;
         double precision = 200;
         int maxIterations = 5;
-        Index<Object, SingleValueDichotomyStep> index = new Index<>(new SingleValueDichotomyStep(minValue), new SingleValueDichotomyStep(maxValue), precision);
-        IndexStrategy<SingleValueDichotomyStep> indexStrategy = new RangeDivisionIndexStrategy(true);
+        Index<Object, SingleDichotomyVariable> index = new Index<>(new SingleDichotomyVariable(minValue), new SingleDichotomyVariable(maxValue), precision);
+        IndexStrategy<SingleDichotomyVariable> indexStrategy = new RangeDivisionIndexStrategy(true);
         NetworkValidator<Object> networkValidator = new NetworkValidatorMock(limit);
-        DichotomyEngine<Object, SingleValueDichotomyStep> engine = new DichotomyEngine<Object, SingleValueDichotomyStep>(index, indexStrategy, Mockito.mock(NetworkShifter.class), networkValidator, maxIterations);
+        DichotomyEngine<Object, SingleDichotomyVariable> engine = new DichotomyEngine<Object, SingleDichotomyVariable>(index, indexStrategy, Mockito.mock(NetworkShifter.class), networkValidator, maxIterations);
         engine.run(initialNetwork);
 
         assertEquals(5, index.testedSteps().size());
@@ -197,10 +197,10 @@ class DichotomyEngineTest {
         double minValue = -1000;
         double maxValue = 1000;
         double precision = 200;
-        Index<Object, SingleValueDichotomyStep> index = new Index<>(new SingleValueDichotomyStep(minValue), new SingleValueDichotomyStep(maxValue), precision);
-        IndexStrategy<SingleValueDichotomyStep> indexStrategy = new RangeDivisionIndexStrategy(true);
+        Index<Object, SingleDichotomyVariable> index = new Index<>(new SingleDichotomyVariable(minValue), new SingleDichotomyVariable(maxValue), precision);
+        IndexStrategy<SingleDichotomyVariable> indexStrategy = new RangeDivisionIndexStrategy(true);
         NetworkValidator<Object> networkValidator = new NetworkValidatorMock(limit);
-        DichotomyEngine<Object, SingleValueDichotomyStep> engine = new DichotomyEngine<Object, SingleValueDichotomyStep>(index, indexStrategy, Mockito.mock(NetworkShifter.class), networkValidator);
+        DichotomyEngine<Object, SingleDichotomyVariable> engine = new DichotomyEngine<Object, SingleDichotomyVariable>(index, indexStrategy, Mockito.mock(NetworkShifter.class), networkValidator);
         engine.run(initialNetwork);
 
         assertEquals(2, index.testedSteps().size());
@@ -221,10 +221,10 @@ class DichotomyEngineTest {
         double minValue = -1000;
         double maxValue = 1000;
         double precision = 200;
-        Index<Object, SingleValueDichotomyStep> index = new Index<>(new SingleValueDichotomyStep(minValue), new SingleValueDichotomyStep(maxValue), precision);
-        IndexStrategy<SingleValueDichotomyStep> indexStrategy = new RangeDivisionIndexStrategy(true);
+        Index<Object, SingleDichotomyVariable> index = new Index<>(new SingleDichotomyVariable(minValue), new SingleDichotomyVariable(maxValue), precision);
+        IndexStrategy<SingleDichotomyVariable> indexStrategy = new RangeDivisionIndexStrategy(true);
         NetworkValidator<Object> networkValidator = new NetworkValidatorMock(limit);
-        DichotomyEngine<Object, SingleValueDichotomyStep> engine = new DichotomyEngine<Object, SingleValueDichotomyStep>(index, indexStrategy, Mockito.mock(NetworkShifter.class), networkValidator);
+        DichotomyEngine<Object, SingleDichotomyVariable> engine = new DichotomyEngine<Object, SingleDichotomyVariable>(index, indexStrategy, Mockito.mock(NetworkShifter.class), networkValidator);
         engine.run(initialNetwork);
 
         assertEquals(1, index.testedSteps().size());
@@ -243,8 +243,8 @@ class DichotomyEngineTest {
         double minValue = -1000;
         double maxValue = 1000;
         double precision = 200;
-        Index<Object, SingleValueDichotomyStep> index = new Index<>(new SingleValueDichotomyStep(minValue), new SingleValueDichotomyStep(maxValue), precision);
-        IndexStrategy<SingleValueDichotomyStep> indexStrategy = new RangeDivisionIndexStrategy(true);
+        Index<Object, SingleDichotomyVariable> index = new Index<>(new SingleDichotomyVariable(minValue), new SingleDichotomyVariable(maxValue), precision);
+        IndexStrategy<SingleDichotomyVariable> indexStrategy = new RangeDivisionIndexStrategy(true);
         NetworkValidator<Object> networkValidator = new NetworkValidatorMock(limit);
         assertThrows(DichotomyException.class, () -> new DichotomyEngine<>(index, indexStrategy, Mockito.mock(NetworkShifter.class), networkValidator, 2));
     }
@@ -262,10 +262,10 @@ class DichotomyEngineTest {
         double maxValue = 50;
         double precision = 200;
         int maxIterations = 5;
-        Index<Object, SingleValueDichotomyStep> index = new Index<>(new SingleValueDichotomyStep(minValue), new SingleValueDichotomyStep(maxValue), precision);
-        IndexStrategy<SingleValueDichotomyStep> indexStrategy = new RangeDivisionIndexStrategy(true);
+        Index<Object, SingleDichotomyVariable> index = new Index<>(new SingleDichotomyVariable(minValue), new SingleDichotomyVariable(maxValue), precision);
+        IndexStrategy<SingleDichotomyVariable> indexStrategy = new RangeDivisionIndexStrategy(true);
         NetworkValidator<Object> networkValidator = new NetworkValidatorMock(limit);
-        DichotomyEngine<Object, SingleValueDichotomyStep> engine = new DichotomyEngine<Object, SingleValueDichotomyStep>(index, indexStrategy, Mockito.mock(NetworkShifter.class), networkValidator, maxIterations);
+        DichotomyEngine<Object, SingleDichotomyVariable> engine = new DichotomyEngine<Object, SingleDichotomyVariable>(index, indexStrategy, Mockito.mock(NetworkShifter.class), networkValidator, maxIterations);
         engine.run(initialNetwork);
 
         assertEquals(2, index.testedSteps().size());
@@ -288,10 +288,10 @@ class DichotomyEngineTest {
         double maxValue = 50;
         double precision = 100;
         int maxIterations = 5;
-        Index<Object, SingleValueDichotomyStep> index = new Index<>(new SingleValueDichotomyStep(minValue), new SingleValueDichotomyStep(maxValue), precision);
-        IndexStrategy<SingleValueDichotomyStep> indexStrategy = new RangeDivisionIndexStrategy(true);
+        Index<Object, SingleDichotomyVariable> index = new Index<>(new SingleDichotomyVariable(minValue), new SingleDichotomyVariable(maxValue), precision);
+        IndexStrategy<SingleDichotomyVariable> indexStrategy = new RangeDivisionIndexStrategy(true);
         NetworkValidator<Object> networkValidator = new NetworkValidatorMock(limit);
-        DichotomyEngine<Object, SingleValueDichotomyStep> engine = new DichotomyEngine<Object, SingleValueDichotomyStep>(index, indexStrategy, Mockito.mock(NetworkShifter.class), networkValidator, maxIterations);
+        DichotomyEngine<Object, SingleDichotomyVariable> engine = new DichotomyEngine<Object, SingleDichotomyVariable>(index, indexStrategy, Mockito.mock(NetworkShifter.class), networkValidator, maxIterations);
         engine.run(initialNetwork);
 
         assertEquals(1, index.testedSteps().size());
@@ -311,10 +311,10 @@ class DichotomyEngineTest {
         double maxValue = 50;
         double precision = 100;
         int maxIterations = 5;
-        Index<Object, SingleValueDichotomyStep> index = new Index<>(new SingleValueDichotomyStep(minValue), new SingleValueDichotomyStep(maxValue), precision);
-        IndexStrategy<SingleValueDichotomyStep> indexStrategy = new RangeDivisionIndexStrategy(false);
+        Index<Object, SingleDichotomyVariable> index = new Index<>(new SingleDichotomyVariable(minValue), new SingleDichotomyVariable(maxValue), precision);
+        IndexStrategy<SingleDichotomyVariable> indexStrategy = new RangeDivisionIndexStrategy(false);
         NetworkValidator<Object> networkValidator = new NetworkValidatorMock(limit);
-        DichotomyEngine<Object, SingleValueDichotomyStep> engine = new DichotomyEngine<Object, SingleValueDichotomyStep>(index, indexStrategy, Mockito.mock(NetworkShifter.class), networkValidator, maxIterations);
+        DichotomyEngine<Object, SingleDichotomyVariable> engine = new DichotomyEngine<Object, SingleDichotomyVariable>(index, indexStrategy, Mockito.mock(NetworkShifter.class), networkValidator, maxIterations);
         engine.run(initialNetwork);
 
         assertEquals(1, index.testedSteps().size());

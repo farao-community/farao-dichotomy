@@ -25,7 +25,7 @@ import java.util.List;
  *
  * @author Sebastien Murgey {@literal <sebastien.murgey at rte-france.com>}
  */
-public class Index<T, U extends DichotomyStep> {
+public class Index<T, U extends DichotomyVariable> {
     private static final double EPSILON = 1e-3;
     private final U minValue;
     private final U maxValue;

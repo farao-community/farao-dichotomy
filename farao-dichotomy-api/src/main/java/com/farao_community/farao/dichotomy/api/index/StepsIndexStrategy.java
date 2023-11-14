@@ -19,7 +19,7 @@ import com.farao_community.farao.dichotomy.api.exceptions.DichotomyException;
  * @author Sebastien Murgey {@literal <sebastien.murgey at rte-france.com>}
  */
 // TODO : rendre générique
-public class StepsIndexStrategy implements IndexStrategy<SingleValueDichotomyStep> {
+public class StepsIndexStrategy implements IndexStrategy<SingleDichotomyVariable> {
     private final boolean startWithMin;
     private final double increaseValueBeforeDichotomy;
 
@@ -32,7 +32,7 @@ public class StepsIndexStrategy implements IndexStrategy<SingleValueDichotomySte
     }
 
     @Override
-    public SingleValueDichotomyStep nextValue(Index<?, SingleValueDichotomyStep> index) {
+    public SingleDichotomyVariable nextValue(Index<?, SingleDichotomyVariable> index) {
         if (precisionReached(index)) {
             throw new AssertionError("Dichotomy engine should not ask for next value if precision is reached");
         }
@@ -42,16 +42,16 @@ public class StepsIndexStrategy implements IndexStrategy<SingleValueDichotomySte
                 return index.minValue();
             }
             if (index.lowestInvalidStep() == null) {
-                return new SingleValueDichotomyStep(Math.min(index.highestValidStep().getLeft().value() + increaseValueBeforeDichotomy, index.maxValue().value()));
+                return new SingleDichotomyVariable(Math.min(index.highestValidStep().getLeft().value() + increaseValueBeforeDichotomy, index.maxValue().value()));
             }
         } else {
             if (index.lowestInvalidStep() == null) {
                 return index.maxValue();
             }
             if (index.highestValidStep() == null) {
-                return new SingleValueDichotomyStep(Math.max(index.lowestInvalidStep().getLeft().value() - increaseValueBeforeDichotomy, index.minValue().value()));
+                return new SingleDichotomyVariable(Math.max(index.lowestInvalidStep().getLeft().value() - increaseValueBeforeDichotomy, index.minValue().value()));
             }
         }
-        return new SingleValueDichotomyStep((index.lowestInvalidStep().getLeft().value() + index.highestValidStep().getLeft().value()) / 2);
+        return new SingleDichotomyVariable((index.lowestInvalidStep().getLeft().value() + index.highestValidStep().getLeft().value()) / 2);
     }
 }

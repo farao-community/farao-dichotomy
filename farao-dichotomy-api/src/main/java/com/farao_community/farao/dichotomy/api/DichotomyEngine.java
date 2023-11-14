@@ -10,7 +10,7 @@ import com.farao_community.farao.dichotomy.api.exceptions.DichotomyException;
 import com.farao_community.farao.dichotomy.api.exceptions.GlskLimitationException;
 import com.farao_community.farao.dichotomy.api.exceptions.ShiftingException;
 import com.farao_community.farao.dichotomy.api.exceptions.ValidationException;
-import com.farao_community.farao.dichotomy.api.index.DichotomyStep;
+import com.farao_community.farao.dichotomy.api.index.DichotomyVariable;
 import com.farao_community.farao.dichotomy.api.index.Index;
 import com.farao_community.farao.dichotomy.api.index.IndexStrategy;
 import com.farao_community.farao.dichotomy.api.results.DichotomyResult;
@@ -33,7 +33,7 @@ import static com.farao_community.farao.dichotomy.api.logging.DichotomyLoggerPro
  *
  * @author Sebastien Murgey {@literal <sebastien.murgey at rte-france.com>}
  */
-public class DichotomyEngine<T, U extends DichotomyStep<U>> {
+public class DichotomyEngine<T, U extends DichotomyVariable<U>> {
     private static final int DEFAULT_MAX_ITERATION_NUMBER = 100;
     private final Index<T, U> index;
     private final IndexStrategy<U> indexStrategy;

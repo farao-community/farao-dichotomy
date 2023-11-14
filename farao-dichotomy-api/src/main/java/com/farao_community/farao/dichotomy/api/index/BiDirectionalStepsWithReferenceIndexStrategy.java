@@ -16,18 +16,18 @@ import java.util.function.BiPredicate;
  * @author Joris Mancini {@literal <joris.mancini at rte-france.com>}
  */
 // TODO : rendre générique
-public class BiDirectionalStepsWithReferenceIndexStrategy implements IndexStrategy<SingleValueDichotomyStep> {
+public class BiDirectionalStepsWithReferenceIndexStrategy implements IndexStrategy<SingleDichotomyVariable> {
     private final double startIndex;
     private final double stepSize;
     private final double referenceExchange;
 
-    private Pair<SingleValueDichotomyStep, ? extends DichotomyStepResult<?>> highestSecureStep;
-    private Pair<SingleValueDichotomyStep, ? extends DichotomyStepResult<?>> lowestUnsecureStep;
-    private Pair<SingleValueDichotomyStep, ? extends DichotomyStepResult<?>> closestGlskLimitationBelowReference;
-    private Pair<SingleValueDichotomyStep, ? extends DichotomyStepResult<?>> closestGlskLimitationAboveReference;
+    private Pair<SingleDichotomyVariable, ? extends DichotomyStepResult<?>> highestSecureStep;
+    private Pair<SingleDichotomyVariable, ? extends DichotomyStepResult<?>> lowestUnsecureStep;
+    private Pair<SingleDichotomyVariable, ? extends DichotomyStepResult<?>> closestGlskLimitationBelowReference;
+    private Pair<SingleDichotomyVariable, ? extends DichotomyStepResult<?>> closestGlskLimitationAboveReference;
 
-    private Pair<SingleValueDichotomyStep, ? extends DichotomyStepResult<?>> highestAdmissibleStep;
-    private Pair<SingleValueDichotomyStep, ? extends DichotomyStepResult<?>> lowestInadmissibleStep;
+    private Pair<SingleDichotomyVariable, ? extends DichotomyStepResult<?>> highestAdmissibleStep;
+    private Pair<SingleDichotomyVariable, ? extends DichotomyStepResult<?>> lowestInadmissibleStep;
 
     public BiDirectionalStepsWithReferenceIndexStrategy(double startIndex, double stepSize, double referenceExchange) {
         this.startIndex = startIndex;
@@ -36,21 +36,21 @@ public class BiDirectionalStepsWithReferenceIndexStrategy implements IndexStrate
     }
 
     @Override
-    public SingleValueDichotomyStep nextValue(Index<?, SingleValueDichotomyStep> index) {
+    public SingleDichotomyVariable nextValue(Index<?, SingleDichotomyVariable> index) {
         updateDichotomyIntervalLimits(index);
         if (highestAdmissibleStep == null && lowestInadmissibleStep == null) {
-            return new SingleValueDichotomyStep(startIndex);
+            return new SingleDichotomyVariable(startIndex);
         } else if (highestAdmissibleStep == null) {
-            return new SingleValueDichotomyStep(Math.max(index.minValue().value(), lowestInadmissibleStep.getLeft().value() - stepSize));
+            return new SingleDichotomyVariable(Math.max(index.minValue().value(), lowestInadmissibleStep.getLeft().value() - stepSize));
         } else if (lowestInadmissibleStep == null) {
-            return new SingleValueDichotomyStep(Math.min(index.maxValue().value(), highestAdmissibleStep.getLeft().value() + stepSize));
+            return new SingleDichotomyVariable(Math.min(index.maxValue().value(), highestAdmissibleStep.getLeft().value() + stepSize));
         } else {
-            return new SingleValueDichotomyStep((lowestInadmissibleStep.getLeft().value() + highestAdmissibleStep.getLeft().value()) / 2);
+            return new SingleDichotomyVariable((lowestInadmissibleStep.getLeft().value() + highestAdmissibleStep.getLeft().value()) / 2);
         }
     }
 
     @Override
-    public boolean precisionReached(Index<?, SingleValueDichotomyStep> index) {
+    public boolean precisionReached(Index<?, SingleDichotomyVariable> index) {
         updateDichotomyIntervalLimits(index);
         if (highestAdmissibleStep == null && lowestInadmissibleStep == null) {
             return false;
@@ -63,7 +63,7 @@ public class BiDirectionalStepsWithReferenceIndexStrategy implements IndexStrate
         }
     }
 
-    private void updateDichotomyIntervalLimits(Index<?, SingleValueDichotomyStep> index) {
+    private void updateDichotomyIntervalLimits(Index<?, SingleDichotomyVariable> index) {
         if (index.lowestInvalidStep() != null &&
             (index.lowestInvalidStep().getRight().getReasonInvalid().equals(ReasonInvalid.UNSECURE_AFTER_VALIDATION)
                 || index.lowestInvalidStep().getRight().getReasonInvalid().equals(ReasonInvalid.VALIDATION_FAILED))) {
@@ -84,15 +84,15 @@ public class BiDirectionalStepsWithReferenceIndexStrategy implements IndexStrate
         lowestInadmissibleStep = getLowestInAdmissibleStep(lowestUnsecureStep, closestGlskLimitationAboveReference);
     }
 
-    private Pair<SingleValueDichotomyStep, ? extends DichotomyStepResult<?>> getHighestAdmissibleStep(Pair<SingleValueDichotomyStep, ? extends DichotomyStepResult<?>> closestGlskLimitationBelowReference, Pair<SingleValueDichotomyStep, ? extends DichotomyStepResult<?>> highestSecureStep) {
+    private Pair<SingleDichotomyVariable, ? extends DichotomyStepResult<?>> getHighestAdmissibleStep(Pair<SingleDichotomyVariable, ? extends DichotomyStepResult<?>> closestGlskLimitationBelowReference, Pair<SingleDichotomyVariable, ? extends DichotomyStepResult<?>> highestSecureStep) {
         return testAndGetStep(closestGlskLimitationBelowReference, highestSecureStep, (t, u) -> t > u);
     }
 
-    private Pair<SingleValueDichotomyStep, ? extends DichotomyStepResult<?>> getLowestInAdmissibleStep(Pair<SingleValueDichotomyStep, ? extends DichotomyStepResult<?>> lowestUnsecureStep, Pair<SingleValueDichotomyStep, ? extends DichotomyStepResult<?>> closestGlskLimitationAboveReference) {
+    private Pair<SingleDichotomyVariable, ? extends DichotomyStepResult<?>> getLowestInAdmissibleStep(Pair<SingleDichotomyVariable, ? extends DichotomyStepResult<?>> lowestUnsecureStep, Pair<SingleDichotomyVariable, ? extends DichotomyStepResult<?>> closestGlskLimitationAboveReference) {
         return testAndGetStep(lowestUnsecureStep, closestGlskLimitationAboveReference, (t, u) -> t < u);
     }
 
-    private Pair<SingleValueDichotomyStep, ? extends DichotomyStepResult<?>> testAndGetStep(Pair<SingleValueDichotomyStep, ? extends DichotomyStepResult<?>> step1, Pair<SingleValueDichotomyStep, ? extends DichotomyStepResult<?>> step2, BiPredicate<Double, Double> biPredicate) {
+    private Pair<SingleDichotomyVariable, ? extends DichotomyStepResult<?>> testAndGetStep(Pair<SingleDichotomyVariable, ? extends DichotomyStepResult<?>> step1, Pair<SingleDichotomyVariable, ? extends DichotomyStepResult<?>> step2, BiPredicate<Double, Double> biPredicate) {
         if (step1 == null && step2 == null) {
             return null;
         } else if (step1 == null) {

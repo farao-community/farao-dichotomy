@@ -10,7 +10,7 @@ import com.farao_community.farao.dichotomy.api.NetworkValidator;
 import com.farao_community.farao.dichotomy.api.exceptions.GlskLimitationException;
 import com.farao_community.farao.dichotomy.api.exceptions.ShiftingException;
 import com.farao_community.farao.dichotomy.api.exceptions.ValidationException;
-import com.farao_community.farao.dichotomy.api.index.SingleValueDichotomyStep;
+import com.farao_community.farao.dichotomy.api.index.SingleDichotomyVariable;
 import com.farao_community.farao.dichotomy.api.results.DichotomyStepResult;
 import com.powsybl.glsk.api.io.GlskDocumentImporters;
 import com.powsybl.glsk.commons.ZonalData;
@@ -59,7 +59,7 @@ class LinearScalerTest {
         ));
 
         LinearScaler linearScaler = new LinearScaler(zonalScalable, shiftDispatcher);
-        assertThrows(GlskLimitationException.class, () -> linearScaler.shiftNetwork(new SingleValueDichotomyStep(200), network));
+        assertThrows(GlskLimitationException.class, () -> linearScaler.shiftNetwork(new SingleDichotomyVariable(200), network));
     }
 
     @Test
@@ -70,7 +70,7 @@ class LinearScalerTest {
         Mockito.when(networkValidator.validateNetwork(network, null)).thenReturn(getStepResult(true));
 
         LinearScaler linearScaler = new LinearScaler(zonalScalable, shiftDispatcher);
-        linearScaler.shiftNetwork(new SingleValueDichotomyStep(200), network);
+        linearScaler.shiftNetwork(new SingleDichotomyVariable(200), network);
         DichotomyStepResult<?> networkStepResult = networkValidator.validateNetwork(network, null);
         assertTrue(networkStepResult.isValid());
     }
@@ -83,7 +83,7 @@ class LinearScalerTest {
         Mockito.when(networkValidator.validateNetwork(network, null)).thenReturn(getStepResult(false));
 
         LinearScaler linearScaler = new LinearScaler(zonalScalable, shiftDispatcher);
-        linearScaler.shiftNetwork(new SingleValueDichotomyStep(200), network);
+        linearScaler.shiftNetwork(new SingleDichotomyVariable(200), network);
         DichotomyStepResult<?> networkStepResult = networkValidator.validateNetwork(network, null);
         assertFalse(networkStepResult.isValid());
     }
@@ -96,7 +96,7 @@ class LinearScalerTest {
         Mockito.when(networkValidator.validateNetwork(network, null)).thenThrow(new ValidationException("RAO failure"));
 
         LinearScaler linearScaler = new LinearScaler(zonalScalable, shiftDispatcher);
-        linearScaler.shiftNetwork(new SingleValueDichotomyStep(200), network);
+        linearScaler.shiftNetwork(new SingleDichotomyVariable(200), network);
         assertThrows(ValidationException.class, () -> networkValidator.validateNetwork(network, null));
     }
 
@@ -104,6 +104,6 @@ class LinearScalerTest {
     void scalingNetworkValidationStrategyWithShiftingException() throws ShiftingException {
         Mockito.when(shiftDispatcher.dispatch(200)).thenThrow(new ShiftingException("Impossible to shift"));
         LinearScaler linearScaler = new LinearScaler(zonalScalable, shiftDispatcher);
-        assertThrows(ShiftingException.class, () -> linearScaler.shiftNetwork(new SingleValueDichotomyStep(200), network));
+        assertThrows(ShiftingException.class, () -> linearScaler.shiftNetwork(new SingleDichotomyVariable(200), network));
     }
 }

@@ -14,7 +14,7 @@ package com.farao_community.farao.dichotomy.api.index;
  * @see StepsIndexStrategy
  * @author Sebastien Murgey {@literal <sebastien.murgey at rte-france.com>}
  */
-public interface IndexStrategy<U extends DichotomyStep<U>> {
+public interface IndexStrategy<U extends DichotomyVariable<U>> {
     double EPSILON = 1e-3;
 
     U nextValue(Index<?, U> index);

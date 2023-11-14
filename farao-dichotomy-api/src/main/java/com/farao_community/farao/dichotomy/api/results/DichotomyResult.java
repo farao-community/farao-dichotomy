@@ -6,7 +6,7 @@
  */
 package com.farao_community.farao.dichotomy.api.results;
 
-import com.farao_community.farao.dichotomy.api.index.DichotomyStep;
+import com.farao_community.farao.dichotomy.api.index.DichotomyVariable;
 import com.farao_community.farao.dichotomy.api.index.Index;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import org.apache.commons.lang3.builder.ToStringBuilder;
@@ -15,7 +15,7 @@ import org.apache.commons.lang3.tuple.Pair;
 /**
  * @author Joris Mancini {@literal <joris.mancini at rte-france.com>}
  */
-public final class DichotomyResult<I, U extends DichotomyStep<U>> {
+public final class DichotomyResult<I, U extends DichotomyVariable<U>> {
     private final Pair<U, DichotomyStepResult<I>> highestValidStep;
     private final Pair<U, DichotomyStepResult<I>> lowestInvalidStep;
     private final LimitingCause limitingCause;
@@ -31,7 +31,7 @@ public final class DichotomyResult<I, U extends DichotomyStep<U>> {
         this.limitingFailureMessage = limitingFailureMessage;
     }
 
-    public static <J, V extends DichotomyStep<V>> DichotomyResult<J, V> buildFromIndex(Index<J, V> index) {
+    public static <J, V extends DichotomyVariable<V>> DichotomyResult<J, V> buildFromIndex(Index<J, V> index) {
         // If one the steps are null it means that it stops due to index evaluation otherwise it could have continued.
         // If both are present, it is the expected case we just have to differentiate if the invalid step failed or if
         // it is just unsecure.

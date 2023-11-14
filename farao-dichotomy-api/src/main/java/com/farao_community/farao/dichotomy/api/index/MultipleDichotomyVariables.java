@@ -4,19 +4,19 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-public class MultipleValuesDichotomyStep implements DichotomyStep<MultipleValuesDichotomyStep> {
-    private final Map<String, SingleValueDichotomyStep> values; // values with keys
+public class MultipleDichotomyVariables implements DichotomyVariable<MultipleDichotomyVariables> {
+    private final Map<String, SingleDichotomyVariable> values; // values with keys
 
-    public MultipleValuesDichotomyStep(Map<String, SingleValueDichotomyStep> values) {
+    public MultipleDichotomyVariables(Map<String, SingleDichotomyVariable> values) {
         this.values = values;
     }
 
-    public Map<String, SingleValueDichotomyStep> values() {
+    public Map<String, SingleDichotomyVariable> values() {
         return new HashMap<>(values);
     }
 
     @Override
-    public boolean isGreaterThan(MultipleValuesDichotomyStep other) {
+    public boolean isGreaterThan(MultipleDichotomyVariables other) {
         if (!values.keySet().equals(other.values.keySet())) {
             // TODO : throw
         }
@@ -26,7 +26,7 @@ public class MultipleValuesDichotomyStep implements DichotomyStep<MultipleValues
     }
 
     @Override
-    public double distanceTo(MultipleValuesDichotomyStep other) {
+    public double distanceTo(MultipleDichotomyVariables other) {
         if (!values.keySet().equals(other.values.keySet())) {
             // TODO : throw
         }
@@ -36,8 +36,8 @@ public class MultipleValuesDichotomyStep implements DichotomyStep<MultipleValues
     }
 
     @Override
-    public MultipleValuesDichotomyStep halfRangeWith(MultipleValuesDichotomyStep other) {
-        return new MultipleValuesDichotomyStep(
+    public MultipleDichotomyVariables halfRangeWith(MultipleDichotomyVariables other) {
+        return new MultipleDichotomyVariables(
             values.entrySet().stream().collect(Collectors.toMap(
                 Map.Entry::getKey,
                 e -> e.getValue().halfRangeWith(other.values.get(e.getKey()))

@@ -20,7 +20,7 @@ class IndexTest {
 
     @Test
     void checkStandardIndexManipulation() {
-        Index<?, SingleValueDichotomyStep> index = new Index<>(new SingleValueDichotomyStep(-1000), new SingleValueDichotomyStep(-200), 100);
+        Index<?, SingleDichotomyVariable> index = new Index<>(new SingleDichotomyVariable(-1000), new SingleDichotomyVariable(-200), 100);
 
         assertEquals(-1000, index.minValue().value(), EPSILON);
         assertEquals(-200, index.maxValue().value(), EPSILON);
@@ -29,13 +29,13 @@ class IndexTest {
 
     @Test
     void checkIndexCreationFailsIfMinHigherThanMax() {
-        Exception e = assertThrows(DichotomyException.class, () -> new Index<>(new SingleValueDichotomyStep(-200), new SingleValueDichotomyStep(-1000), 100));
+        Exception e = assertThrows(DichotomyException.class, () -> new Index<>(new SingleDichotomyVariable(-200), new SingleDichotomyVariable(-1000), 100));
         assertEquals("Index creation impossible, minValue is supposed to be lower than maxValue.", e.getMessage());
     }
 
     @Test
     void checkIndexCreationSucceedsIfPrecisionIsLowerThanSearchInterval() {
-        Index<?, SingleValueDichotomyStep> index = new Index<>(new SingleValueDichotomyStep(0), new SingleValueDichotomyStep(100), 300);
+        Index<?, SingleDichotomyVariable> index = new Index<>(new SingleDichotomyVariable(0), new SingleDichotomyVariable(100), 300);
         assertEquals(0, index.minValue().value(), EPSILON);
         assertEquals(100, index.maxValue().value(), EPSILON);
         assertEquals(300, index.precision(), EPSILON);

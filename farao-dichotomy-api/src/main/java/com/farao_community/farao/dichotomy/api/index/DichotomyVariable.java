@@ -1,6 +1,6 @@
 package com.farao_community.farao.dichotomy.api.index;
 
-public interface DichotomyStep<U extends DichotomyStep<U>> {
+public interface DichotomyVariable<U extends DichotomyVariable<U>> {
     boolean isGreaterThan(U other);
 
     double distanceTo(U other);
