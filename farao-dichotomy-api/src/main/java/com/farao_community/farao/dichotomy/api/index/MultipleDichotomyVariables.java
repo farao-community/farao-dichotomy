@@ -7,8 +7,8 @@ import java.util.stream.Collectors;
 public class MultipleDichotomyVariables implements DichotomyVariable<MultipleDichotomyVariables> {
     private final Map<String, SingleDichotomyVariable> values; // values with keys
 
-    public MultipleDichotomyVariables(Map<String, SingleDichotomyVariable> values) {
-        this.values = values;
+    public MultipleDichotomyVariables(Map<String, Double> values) {
+        this.values = values.entrySet().stream().collect(Collectors.toMap(Map.Entry::getKey, e -> new SingleDichotomyVariable(e.getValue())));
     }
 
     public Map<String, SingleDichotomyVariable> values() {
@@ -40,7 +40,7 @@ public class MultipleDichotomyVariables implements DichotomyVariable<MultipleDic
         return new MultipleDichotomyVariables(
             values.entrySet().stream().collect(Collectors.toMap(
                 Map.Entry::getKey,
-                e -> e.getValue().halfRangeWith(other.values.get(e.getKey()))
+                e -> e.getValue().halfRangeWith(other.values.get(e.getKey())).value()
             )));
     }
 

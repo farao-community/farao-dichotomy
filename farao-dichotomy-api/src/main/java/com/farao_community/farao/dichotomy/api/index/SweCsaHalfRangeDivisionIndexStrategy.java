@@ -12,6 +12,14 @@ import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+/**
+ * Implementation of IndexStrategy that consists of a basic dichotomy between minimum index value and maximum one, on
+ * FR-ES and PT-ES borders.
+ * When one of the borders is secured with a good precision, dichotomy continues on the other border until that one
+ * is secured too.
+ *
+ * @author Peter Mitri {@literal <peter.mitri at rte-france.com>}
+ */
 // TODO : migrate this to gridcapa-swe-csa
 // careful : min and max values are related to exchange values, which is equal to initial exchange - countertrading
 // so when initializing index, min value should be 0 and max value should be initial exchange value
@@ -37,29 +45,36 @@ public class SweCsaHalfRangeDivisionIndexStrategy extends HalfRangeDivisionIndex
             return index.minValue(); // maximum counter-trading, minimum exchange
         }
 
-        Map<String, SingleDichotomyVariable> newValues = Map.of(frEsIndexName, new SingleDichotomyVariable(computeNextValue(index, frEsIndexName)),
-            ptEsIndexName, new SingleDichotomyVariable(computeNextValue(index, ptEsIndexName)));
+        Map<String, Double> newValues = Map.of(
+            frEsIndexName, computeNextValue(index, frEsIndexName),
+            ptEsIndexName, computeNextValue(index, ptEsIndexName)
+        );
 
         return new MultipleDichotomyVariables(newValues);
     }
 
     double computeNextValue(Index<?, MultipleDichotomyVariables> index, String key) {
+        // Fetch tested exchange values for this border, for which the border is secure
         Set<Double> safeVariableValues = index.testedSteps().stream().filter(
             pair -> isSafeForBorder(pair.getRight().getRaoResult(), key)
         ).map(p -> p.getLeft().values().get(key).value()).collect(Collectors.toSet());
+        // Compute max
         double maxSafeValue = safeVariableValues.stream().mapToDouble(Double::doubleValue).max().orElseThrow();
+        // Deduce tested values that are unsafe
         Set<Double> unsafeVariableValues = index.testedSteps().stream().map(p -> p.getLeft().values().get(key).value()).collect(Collectors.toSet());
         unsafeVariableValues.removeAll(safeVariableValues);
+        // Compute min
         double minUnsafeValue = unsafeVariableValues.stream().mapToDouble(Double::doubleValue).min().orElseThrow();
+        // If precision is reached, keep max value
         if (Math.abs(maxSafeValue - minUnsafeValue) < index.precision()) {
             return maxSafeValue;
         }
+        // Else, return average
         return (maxSafeValue + minUnsafeValue) / 2;
     }
 
 
     boolean isSafeForBorder(RaoResult raoResult, String key) {
-        // TODO
         if (key.equals(frEsIndexName)) {
             return isSafeForFrEs(raoResult);
         }
@@ -70,12 +85,12 @@ public class SweCsaHalfRangeDivisionIndexStrategy extends HalfRangeDivisionIndex
     }
 
     boolean isSafeForFrEs(RaoResult raoResult) {
-        // TODO
+        // TODO implement this
         return true;
     }
 
     boolean isSafeForPtEs(RaoResult raoResult) {
-        // TODO
+        // TODO implement this
         return true;
     }
 
