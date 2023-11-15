@@ -20,7 +20,7 @@ public class MultipleDichotomyVariables implements DichotomyVariable<MultipleDic
         if (!values.keySet().equals(other.values.keySet())) {
             // TODO : throw
         }
-        return values.entrySet().stream().allMatch(
+        return values.entrySet().stream().anyMatch(
             e -> e.getValue().isGreaterThan(other.values.get(e.getKey()))
         );
     }
