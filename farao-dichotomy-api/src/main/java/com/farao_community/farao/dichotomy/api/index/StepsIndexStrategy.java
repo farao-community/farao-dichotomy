@@ -18,7 +18,8 @@ import com.farao_community.farao.dichotomy.api.exceptions.DichotomyException;
  *
  * @author Sebastien Murgey {@literal <sebastien.murgey at rte-france.com>}
  */
-public class StepsIndexStrategy implements IndexStrategy {
+// TODO : rendre générique
+public class StepsIndexStrategy implements IndexStrategy<SingleDichotomyVariable> {
     private final boolean startWithMin;
     private final double increaseValueBeforeDichotomy;
 
@@ -31,7 +32,7 @@ public class StepsIndexStrategy implements IndexStrategy {
     }
 
     @Override
-    public double nextValue(Index<?> index) {
+    public SingleDichotomyVariable nextValue(Index<?, SingleDichotomyVariable> index) {
         if (precisionReached(index)) {
             throw new AssertionError("Dichotomy engine should not ask for next value if precision is reached");
         }
@@ -41,16 +42,16 @@ public class StepsIndexStrategy implements IndexStrategy {
                 return index.minValue();
             }
             if (index.lowestInvalidStep() == null) {
-                return Math.min(index.highestValidStep().getLeft() + increaseValueBeforeDichotomy, index.maxValue());
+                return new SingleDichotomyVariable(Math.min(index.highestValidStep().getLeft().value() + increaseValueBeforeDichotomy, index.maxValue().value()));
             }
         } else {
             if (index.lowestInvalidStep() == null) {
                 return index.maxValue();
             }
             if (index.highestValidStep() == null) {
-                return Math.max(index.lowestInvalidStep().getLeft() - increaseValueBeforeDichotomy, index.minValue());
+                return new SingleDichotomyVariable(Math.max(index.lowestInvalidStep().getLeft().value() - increaseValueBeforeDichotomy, index.minValue().value()));
             }
         }
-        return (index.lowestInvalidStep().getLeft() + index.highestValidStep().getLeft()) / 2;
+        return new SingleDichotomyVariable((index.lowestInvalidStep().getLeft().value() + index.highestValidStep().getLeft().value()) / 2);
     }
 }

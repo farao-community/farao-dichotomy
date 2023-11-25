@@ -34,30 +34,35 @@ class IndexStrategyTest {
 
     @Test
     void precisionReachedHighestStep() {
-        Index<Boolean> index = new Index<>(0, 160, 50);
-        Mockito.when(strategy.nextValue(index)).thenReturn(160.);
+        Index<Boolean, SingleDichotomyVariable> index = new Index<>(new SingleDichotomyVariable(0), new SingleDichotomyVariable(160), 50);
+        Mockito.when(strategy.nextValue(index)).thenReturn(new SingleDichotomyVariable(160.));
 
-        double nextValue = strategy.nextValue(index); // 160
+        SingleDichotomyVariable nextValue = strategy.nextValue(index); // 160
         index.addDichotomyStepResult(nextValue, STEP_RESULT_SUCCESS);
         assertTrue(strategy.precisionReached(index));
     }
 
     @Test
     void precisionReachedLowestStep() {
-        Index<Boolean> index = new Index<>(0, 160, 50);
-        Mockito.when(strategy.nextValue(index)).thenReturn(0.);
+        Index<Boolean, SingleDichotomyVariable> index = new Index<>(new SingleDichotomyVariable(0), new SingleDichotomyVariable(160), 50);
+        Mockito.when(strategy.nextValue(index)).thenReturn(new SingleDichotomyVariable(0.));
 
-        double nextValue = strategy.nextValue(index); // 0
+        SingleDichotomyVariable nextValue = strategy.nextValue(index); // 0
         index.addDichotomyStepResult(nextValue, STEP_RESULT_FAIL);
         assertTrue(strategy.precisionReached(index));
     }
 
     @Test
     void precisionReachedIfAllStepsAreUnsecure() {
-        Index<Boolean> index = new Index<>(0, 5, 1);
-        Mockito.when(strategy.nextValue(index)).thenReturn(5.).thenReturn(0.5).thenReturn(0.05).thenReturn(0.005).thenReturn(0.0005);
+        Index<Boolean, SingleDichotomyVariable> index = new Index<>(new SingleDichotomyVariable(0), new SingleDichotomyVariable(5), 1);
+        Mockito.when(strategy.nextValue(index))
+            .thenReturn(new SingleDichotomyVariable(5))
+            .thenReturn(new SingleDichotomyVariable(0.5))
+            .thenReturn(new SingleDichotomyVariable(0.05))
+            .thenReturn(new SingleDichotomyVariable(0.005))
+            .thenReturn(new SingleDichotomyVariable(0.0005));
 
-        double nextValue = strategy.nextValue(index); // 5
+        SingleDichotomyVariable nextValue = strategy.nextValue(index); // 5
         index.addDichotomyStepResult(nextValue, STEP_RESULT_FAIL);
         assertFalse(strategy.precisionReached(index));
 
@@ -80,17 +85,21 @@ class IndexStrategyTest {
 
     @Test
     void precisionReachedNoStepResult() {
-        Index<Boolean> index = new Index<>(0, 160, 50);
+        Index<Boolean, SingleDichotomyVariable> index = new Index<>(new SingleDichotomyVariable(0), new SingleDichotomyVariable(160), 50);
 
         assertFalse(strategy.precisionReached(index));
     }
 
     @Test
     void precisionReached() {
-        Index<Boolean> index = new Index<>(0, 220, 50);
-        Mockito.when(strategy.nextValue(index)).thenReturn(220.).thenReturn(110.).thenReturn(55.).thenReturn(82.5);
+        Index<Boolean, SingleDichotomyVariable> index = new Index<>(new SingleDichotomyVariable(0), new SingleDichotomyVariable(220), 50);
+        Mockito.when(strategy.nextValue(index))
+            .thenReturn(new SingleDichotomyVariable(220))
+            .thenReturn(new SingleDichotomyVariable(110))
+            .thenReturn(new SingleDichotomyVariable(55))
+            .thenReturn(new SingleDichotomyVariable(82.5));
 
-        double nextValue = strategy.nextValue(index); // 220
+        SingleDichotomyVariable nextValue = strategy.nextValue(index); // 220
         index.addDichotomyStepResult(nextValue, STEP_RESULT_FAIL);
         assertFalse(strategy.precisionReached(index));
 

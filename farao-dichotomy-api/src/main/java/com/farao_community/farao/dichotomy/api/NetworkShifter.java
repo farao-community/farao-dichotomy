@@ -8,12 +8,13 @@ package com.farao_community.farao.dichotomy.api;
 
 import com.farao_community.farao.dichotomy.api.exceptions.GlskLimitationException;
 import com.farao_community.farao.dichotomy.api.exceptions.ShiftingException;
+import com.farao_community.farao.dichotomy.api.index.DichotomyVariable;
 import com.powsybl.iidm.network.Network;
 
 /**
  * @author Joris Mancini {@literal <joris.mancini at rte-france.com>}
  */
-public interface NetworkShifter {
+public interface NetworkShifter<U extends DichotomyVariable<U>> {
 
-    void shiftNetwork(double stepValue, Network network) throws GlskLimitationException, ShiftingException;
+    void shiftNetwork(U stepValue, Network network) throws GlskLimitationException, ShiftingException;
 }

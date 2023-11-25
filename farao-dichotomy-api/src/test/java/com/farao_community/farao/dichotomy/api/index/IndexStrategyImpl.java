@@ -1,8 +1,8 @@
 package com.farao_community.farao.dichotomy.api.index;
 
-public class IndexStrategyImpl implements IndexStrategy {
+public class IndexStrategyImpl implements IndexStrategy<SingleDichotomyVariable> {
 
-    public double nextValue(Index<?> index) {
-        return Double.NaN;
+    public SingleDichotomyVariable nextValue(Index<?, SingleDichotomyVariable> index) {
+        return new SingleDichotomyVariable(Double.NaN);
     }
 }
