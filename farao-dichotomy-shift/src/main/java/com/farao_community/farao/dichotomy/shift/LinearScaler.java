@@ -48,21 +48,21 @@ public final class LinearScaler implements NetworkShifter {
 
     @Override
     public void shiftNetwork(double stepValue, Network network) throws GlskLimitationException, ShiftingException {
-        BUSINESS_LOGS.info(String.format("Starting linear scaling on network %s with step value %.2f",
-            network.getVariantManager().getWorkingVariantId(), stepValue));
+        BUSINESS_LOGS.info(String.format("Starting linear scaling on network %s with step value %d",
+            network.getVariantManager().getWorkingVariantId(), (int) stepValue));
         Map<String, Double> scalingValuesByCountry = shiftDispatcher.dispatch(stepValue);
         List<String> limitingCountries = new ArrayList<>();
         for (Map.Entry<String, Double> entry : scalingValuesByCountry.entrySet()) {
             String zoneId = entry.getKey();
             double asked = entry.getValue();
-            BUSINESS_LOGS.info(String.format("Applying variation on zone %s (target: %.2f)", zoneId, asked));
+            BUSINESS_LOGS.info(String.format("Applying variation on zone %s (target: %d)", zoneId, (int) asked));
             ScalingParameters scalingParameters = new ScalingParameters();
             scalingParameters.setIterative(true);
             scalingParameters.setReconnect(true);
             double done = zonalScalable.getData(zoneId).scale(network, asked, scalingParameters);
             if (Math.abs(done - asked) > shiftEpsilon) {
-                BUSINESS_WARNS.warn(String.format("Incomplete variation on zone %s (target: %.2f, done: %.2f)",
-                    zoneId, asked, done));
+                BUSINESS_WARNS.warn(String.format("Incomplete variation on zone %s (target: %d, done: %d)",
+                    zoneId, (int) asked, (int) done));
                 limitingCountries.add(zoneId);
             }
         }

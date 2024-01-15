@@ -19,11 +19,12 @@ import com.powsybl.iidm.network.Network;
 
 import java.util.Objects;
 
-import static com.farao_community.farao.dichotomy.api.logging.DichotomyLoggerProvider.*;
+import static com.farao_community.farao.dichotomy.api.logging.DichotomyLoggerProvider.BUSINESS_LOGS;
+import static com.farao_community.farao.dichotomy.api.logging.DichotomyLoggerProvider.BUSINESS_WARNS;
 
 /**
  * Dichotomy engine.
- *
+ * <p>
  * This is a generic engine to perform a dichotomy on an IIDM network. The generic algorithm is as follows: a target
  * index is defined according to the {@link IndexStrategy}, then according to this value a shift on the network is
  * performed by the {@link NetworkShifter}. After the shift a validation is performed and gathers the results in the
@@ -60,13 +61,13 @@ public class DichotomyEngine<T> {
         String initialVariant = network.getVariantManager().getWorkingVariantId();
         while (!indexStrategy.precisionReached(index) && iterationCounter < maxIteration) {
             double nextValue = indexStrategy.nextValue(index);
-            BUSINESS_LOGS.info(String.format("Next dichotomy step: %.2f", nextValue));
+            BUSINESS_LOGS.info(String.format("Next dichotomy step: %d", (int) nextValue));
             DichotomyStepResult<T> lastDichotomyStepResult = !index.testedSteps().isEmpty() ? index.testedSteps().get(index.testedSteps().size() - 1).getRight() : null;
             DichotomyStepResult<T> dichotomyStepResult = validate(nextValue, network, initialVariant, lastDichotomyStepResult);
             if (dichotomyStepResult.isValid()) {
-                BUSINESS_LOGS.info(String.format("Network at dichotomy step %.2f is secure", nextValue));
+                BUSINESS_LOGS.info(String.format("Network at dichotomy step %d is secure", (int) nextValue));
             } else {
-                BUSINESS_LOGS.info(String.format("Network at dichotomy step %.2f is unsecure", nextValue));
+                BUSINESS_LOGS.info(String.format("Network at dichotomy step %d is unsecure", (int) nextValue));
             }
             index.addDichotomyStepResult(nextValue, dichotomyStepResult);
             iterationCounter++;
@@ -86,10 +87,10 @@ public class DichotomyEngine<T> {
             networkShifter.shiftNetwork(stepValue, network);
             return networkValidator.validateNetwork(network, lastDichotomyStepResult);
         } catch (GlskLimitationException e) {
-            BUSINESS_WARNS.warn(String.format("GLSK limits have been reached for step value %.2f", stepValue));
+            BUSINESS_WARNS.warn(String.format("GLSK limits have been reached for step value %d", (int) stepValue));
             return DichotomyStepResult.fromFailure(ReasonInvalid.GLSK_LIMITATION, e.getMessage());
         } catch (ShiftingException | ValidationException e) {
-            BUSINESS_WARNS.warn(String.format("Validation failed for step value %.2f", stepValue));
+            BUSINESS_WARNS.warn(String.format("Validation failed for step value %d", (int) stepValue));
             return DichotomyStepResult.fromFailure(ReasonInvalid.VALIDATION_FAILED, e.getMessage());
         } finally {
             network.getVariantManager().setWorkingVariant(initialVariant);
