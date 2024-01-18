@@ -6,6 +6,8 @@
  */
 package com.farao_community.farao.dichotomy.api.utils;
 
+import java.util.Locale;
+
 /**
  * @author Theo Pascoli {@literal <theo.pascoli at rte-france.com>}
  */
@@ -17,9 +19,9 @@ public final class Formatter {
 
     public static String formatDoubleDecimals(double value) {
         if (value % 1 == 0) {
-            return String.format("%d", (int) value);
+            return String.format(Locale.US,"%d", (int) value);
         } else {
-            return String.format("%.2f", value);
+            return String.format(Locale.US,"%.2f", value);
         }
     }
 }

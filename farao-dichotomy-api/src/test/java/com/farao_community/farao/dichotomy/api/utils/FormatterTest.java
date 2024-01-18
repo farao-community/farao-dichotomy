@@ -17,7 +17,7 @@ class FormatterTest {
 
     @Test
     void testFormatDoubleWithDecimals() {
-        assertEquals("123,46", Formatter.formatDoubleDecimals(123.456));
+        assertEquals("123.46", Formatter.formatDoubleDecimals(123.456));
     }
 
     @Test
@@ -27,7 +27,7 @@ class FormatterTest {
 
     @Test
     void testFormatDoubleWithExactDecimals() {
-        assertEquals("123,50", Formatter.formatDoubleDecimals(123.50));
+        assertEquals("123.50", Formatter.formatDoubleDecimals(123.50));
     }
 
     @Test
