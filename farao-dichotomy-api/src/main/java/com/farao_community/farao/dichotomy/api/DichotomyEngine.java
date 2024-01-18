@@ -15,6 +15,7 @@ import com.farao_community.farao.dichotomy.api.index.IndexStrategy;
 import com.farao_community.farao.dichotomy.api.results.DichotomyResult;
 import com.farao_community.farao.dichotomy.api.results.DichotomyStepResult;
 import com.farao_community.farao.dichotomy.api.results.ReasonInvalid;
+import com.farao_community.farao.dichotomy.api.utils.Formatter;
 import com.powsybl.iidm.network.Network;
 
 import java.util.Objects;
@@ -61,13 +62,13 @@ public class DichotomyEngine<T> {
         String initialVariant = network.getVariantManager().getWorkingVariantId();
         while (!indexStrategy.precisionReached(index) && iterationCounter < maxIteration) {
             double nextValue = indexStrategy.nextValue(index);
-            BUSINESS_LOGS.info(String.format("Next dichotomy step: %d", (int) nextValue));
+            BUSINESS_LOGS.info(String.format("Next dichotomy step: %s", Formatter.formatDoubleDecimals(nextValue)));
             DichotomyStepResult<T> lastDichotomyStepResult = !index.testedSteps().isEmpty() ? index.testedSteps().get(index.testedSteps().size() - 1).getRight() : null;
             DichotomyStepResult<T> dichotomyStepResult = validate(nextValue, network, initialVariant, lastDichotomyStepResult);
             if (dichotomyStepResult.isValid()) {
-                BUSINESS_LOGS.info(String.format("Network at dichotomy step %d is secure", (int) nextValue));
+                BUSINESS_LOGS.info(String.format("Network at dichotomy step %s is secure", Formatter.formatDoubleDecimals(nextValue)));
             } else {
-                BUSINESS_LOGS.info(String.format("Network at dichotomy step %d is unsecure", (int) nextValue));
+                BUSINESS_LOGS.info(String.format("Network at dichotomy step %s is unsecure", Formatter.formatDoubleDecimals(nextValue)));
             }
             index.addDichotomyStepResult(nextValue, dichotomyStepResult);
             iterationCounter++;
@@ -87,10 +88,10 @@ public class DichotomyEngine<T> {
             networkShifter.shiftNetwork(stepValue, network);
             return networkValidator.validateNetwork(network, lastDichotomyStepResult);
         } catch (GlskLimitationException e) {
-            BUSINESS_WARNS.warn(String.format("GLSK limits have been reached for step value %d", (int) stepValue));
+            BUSINESS_WARNS.warn(String.format("GLSK limits have been reached for step value %s", Formatter.formatDoubleDecimals(stepValue)));
             return DichotomyStepResult.fromFailure(ReasonInvalid.GLSK_LIMITATION, e.getMessage());
         } catch (ShiftingException | ValidationException e) {
-            BUSINESS_WARNS.warn(String.format("Validation failed for step value %d", (int) stepValue));
+            BUSINESS_WARNS.warn(String.format("Validation failed for step value %s", Formatter.formatDoubleDecimals(stepValue)));
             return DichotomyStepResult.fromFailure(ReasonInvalid.VALIDATION_FAILED, e.getMessage());
         } finally {
             network.getVariantManager().setWorkingVariant(initialVariant);
