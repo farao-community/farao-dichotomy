@@ -19,9 +19,9 @@ public final class Formatter {
 
     public static String formatDoubleDecimals(double value) {
         if (value % 1 == 0) {
-            return String.format(Locale.US,"%d", (int) value);
+            return String.format(Locale.US, "%d", (int) value);
         } else {
-            return String.format(Locale.US,"%.2f", value);
+            return String.format(Locale.US, "%.2f", value);
         }
     }
 }
