@@ -9,7 +9,7 @@ package com.farao_community.farao.dichotomy.api.utils;
 /**
  * @author Theo Pascoli {@literal <theo.pascoli at rte-france.com>}
  */
-public class Formatter {
+public final class Formatter {
 
     private Formatter() {
 
