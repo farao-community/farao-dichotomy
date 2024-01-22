@@ -30,7 +30,7 @@ public final class DichotomyStepResult<I> {
     private DichotomyStepResult(RaoResult raoResult, I validationData) {
         this.raoResult = raoResult;
         this.validationData = validationData;
-        this.secure = raoResultIsSecure(raoResult);
+        this.secure = raoResult.isSecure(); //todo test
         this.reasonInvalid = secure ? ReasonInvalid.NONE : ReasonInvalid.UNSECURE_AFTER_VALIDATION;
         this.failureMessage = "None";
     }
@@ -84,10 +84,6 @@ public final class DichotomyStepResult<I> {
                                                                          J validationData,
                                                                          boolean passedValidationAsSecure) {
         return new DichotomyStepResult<>(raoResult, validationData, passedValidationAsSecure);
-    }
-
-    private static boolean raoResultIsSecure(RaoResult raoResult) {
-        return raoResult.getFunctionalCost(Instant.CURATIVE) <= 0; // todo this method will migrate in farao-core
     }
 
     public RaoResult getRaoResult() {

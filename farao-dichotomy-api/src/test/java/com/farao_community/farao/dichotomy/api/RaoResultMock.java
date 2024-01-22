@@ -6,6 +6,7 @@
  */
 package com.farao_community.farao.dichotomy.api;
 
+import com.powsybl.openrao.commons.PhysicalParameter;
 import com.powsybl.openrao.commons.Unit;
 import com.powsybl.openrao.data.cracapi.Instant;
 import com.powsybl.openrao.data.cracapi.RemedialAction;
@@ -30,9 +31,11 @@ import java.util.Set;
  */
 public class RaoResultMock implements RaoResult {
     private final double cost;
+    private final boolean secure;
 
     public RaoResultMock(boolean secure) {
         this.cost = secure ? -10 : 10;
+        this.secure = secure;
     }
 
     @Override
@@ -140,6 +143,11 @@ public class RaoResultMock implements RaoResult {
     }
 
     @Override
+    public boolean isActivated(State state, NetworkAction networkAction) {
+        return RaoResult.super.isActivated(state, networkAction);
+    }
+
+    @Override
     public Set<NetworkAction> getActivatedNetworkActionsDuringState(State state) {
         return null;
     }
@@ -192,5 +200,20 @@ public class RaoResultMock implements RaoResult {
     @Override
     public void setOptimizationStepsExecuted(OptimizationStepsExecuted optimizationStepsExecuted) {
 
+    }
+
+    @Override
+    public boolean isSecure(Instant instant, PhysicalParameter... physicalParameters) {
+        return secure;
+    }
+
+    @Override
+    public boolean isSecure(PhysicalParameter... physicalParameters) {
+        return secure;
+    }
+
+    @Override
+    public boolean isSecure() {
+        return secure;
     }
 }
