@@ -30,7 +30,7 @@ public final class DichotomyStepResult<I> {
     private DichotomyStepResult(RaoResult raoResult, I validationData) {
         this.raoResult = raoResult;
         this.validationData = validationData;
-        this.secure = raoResult.isSecure(); //todo test
+        this.secure = raoResult.isSecure();
         this.reasonInvalid = secure ? ReasonInvalid.NONE : ReasonInvalid.UNSECURE_AFTER_VALIDATION;
         this.failureMessage = "None";
     }
