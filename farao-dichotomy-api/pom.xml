@@ -17,8 +17,8 @@
 
     <dependencies>
         <dependency>
-            <groupId>com.farao-community.farao</groupId>
-            <artifactId>farao-rao-result-api</artifactId>
+            <groupId>com.powsybl</groupId>
+            <artifactId>open-rao-rao-result-api</artifactId>
         </dependency>
         <dependency>
             <groupId>com.powsybl</groupId>

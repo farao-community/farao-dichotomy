@@ -6,8 +6,7 @@
  */
 package com.farao_community.farao.dichotomy.api.results;
 
-import com.farao_community.farao.data.crac_api.Instant;
-import com.farao_community.farao.data.rao_result_api.RaoResult;
+import com.powsybl.openrao.data.raoresultapi.RaoResult;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 
 /**
@@ -31,7 +30,7 @@ public final class DichotomyStepResult<I> {
     private DichotomyStepResult(RaoResult raoResult, I validationData) {
         this.raoResult = raoResult;
         this.validationData = validationData;
-        this.secure = raoResultIsSecure(raoResult);
+        this.secure = raoResult.isSecure();
         this.reasonInvalid = secure ? ReasonInvalid.NONE : ReasonInvalid.UNSECURE_AFTER_VALIDATION;
         this.failureMessage = "None";
     }
@@ -85,10 +84,6 @@ public final class DichotomyStepResult<I> {
                                                                          J validationData,
                                                                          boolean passedValidationAsSecure) {
         return new DichotomyStepResult<>(raoResult, validationData, passedValidationAsSecure);
-    }
-
-    private static boolean raoResultIsSecure(RaoResult raoResult) {
-        return raoResult.getFunctionalCost(Instant.CURATIVE) <= 0;
     }
 
     public RaoResult getRaoResult() {

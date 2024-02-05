@@ -7,7 +7,7 @@
     <parent>
         <groupId>com.farao-community.farao</groupId>
         <artifactId>farao-parent</artifactId>
-        <version>1.5.0</version>
+        <version>1.7.0</version>
     </parent>
 
     <artifactId>farao-dichotomy</artifactId>
@@ -48,7 +48,7 @@
     <properties>
         <logback.classic.version>1.2.3</logback.classic.version>
         <mockito.core.version>3.5.10</mockito.core.version>
-        <farao.dependencies.version>1.22.0</farao.dependencies.version>
+        <farao.dependencies.version>1.25.0</farao.dependencies.version>
     </properties>
 
     <dependencyManagement>

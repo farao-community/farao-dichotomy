@@ -6,20 +6,21 @@
  */
 package com.farao_community.farao.dichotomy.shift;
 
-import com.farao_community.farao.commons.Unit;
-import com.farao_community.farao.data.crac_api.Instant;
-import com.farao_community.farao.data.crac_api.RemedialAction;
-import com.farao_community.farao.data.crac_api.State;
-import com.farao_community.farao.data.crac_api.cnec.AngleCnec;
-import com.farao_community.farao.data.crac_api.cnec.FlowCnec;
-import com.farao_community.farao.data.crac_api.cnec.Side;
-import com.farao_community.farao.data.crac_api.cnec.VoltageCnec;
-import com.farao_community.farao.data.crac_api.network_action.NetworkAction;
-import com.farao_community.farao.data.crac_api.range_action.PstRangeAction;
-import com.farao_community.farao.data.crac_api.range_action.RangeAction;
-import com.farao_community.farao.data.rao_result_api.ComputationStatus;
-import com.farao_community.farao.data.rao_result_api.OptimizationStepsExecuted;
-import com.farao_community.farao.data.rao_result_api.RaoResult;
+import com.powsybl.openrao.commons.PhysicalParameter;
+import com.powsybl.openrao.commons.Unit;
+import com.powsybl.openrao.data.cracapi.Instant;
+import com.powsybl.openrao.data.cracapi.RemedialAction;
+import com.powsybl.openrao.data.cracapi.State;
+import com.powsybl.openrao.data.cracapi.cnec.AngleCnec;
+import com.powsybl.openrao.data.cracapi.cnec.FlowCnec;
+import com.powsybl.openrao.data.cracapi.cnec.Side;
+import com.powsybl.openrao.data.cracapi.cnec.VoltageCnec;
+import com.powsybl.openrao.data.cracapi.networkaction.NetworkAction;
+import com.powsybl.openrao.data.cracapi.rangeaction.PstRangeAction;
+import com.powsybl.openrao.data.cracapi.rangeaction.RangeAction;
+import com.powsybl.openrao.data.raoresultapi.ComputationStatus;
+import com.powsybl.openrao.data.raoresultapi.OptimizationStepsExecuted;
+import com.powsybl.openrao.data.raoresultapi.RaoResult;
 import org.apache.commons.lang3.NotImplementedException;
 
 import java.util.Map;
@@ -30,9 +31,11 @@ import java.util.Set;
  */
 public class RaoResultMock implements RaoResult {
     private final double cost;
+    private final boolean secure;
 
     public RaoResultMock(boolean secure) {
         this.cost = secure ? -10 : 10;
+        this.secure = secure;
     }
 
     @Override
@@ -102,7 +105,7 @@ public class RaoResultMock implements RaoResult {
 
     @Override
     public double getFunctionalCost(Instant optimizedInstant) {
-        if (optimizedInstant == Instant.CURATIVE) {
+        if (optimizedInstant.isCurative()) {
             return cost;
         } else {
             throw new NotImplementedException("Only after CRA is handled");
@@ -137,6 +140,11 @@ public class RaoResultMock implements RaoResult {
     @Override
     public boolean isActivatedDuringState(State state, NetworkAction networkAction) {
         return false;
+    }
+
+    @Override
+    public boolean isActivated(State state, NetworkAction networkAction) {
+        return RaoResult.super.isActivated(state, networkAction);
     }
 
     @Override
@@ -192,5 +200,20 @@ public class RaoResultMock implements RaoResult {
     @Override
     public void setOptimizationStepsExecuted(OptimizationStepsExecuted optimizationStepsExecuted) {
 
+    }
+
+    @Override
+    public boolean isSecure(Instant instant, PhysicalParameter... physicalParameters) {
+        return secure;
+    }
+
+    @Override
+    public boolean isSecure(PhysicalParameter... physicalParameters) {
+        return secure;
+    }
+
+    @Override
+    public boolean isSecure() {
+        return secure;
     }
 }
