@@ -8,6 +8,7 @@ package com.farao_community.farao.dichotomy.shift;
 
 import com.farao_community.farao.dichotomy.api.NetworkValidator;
 import com.farao_community.farao.dichotomy.api.exceptions.GlskLimitationException;
+import com.farao_community.farao.dichotomy.api.exceptions.RaoInterruptionException;
 import com.farao_community.farao.dichotomy.api.exceptions.ShiftingException;
 import com.farao_community.farao.dichotomy.api.exceptions.ValidationException;
 import com.farao_community.farao.dichotomy.api.results.DichotomyStepResult;
@@ -62,7 +63,7 @@ class LinearScalerTest {
     }
 
     @Test
-    void scalingNetworkValidationStrategyWithSecure() throws ShiftingException, ValidationException, GlskLimitationException {
+    void scalingNetworkValidationStrategyWithSecure() throws ShiftingException, ValidationException, GlskLimitationException, RaoInterruptionException {
         Mockito.when(shiftDispatcher.dispatch(200)).thenReturn(Map.of(
                 "10YCH-SWISSGRIDZ", 200.
         ));
@@ -75,7 +76,7 @@ class LinearScalerTest {
     }
 
     @Test
-    void scalingNetworkValidationStrategyWithUnsecure() throws ShiftingException, ValidationException, GlskLimitationException {
+    void scalingNetworkValidationStrategyWithUnsecure() throws ShiftingException, ValidationException, GlskLimitationException, RaoInterruptionException {
         Mockito.when(shiftDispatcher.dispatch(200)).thenReturn(Map.of(
                 "10YCH-SWISSGRIDZ", 200.
         ));
@@ -88,7 +89,7 @@ class LinearScalerTest {
     }
 
     @Test
-    void scalingNetworkValidationStrategyWithFailure() throws ShiftingException, ValidationException, GlskLimitationException {
+    void scalingNetworkValidationStrategyWithFailure() throws ShiftingException, ValidationException, GlskLimitationException, RaoInterruptionException {
         Mockito.when(shiftDispatcher.dispatch(200)).thenReturn(Map.of(
                 "10YCH-SWISSGRIDZ", 200.
         ));

@@ -13,5 +13,6 @@ public enum ReasonInvalid {
     GLSK_LIMITATION,
     UNSECURE_AFTER_VALIDATION,
     VALIDATION_FAILED,
+    RAO_INTERRUPTION,
     NONE
 }
