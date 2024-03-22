@@ -9,9 +9,9 @@ package com.farao_community.farao.dichotomy.shift;
 import com.farao_community.farao.dichotomy.api.NetworkShifter;
 import com.farao_community.farao.dichotomy.api.exceptions.GlskLimitationException;
 import com.farao_community.farao.dichotomy.api.exceptions.ShiftingException;
+import com.farao_community.farao.dichotomy.api.utils.Formatter;
 import com.powsybl.glsk.commons.ZonalData;
 import com.powsybl.iidm.modification.scalable.Scalable;
-import com.powsybl.iidm.modification.scalable.ScalingParameters;
 import com.powsybl.iidm.network.Network;
 
 import java.util.ArrayList;
@@ -48,20 +48,21 @@ public final class LinearScaler implements NetworkShifter {
 
     @Override
     public void shiftNetwork(double stepValue, Network network) throws GlskLimitationException, ShiftingException {
-        BUSINESS_LOGS.info(String.format("Starting linear scaling on network %s with step value %.2f",
-            network.getVariantManager().getWorkingVariantId(), stepValue));
+        BUSINESS_LOGS.info(String.format("Starting linear scaling on network %s with step value %s",
+            network.getVariantManager().getWorkingVariantId(), Formatter.formatDoubleDecimals(stepValue)));
         Map<String, Double> scalingValuesByCountry = shiftDispatcher.dispatch(stepValue);
         List<String> limitingCountries = new ArrayList<>();
         for (Map.Entry<String, Double> entry : scalingValuesByCountry.entrySet()) {
             String zoneId = entry.getKey();
             double asked = entry.getValue();
-            BUSINESS_LOGS.info(String.format("Applying variation on zone %s (target: %.2f)", zoneId, asked));
-            ScalingParameters iterativeScalingParameters = new ScalingParameters();
-            iterativeScalingParameters.setIterative(true);
-            double done = zonalScalable.getData(zoneId).scale(network, asked, iterativeScalingParameters);
+            BUSINESS_LOGS.info(String.format("Applying variation on zone %s (target: %s)", zoneId, Formatter.formatDoubleDecimals(stepValue)));
+            ScalingParameters scalingParameters = new ScalingParameters();
+            scalingParameters.setIterative(true);
+            scalingParameters.setReconnect(true);
+            double done = zonalScalable.getData(zoneId).scale(network, asked, scalingParameters);
             if (Math.abs(done - asked) > shiftEpsilon) {
-                BUSINESS_WARNS.warn(String.format("Incomplete variation on zone %s (target: %.2f, done: %.2f)",
-                    zoneId, asked, done));
+                BUSINESS_WARNS.warn(String.format("Incomplete variation on zone %s (target: %s, done: %s)",
+                    zoneId, Formatter.formatDoubleDecimals(asked), Formatter.formatDoubleDecimals(done)));
                 limitingCountries.add(zoneId);
             }
         }

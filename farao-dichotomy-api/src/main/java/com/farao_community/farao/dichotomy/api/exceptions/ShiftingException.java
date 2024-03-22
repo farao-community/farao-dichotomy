@@ -14,4 +14,8 @@ public class ShiftingException extends Exception {
     public ShiftingException(String message) {
         super(message);
     }
+
+    public ShiftingException(String message, Throwable cause) {
+        super(message, cause);
+    }
 }

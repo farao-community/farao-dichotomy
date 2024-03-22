@@ -7,18 +7,18 @@
     <parent>
         <artifactId>farao-dichotomy</artifactId>
         <groupId>com.farao-community.farao</groupId>
-        <version>4.11.0-SNAPSHOT</version>
+        <version>4.15.0-SNAPSHOT</version>
     </parent>
 
     <artifactId>farao-dichotomy-api</artifactId>
-    <version>4.11.0-SNAPSHOT</version>
+    <version>4.15.0-SNAPSHOT</version>
     <name>FARAO dichotomy API</name>
     <description>API that enables launching dichotomy on an IIDM network</description>
 
     <dependencies>
         <dependency>
-            <groupId>com.farao-community.farao</groupId>
-            <artifactId>farao-rao-result-api</artifactId>
+            <groupId>com.powsybl</groupId>
+            <artifactId>open-rao-rao-result-api</artifactId>
         </dependency>
         <dependency>
             <groupId>com.powsybl</groupId>

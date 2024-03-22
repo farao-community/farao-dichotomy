@@ -10,7 +10,12 @@ package com.farao_community.farao.dichotomy.api.exceptions;
  * @author Sebastien Murgey {@literal <sebastien.murgey at rte-france.com>}
  */
 public class DichotomyException extends RuntimeException {
+
     public DichotomyException(String message) {
         super(message);
+    }
+
+    public DichotomyException(String message, Throwable cause) {
+        super(message, cause);
     }
 }
