@@ -105,7 +105,9 @@ public class DichotomyEngine<T> {
                 } else {
                     BUSINESS_LOGS.info(String.format("Network at dichotomy step %s is unsecure", Formatter.formatDoubleDecimals(nextValue)));
                 }
-                index.addDichotomyStepResult(nextValue, dichotomyStepResult);
+                if (!dichotomyStepResult.getReasonInvalid().equals(ReasonInvalid.RAO_INTERRUPTION)) {
+                    index.addDichotomyStepResult(nextValue, dichotomyStepResult);
+                }
                 iterationCounter++;
             }
         }

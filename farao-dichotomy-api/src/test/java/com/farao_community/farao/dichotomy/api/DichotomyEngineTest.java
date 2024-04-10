@@ -14,13 +14,16 @@ import com.farao_community.farao.dichotomy.api.index.IndexStrategy;
 import com.farao_community.farao.dichotomy.api.index.RangeDivisionIndexStrategy;
 import com.farao_community.farao.dichotomy.api.index.StepsIndexStrategy;
 import com.farao_community.farao.dichotomy.api.results.DichotomyResult;
-import com.farao_community.farao.dichotomy.api.results.ReasonInvalid;
 import com.powsybl.iidm.network.Network;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
  * @author Joris Mancini {@literal <joris.mancini at rte-france.com>}
@@ -422,8 +425,6 @@ class DichotomyEngineTest {
         DichotomyResult<Object> dichotomyResult = engine.run(initialNetwork);
 
         assertTrue(dichotomyResult.isInterrupted());
-        assertEquals(1, index.testedSteps().size());
-        assertEquals(ReasonInvalid.RAO_INTERRUPTION, dichotomyResult.getLowestInvalidStep().getReasonInvalid());
-        assertEquals("test", dichotomyResult.getLowestInvalidStep().getFailureMessage());
+        assertEquals(0, index.testedSteps().size());
     }
 }
