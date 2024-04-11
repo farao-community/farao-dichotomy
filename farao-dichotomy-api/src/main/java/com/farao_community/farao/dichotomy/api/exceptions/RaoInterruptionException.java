@@ -7,7 +7,7 @@
 package com.farao_community.farao.dichotomy.api.exceptions;
 
 /**
- * @author Vincnt Bochet {@literal <vincent.bochet at rte-france.com>}
+ * @author Vincent Bochet {@literal <vincent.bochet at rte-france.com>}
  */
 public class RaoInterruptionException extends Exception {
 

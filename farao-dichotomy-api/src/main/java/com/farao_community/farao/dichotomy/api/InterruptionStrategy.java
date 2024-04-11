@@ -7,7 +7,7 @@
 package com.farao_community.farao.dichotomy.api;
 
 /**
- * @author Vincnt Bochet {@literal <vincent.bochet at rte-france.com>}
+ * @author Vincent Bochet {@literal <vincent.bochet at rte-france.com>}
  */
 public interface InterruptionStrategy {
     boolean shouldTaskBeInterruptedSoftly(String taskId);
