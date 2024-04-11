@@ -91,7 +91,6 @@ public class DichotomyEngine<T> {
             DichotomyStepResult<T> lastDichotomyStepResult = !index.testedSteps().isEmpty() ? index.testedSteps().get(index.testedSteps().size() - 1).getRight() : null;
 
             if (interruptionStrategy != null && interruptionStrategy.shouldTaskBeInterruptedSoftly(taskId)) {
-                BUSINESS_WARNS.warn("Next dichotomy step is interrupted, previous steps results will be returned");
                 DichotomyResult<T> dichotomyResult = DichotomyResult.buildFromIndex(index);
                 dichotomyResult.setInterrupted(true);
                 return dichotomyResult;
