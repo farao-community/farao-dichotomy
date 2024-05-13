@@ -7,11 +7,11 @@
     <parent>
         <artifactId>farao-dichotomy</artifactId>
         <groupId>com.farao-community.farao</groupId>
-        <version>4.17.1</version>
+        <version>4.17.2-SNAPSHOT</version>
     </parent>
 
     <artifactId>farao-dichotomy-api</artifactId>
-    <version>4.17.1</version>
+    <version>4.17.2-SNAPSHOT</version>
     <name>FARAO dichotomy API</name>
     <description>API that enables launching dichotomy on an IIDM network</description>
 
