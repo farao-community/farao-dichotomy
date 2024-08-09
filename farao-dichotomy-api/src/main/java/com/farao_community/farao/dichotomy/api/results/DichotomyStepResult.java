@@ -6,6 +6,7 @@
  */
 package com.farao_community.farao.dichotomy.api.results;
 
+import com.powsybl.openrao.commons.PhysicalParameter;
 import com.powsybl.openrao.data.raoresultapi.RaoResult;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 
@@ -28,7 +29,7 @@ public final class DichotomyStepResult<I> {
     }
 
     private DichotomyStepResult(RaoResult raoResult, I validationData) {
-        this(raoResult, validationData, raoResult.isSecure());
+        this(raoResult, validationData, raoResult.isSecure(PhysicalParameter.FLOW) && raoResult.isSecure(PhysicalParameter.ANGLE));
     }
 
     private DichotomyStepResult(RaoResult raoResult, I validationData, boolean secure) {
