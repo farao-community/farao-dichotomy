@@ -127,7 +127,10 @@ public class DichotomyEngine<T> {
         } catch (GlskLimitationException e) {
             BUSINESS_WARNS.warn(String.format("GLSK limits have been reached for step value %s", Formatter.formatDoubleDecimals(stepValue)));
             return DichotomyStepResult.fromFailure(ReasonInvalid.GLSK_LIMITATION, e.getMessage());
-        } catch (ShiftingException | ValidationException e) {
+        } catch (ShiftingException e) {
+            BUSINESS_WARNS.warn(String.format("Loadflow diverged during balancing adjustment for step value %s", Formatter.formatDoubleDecimals(stepValue)));
+            return DichotomyStepResult.fromFailure(ReasonInvalid.BALANCE_LOADFLOW_DIVERGENCE, e.getMessage());
+        } catch (ValidationException e) {
             BUSINESS_WARNS.warn(String.format("Validation failed for step value %s", Formatter.formatDoubleDecimals(stepValue)));
             return DichotomyStepResult.fromFailure(ReasonInvalid.VALIDATION_FAILED, e.getMessage());
         } catch (RaoInterruptionException e) {

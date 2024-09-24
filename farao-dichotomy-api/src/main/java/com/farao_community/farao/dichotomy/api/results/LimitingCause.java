@@ -10,6 +10,7 @@ package com.farao_community.farao.dichotomy.api.results;
  * @author Joris Mancini {@literal <joris.mancini at rte-france.com>}
  */
 public enum LimitingCause {
+    BALANCE_LOADFLOW_DIVERGENCE,
     GLSK_LIMITATION,
     CRITICAL_BRANCH,
     COMPUTATION_FAILURE,

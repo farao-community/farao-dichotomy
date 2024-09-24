@@ -10,6 +10,7 @@ package com.farao_community.farao.dichotomy.api.results;
  * @author Theo Pascoli {@literal <theo.pascoli at rte-france.com>}
  */
 public enum ReasonInvalid {
+    BALANCE_LOADFLOW_DIVERGENCE,
     GLSK_LIMITATION,
     UNSECURE_AFTER_VALIDATION,
     VALIDATION_FAILED,
