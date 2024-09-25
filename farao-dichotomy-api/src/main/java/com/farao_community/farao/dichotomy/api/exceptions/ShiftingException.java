@@ -6,16 +6,32 @@
  */
 package com.farao_community.farao.dichotomy.api.exceptions;
 
+import com.farao_community.farao.dichotomy.api.results.ReasonInvalid;
+
 /**
  * @author Joris Mancini {@literal <joris.mancini at rte-france.com>}
  */
 public class ShiftingException extends Exception {
+    private final ReasonInvalid reason;
 
     public ShiftingException(String message) {
-        super(message);
+        this(message, null, null);
     }
 
     public ShiftingException(String message, Throwable cause) {
+        this(message, cause, null);
+    }
+
+    public ShiftingException(String message, ReasonInvalid reason) {
+        this(message, null, reason);
+    }
+
+    public ShiftingException(String message, Throwable cause, ReasonInvalid reason) {
         super(message, cause);
+        this.reason = reason;
+    }
+
+    public ReasonInvalid getReason() {
+        return reason;
     }
 }
