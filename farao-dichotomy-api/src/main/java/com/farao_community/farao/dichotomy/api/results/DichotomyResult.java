@@ -44,6 +44,7 @@ public final class DichotomyResult<I> {
                 limitingCause = switch (index.lowestInvalidStep().getRight().getReasonInvalid()) {
                     case GLSK_LIMITATION -> LimitingCause.GLSK_LIMITATION;
                     case BALANCE_LOADFLOW_DIVERGENCE -> LimitingCause.BALANCE_LOADFLOW_DIVERGENCE;
+                    case UNKNOWN_TERMINAL_BUS -> LimitingCause.UNKNOWN_TERMINAL_BUS;
                     default -> LimitingCause.COMPUTATION_FAILURE;
                 };
                 failureMessage = index.lowestInvalidStep().getRight().getFailureMessage();

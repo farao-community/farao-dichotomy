@@ -12,8 +12,9 @@ package com.farao_community.farao.dichotomy.api.results;
 public enum ReasonInvalid {
     BALANCE_LOADFLOW_DIVERGENCE,
     GLSK_LIMITATION,
+    RAO_INTERRUPTION,
+    UNKNOWN_TERMINAL_BUS,
     UNSECURE_AFTER_VALIDATION,
     VALIDATION_FAILED,
-    RAO_INTERRUPTION,
     NONE
 }
