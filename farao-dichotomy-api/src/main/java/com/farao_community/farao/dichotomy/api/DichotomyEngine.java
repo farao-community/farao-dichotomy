@@ -117,8 +117,8 @@ public class DichotomyEngine<T> {
         return DichotomyResult.buildFromIndex(index);
     }
 
-    private DichotomyStepResult<T> validate(double stepValue, Network network, String initialVariant, DichotomyStepResult<T> lastDichotomyStepResult) {
-        String newVariant = variantName(stepValue, initialVariant);
+    DichotomyStepResult<T> validate(double stepValue, Network network, String initialVariant, DichotomyStepResult<T> lastDichotomyStepResult) {
+        final String newVariant = variantName(stepValue, initialVariant);
         network.getVariantManager().cloneVariant(initialVariant, newVariant);
         network.getVariantManager().setWorkingVariant(newVariant);
         final String formattedStepValueForLogs = Formatter.formatDoubleDecimals(stepValue);

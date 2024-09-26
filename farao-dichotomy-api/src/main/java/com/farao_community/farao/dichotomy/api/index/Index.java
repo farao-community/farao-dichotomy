@@ -15,7 +15,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Object responsible of storing the dichotomy index state during dichotomy calculation.
+ * Object responsible for storing the dichotomy index state during dichotomy calculation.
  * It stores the results of previously validated steps.
  * An important assumption for Dichotomy engine is that minimum value is supposed to be secure
  * and maximum value is supposed to be unsecure. More precisely, if minimum value is unsecure, the algorithm
@@ -26,7 +26,6 @@ import java.util.List;
  * @author Sebastien Murgey {@literal <sebastien.murgey at rte-france.com>}
  */
 public class Index<T> {
-    private static final double EPSILON = 1e-3;
     private final double minValue;
     private final double maxValue;
     private final double precision;

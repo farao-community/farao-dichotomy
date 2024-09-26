@@ -59,11 +59,11 @@ public final class DichotomyResult<I> {
     }
 
     public DichotomyStepResult<I> getHighestValidStep() {
-        return highestValidStep.getRight();
+        return highestValidStep == null ? null : highestValidStep.getRight();
     }
 
     public DichotomyStepResult<I> getLowestInvalidStep() {
-        return lowestInvalidStep.getRight();
+        return lowestInvalidStep == null ? null : lowestInvalidStep.getRight();
     }
 
     public LimitingCause getLimitingCause() {
