@@ -7,23 +7,33 @@
 package com.farao_community.farao.dichotomy.api;
 
 import com.farao_community.farao.dichotomy.api.exceptions.DichotomyException;
+import com.farao_community.farao.dichotomy.api.exceptions.GlskLimitationException;
 import com.farao_community.farao.dichotomy.api.exceptions.RaoInterruptionException;
+import com.farao_community.farao.dichotomy.api.exceptions.ShiftingException;
 import com.farao_community.farao.dichotomy.api.exceptions.ValidationException;
 import com.farao_community.farao.dichotomy.api.index.Index;
 import com.farao_community.farao.dichotomy.api.index.IndexStrategy;
 import com.farao_community.farao.dichotomy.api.index.RangeDivisionIndexStrategy;
 import com.farao_community.farao.dichotomy.api.index.StepsIndexStrategy;
 import com.farao_community.farao.dichotomy.api.results.DichotomyResult;
+import com.farao_community.farao.dichotomy.api.results.DichotomyStepResult;
+import com.farao_community.farao.dichotomy.api.results.ReasonInvalid;
 import com.powsybl.iidm.network.Network;
+import com.powsybl.iidm.network.VariantManager;
+import org.apache.commons.lang3.tuple.Pair;
+import org.assertj.core.api.Assertions;
+import org.assertj.core.api.SoftAssertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.EnumSource;
 import org.mockito.Mockito;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertNull;
-import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.Mockito.any;
+import static org.mockito.Mockito.anyString;
+import static org.mockito.Mockito.eq;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 /**
  * @author Joris Mancini {@literal <joris.mancini at rte-france.com>}
@@ -36,395 +46,524 @@ class DichotomyEngineTest {
 
     @BeforeEach
     void setUp() {
-        String networkFilename = "20210901_2230_test_network.uct";
+        final String networkFilename = "20210901_2230_test_network.uct";
         initialNetwork = Network.read(networkFilename, getClass().getResourceAsStream(networkFilename));
     }
 
     @Test
     void checkRangeDivisionIndexStrategyStartingWithMin() {
-        double limit = -340;
-        double minValue = -1000;
-        double maxValue = 1000;
-        double precision = 200;
-        Index<Object> index = new Index<>(minValue, maxValue, precision);
-        IndexStrategy indexStrategy = new RangeDivisionIndexStrategy(true);
-        NetworkValidator<Object> networkValidator = new NetworkValidatorMock(limit);
-        DichotomyEngine<Object> engine = new DichotomyEngine<>(index, indexStrategy, Mockito.mock(NetworkShifter.class), networkValidator);
+        final double limit = -340;
+        final double minValue = -1000;
+        final double maxValue = 1000;
+        final double precision = 200;
+        final Index<Object> index = new Index<>(minValue, maxValue, precision);
+        final IndexStrategy indexStrategy = new RangeDivisionIndexStrategy(true);
+        final NetworkValidator<Object> networkValidator = new NetworkValidatorMock(limit);
+        final DichotomyEngine<Object> engine = new DichotomyEngine<>(index, indexStrategy, mock(NetworkShifter.class), networkValidator);
+
         engine.run(initialNetwork);
 
-        assertEquals(6, index.testedSteps().size());
+        SoftAssertions assertions = new SoftAssertions();
+        assertions.assertThat(index.testedSteps()).hasSize(6);
 
-        assertTrue(index.highestValidStep().getRight().isValid());
-        assertEquals(-375, index.highestValidStep().getLeft(), EPSILON);
-        assertFalse(index.lowestInvalidStep().getRight().isValid());
-        assertEquals(-250, index.lowestInvalidStep().getLeft(), EPSILON);
+        assertResultValidEquals(assertions, index.highestValidStep(), -375);
+        assertResultInvalidEquals(assertions, index.lowestInvalidStep(), -250);
 
-        assertEquals(-1000, index.testedSteps().get(0).getLeft(), EPSILON);
-        assertTrue(index.testedSteps().get(0).getRight().isValid());
-        assertEquals(1000, index.testedSteps().get(1).getLeft(), EPSILON);
-        assertFalse(index.testedSteps().get(1).getRight().isValid());
-        assertEquals(0, index.testedSteps().get(2).getLeft(), EPSILON);
-        assertFalse(index.testedSteps().get(2).getRight().isValid());
-        assertEquals(-500, index.testedSteps().get(3).getLeft(), EPSILON);
-        assertTrue(index.testedSteps().get(3).getRight().isValid());
-        assertEquals(-250, index.testedSteps().get(4).getLeft(), EPSILON);
-        assertFalse(index.testedSteps().get(4).getRight().isValid());
-        assertEquals(-375, index.testedSteps().get(5).getLeft(), EPSILON);
-        assertTrue(index.testedSteps().get(5).getRight().isValid());
+        assertResultValidEquals(assertions, index.testedSteps().get(0), -1000);
+        assertResultInvalidEquals(assertions, index.testedSteps().get(1), 1000);
+        assertResultInvalidEquals(assertions, index.testedSteps().get(2), 0);
+        assertResultValidEquals(assertions, index.testedSteps().get(3), -500);
+        assertResultInvalidEquals(assertions, index.testedSteps().get(4), -250);
+        assertResultValidEquals(assertions, index.testedSteps().get(5), -375);
+        assertions.assertAll();
     }
 
     @Test
     void checkRangeDivisionIndexStrategyStartingWithMax() {
-        double limit = -340;
-        double minValue = -1000;
-        double maxValue = 1000;
-        double precision = 200;
-        Index<Object> index = new Index<>(minValue, maxValue, precision);
-        IndexStrategy indexStrategy = new RangeDivisionIndexStrategy(false);
-        NetworkValidator<Object> networkValidator = new NetworkValidatorMock(limit);
-        DichotomyEngine<Object> engine = new DichotomyEngine<>(index, indexStrategy, Mockito.mock(NetworkShifter.class), networkValidator);
+        final double limit = -340;
+        final double minValue = -1000;
+        final double maxValue = 1000;
+        final double precision = 200;
+        final Index<Object> index = new Index<>(minValue, maxValue, precision);
+        final IndexStrategy indexStrategy = new RangeDivisionIndexStrategy(false);
+        final NetworkValidator<Object> networkValidator = new NetworkValidatorMock(limit);
+        final DichotomyEngine<Object> engine = new DichotomyEngine<>(index, indexStrategy, mock(NetworkShifter.class), networkValidator);
+
         engine.run(initialNetwork);
 
-        assertEquals(6, index.testedSteps().size());
+        SoftAssertions assertions = new SoftAssertions();
+        assertions.assertThat(index.testedSteps().size()).isEqualTo(6);
 
-        assertTrue(index.highestValidStep().getRight().isValid());
-        assertEquals(-375, index.highestValidStep().getLeft(), EPSILON);
-        assertFalse(index.lowestInvalidStep().getRight().isValid());
-        assertEquals(-250, index.lowestInvalidStep().getLeft(), EPSILON);
+        assertResultValidEquals(assertions, index.highestValidStep(), -375);
+        assertResultInvalidEquals(assertions, index.lowestInvalidStep(), -250);
 
-        assertEquals(1000, index.testedSteps().get(0).getLeft(), EPSILON);
-        assertFalse(index.testedSteps().get(0).getRight().isValid());
-        assertEquals(-1000, index.testedSteps().get(1).getLeft(), EPSILON);
-        assertTrue(index.testedSteps().get(1).getRight().isValid());
-        assertEquals(0, index.testedSteps().get(2).getLeft(), EPSILON);
-        assertFalse(index.testedSteps().get(2).getRight().isValid());
-        assertEquals(-500, index.testedSteps().get(3).getLeft(), EPSILON);
-        assertTrue(index.testedSteps().get(3).getRight().isValid());
-        assertEquals(-250, index.testedSteps().get(4).getLeft(), EPSILON);
-        assertFalse(index.testedSteps().get(4).getRight().isValid());
-        assertEquals(-375, index.testedSteps().get(5).getLeft(), EPSILON);
-        assertTrue(index.testedSteps().get(5).getRight().isValid());
+        assertResultInvalidEquals(assertions, index.testedSteps().get(0), 1000);
+        assertResultValidEquals(assertions, index.testedSteps().get(1), -1000);
+        assertResultInvalidEquals(assertions, index.testedSteps().get(2), 0);
+        assertResultValidEquals(assertions, index.testedSteps().get(3), -500);
+        assertResultInvalidEquals(assertions, index.testedSteps().get(4), -250);
+        assertResultValidEquals(assertions, index.testedSteps().get(5), -375);
+        assertions.assertAll();
     }
 
     @Test
     void checkStepsIndexStrategyStartingWithMin() {
-        double limit = -340;
-        double minValue = -1000;
-        double maxValue = 1000;
-        double precision = 200;
-        double stepsSize = 400;
-        Index<Object> index = new Index<>(minValue, maxValue, precision);
-        IndexStrategy indexStrategy = new StepsIndexStrategy(true, stepsSize);
-        NetworkValidator<Object> networkValidator = new NetworkValidatorMock(limit);
-        DichotomyEngine<Object> engine = new DichotomyEngine<>(index, indexStrategy, Mockito.mock(NetworkShifter.class), networkValidator);
+        final double limit = -340;
+        final double minValue = -1000;
+        final double maxValue = 1000;
+        final double precision = 200;
+        final double stepsSize = 400;
+        final Index<Object> index = new Index<>(minValue, maxValue, precision);
+        final IndexStrategy indexStrategy = new StepsIndexStrategy(true, stepsSize);
+        final NetworkValidator<Object> networkValidator = new NetworkValidatorMock(limit);
+        final DichotomyEngine<Object> engine = new DichotomyEngine<>(index, indexStrategy, mock(NetworkShifter.class), networkValidator);
+
         engine.run(initialNetwork);
 
-        assertEquals(4, index.testedSteps().size());
+        SoftAssertions assertions = new SoftAssertions();
+        assertions.assertThat(index.testedSteps().size()).isEqualTo(4);
 
-        assertTrue(index.highestValidStep().getRight().isValid());
-        assertEquals(-400, index.highestValidStep().getLeft(), EPSILON);
-        assertFalse(index.lowestInvalidStep().getRight().isValid());
-        assertEquals(-200, index.lowestInvalidStep().getLeft(), EPSILON);
+        assertResultValidEquals(assertions, index.highestValidStep(), -400);
+        assertResultInvalidEquals(assertions, index.lowestInvalidStep(), -200);
 
-        assertEquals(-1000, index.testedSteps().get(0).getLeft(), EPSILON);
-        assertTrue(index.testedSteps().get(0).getRight().isValid());
-        assertEquals(-600, index.testedSteps().get(1).getLeft(), EPSILON);
-        assertTrue(index.testedSteps().get(1).getRight().isValid());
-        assertEquals(-200, index.testedSteps().get(2).getLeft(), EPSILON);
-        assertFalse(index.testedSteps().get(2).getRight().isValid());
-        assertEquals(-400, index.testedSteps().get(3).getLeft(), EPSILON);
-        assertTrue(index.testedSteps().get(3).getRight().isValid());
+        assertResultValidEquals(assertions, index.testedSteps().get(0), -1000);
+        assertResultValidEquals(assertions, index.testedSteps().get(1), -600);
+        assertResultInvalidEquals(assertions, index.testedSteps().get(2), -200);
+        assertResultValidEquals(assertions, index.testedSteps().get(3), -400);
+        assertions.assertAll();
     }
 
     @Test
     void checkStepsIndexStrategyStartingWithMax() {
-        double limit = -340;
-        double minValue = -1000;
-        double maxValue = 1000;
-        double precision = 200;
-        double stepsSize = 400;
-        Index<Object> index = new Index<>(minValue, maxValue, precision);
-        IndexStrategy indexStrategy = new StepsIndexStrategy(false, stepsSize);
-        NetworkValidator<Object> networkValidator = new NetworkValidatorMock(limit);
-        DichotomyEngine<Object> engine = new DichotomyEngine<>(index, indexStrategy, Mockito.mock(NetworkShifter.class), networkValidator);
+        final double limit = -340;
+        final double minValue = -1000;
+        final double maxValue = 1000;
+        final double precision = 200;
+        final double stepsSize = 400;
+        final Index<Object> index = new Index<>(minValue, maxValue, precision);
+        final IndexStrategy indexStrategy = new StepsIndexStrategy(false, stepsSize);
+        final NetworkValidator<Object> networkValidator = new NetworkValidatorMock(limit);
+        final DichotomyEngine<Object> engine = new DichotomyEngine<>(index, indexStrategy, mock(NetworkShifter.class), networkValidator);
+
         engine.run(initialNetwork);
 
-        assertEquals(6, index.testedSteps().size());
+        SoftAssertions assertions = new SoftAssertions();
+        assertions.assertThat(index.testedSteps().size()).isEqualTo(6);
 
-        assertTrue(index.highestValidStep().getRight().isValid());
-        assertEquals(-400, index.highestValidStep().getLeft(), EPSILON);
-        assertFalse(index.lowestInvalidStep().getRight().isValid());
-        assertEquals(-200, index.lowestInvalidStep().getLeft(), EPSILON);
+        assertResultValidEquals(assertions, index.highestValidStep(), -400);
+        assertResultInvalidEquals(assertions, index.lowestInvalidStep(), -200);
 
-        assertEquals(1000, index.testedSteps().get(0).getLeft(), EPSILON);
-        assertFalse(index.testedSteps().get(0).getRight().isValid());
-        assertEquals(600, index.testedSteps().get(1).getLeft(), EPSILON);
-        assertFalse(index.testedSteps().get(1).getRight().isValid());
-        assertEquals(200, index.testedSteps().get(2).getLeft(), EPSILON);
-        assertFalse(index.testedSteps().get(2).getRight().isValid());
-        assertEquals(-200, index.testedSteps().get(3).getLeft(), EPSILON);
-        assertFalse(index.testedSteps().get(3).getRight().isValid());
-        assertEquals(-600, index.testedSteps().get(4).getLeft(), EPSILON);
-        assertTrue(index.testedSteps().get(4).getRight().isValid());
-        assertEquals(-400, index.testedSteps().get(5).getLeft(), EPSILON);
-        assertTrue(index.testedSteps().get(5).getRight().isValid());
+        assertResultInvalidEquals(assertions, index.testedSteps().get(0), 1000);
+        assertResultInvalidEquals(assertions, index.testedSteps().get(1), 600);
+        assertResultInvalidEquals(assertions, index.testedSteps().get(2), 200);
+        assertResultInvalidEquals(assertions, index.testedSteps().get(3), -200);
+        assertResultValidEquals(assertions, index.testedSteps().get(4), -600);
+        assertResultValidEquals(assertions, index.testedSteps().get(5), -400);
+        assertions.assertAll();
     }
 
     @Test
     void checkDichotomyEngineStopsAtMaxIterations() {
-        double limit = -340;
-        double minValue = -1000;
-        double maxValue = 1000;
-        double precision = 200;
-        int maxIterations = 5;
-        Index<Object> index = new Index<>(minValue, maxValue, precision);
-        IndexStrategy indexStrategy = new RangeDivisionIndexStrategy(true);
-        NetworkValidator<Object> networkValidator = new NetworkValidatorMock(limit);
-        DichotomyEngine<Object> engine = new DichotomyEngine<>(index, indexStrategy, Mockito.mock(NetworkShifter.class), networkValidator, maxIterations);
+        final double limit = -340;
+        final double minValue = -1000;
+        final double maxValue = 1000;
+        final double precision = 200;
+        final int maxIterations = 5;
+        final Index<Object> index = new Index<>(minValue, maxValue, precision);
+        final IndexStrategy indexStrategy = new RangeDivisionIndexStrategy(true);
+        final NetworkValidator<Object> networkValidator = new NetworkValidatorMock(limit);
+        final DichotomyEngine<Object> engine = new DichotomyEngine<>(index, indexStrategy, mock(NetworkShifter.class), networkValidator, maxIterations);
+
         engine.run(initialNetwork);
 
-        assertEquals(5, index.testedSteps().size());
+        SoftAssertions assertions = new SoftAssertions();
+        assertions.assertThat(index.testedSteps().size()).isEqualTo(5);
 
-        assertTrue(index.highestValidStep().getRight().isValid());
-        assertEquals(-500, index.highestValidStep().getLeft(), EPSILON);
-        assertFalse(index.lowestInvalidStep().getRight().isValid());
-        assertEquals(-250, index.lowestInvalidStep().getLeft(), EPSILON);
+        assertResultValidEquals(assertions, index.highestValidStep(), -500);
+        assertResultInvalidEquals(assertions, index.lowestInvalidStep(), -250);
 
-        assertEquals(-1000, index.testedSteps().get(0).getLeft(), EPSILON);
-        assertTrue(index.testedSteps().get(0).getRight().isValid());
-        assertEquals(1000, index.testedSteps().get(1).getLeft(), EPSILON);
-        assertFalse(index.testedSteps().get(1).getRight().isValid());
-        assertEquals(0, index.testedSteps().get(2).getLeft(), EPSILON);
-        assertFalse(index.testedSteps().get(2).getRight().isValid());
-        assertEquals(-500, index.testedSteps().get(3).getLeft(), EPSILON);
-        assertTrue(index.testedSteps().get(3).getRight().isValid());
-        assertEquals(-250, index.testedSteps().get(4).getLeft(), EPSILON);
-        assertFalse(index.testedSteps().get(4).getRight().isValid());
+        assertResultValidEquals(assertions, index.testedSteps().get(0), -1000);
+        assertResultInvalidEquals(assertions, index.testedSteps().get(1), 1000);
+        assertResultInvalidEquals(assertions, index.testedSteps().get(2), 0);
+        assertResultValidEquals(assertions, index.testedSteps().get(3), -500);
+        assertResultInvalidEquals(assertions, index.testedSteps().get(4), -250);
+        assertions.assertAll();
     }
 
     @Test
     void checkAllSecure() {
-        double limit = 1500;
-        double minValue = -1000;
-        double maxValue = 1000;
-        double precision = 200;
-        Index<Object> index = new Index<>(minValue, maxValue, precision);
-        IndexStrategy indexStrategy = new RangeDivisionIndexStrategy(true);
-        NetworkValidator<Object> networkValidator = new NetworkValidatorMock(limit);
-        DichotomyEngine<Object> engine = new DichotomyEngine<>(index, indexStrategy, Mockito.mock(NetworkShifter.class), networkValidator);
+        final double limit = 1500;
+        final double minValue = -1000;
+        final double maxValue = 1000;
+        final double precision = 200;
+        final Index<Object> index = new Index<>(minValue, maxValue, precision);
+        final IndexStrategy indexStrategy = new RangeDivisionIndexStrategy(true);
+        final NetworkValidator<Object> networkValidator = new NetworkValidatorMock(limit);
+        final DichotomyEngine<Object> engine = new DichotomyEngine<>(index, indexStrategy, mock(NetworkShifter.class), networkValidator);
+
         engine.run(initialNetwork);
 
-        assertEquals(2, index.testedSteps().size());
+        SoftAssertions assertions = new SoftAssertions();
+        assertions.assertThat(index.testedSteps().size()).isEqualTo(2);
 
-        assertTrue(index.highestValidStep().getRight().isValid());
-        assertEquals(1000, index.highestValidStep().getLeft(), EPSILON);
-        assertNull(index.lowestInvalidStep());
+        assertResultValidEquals(assertions, index.highestValidStep(), 1000);
+        assertions.assertThat(index.lowestInvalidStep()).isNull();
 
-        assertEquals(-1000, index.testedSteps().get(0).getLeft(), EPSILON);
-        assertTrue(index.testedSteps().get(0).getRight().isValid());
-        assertEquals(1000, index.testedSteps().get(1).getLeft(), EPSILON);
-        assertTrue(index.testedSteps().get(1).getRight().isValid());
+        assertResultValidEquals(assertions, index.testedSteps().get(0), -1000);
+        assertResultValidEquals(assertions, index.testedSteps().get(1), 1000);
+        assertions.assertAll();
     }
 
     @Test
     void checkAllUnsecure() {
-        double limit = -1500;
-        double minValue = -1000;
-        double maxValue = 1000;
-        double precision = 200;
-        Index<Object> index = new Index<>(minValue, maxValue, precision);
-        IndexStrategy indexStrategy = new RangeDivisionIndexStrategy(true);
-        NetworkValidator<Object> networkValidator = new NetworkValidatorMock(limit);
-        DichotomyEngine<Object> engine = new DichotomyEngine<>(index, indexStrategy, Mockito.mock(NetworkShifter.class), networkValidator);
+        final double limit = -1500;
+        final double minValue = -1000;
+        final double maxValue = 1000;
+        final double precision = 200;
+        final Index<Object> index = new Index<>(minValue, maxValue, precision);
+        final IndexStrategy indexStrategy = new RangeDivisionIndexStrategy(true);
+        final NetworkValidator<Object> networkValidator = new NetworkValidatorMock(limit);
+        final DichotomyEngine<Object> engine = new DichotomyEngine<>(index, indexStrategy, mock(NetworkShifter.class), networkValidator);
+
         engine.run(initialNetwork);
 
-        assertEquals(1, index.testedSteps().size());
+        SoftAssertions assertions = new SoftAssertions();
+        assertions.assertThat(index.testedSteps().size()).isEqualTo(1);
 
-        assertNull(index.highestValidStep());
-        assertFalse(index.lowestInvalidStep().getRight().isValid());
-        assertEquals(-1000, index.lowestInvalidStep().getLeft(), EPSILON);
+        assertions.assertThat(index.highestValidStep()).isNull();
+        assertResultInvalidEquals(assertions, index.lowestInvalidStep(), -1000);
 
-        assertEquals(-1000, index.testedSteps().get(0).getLeft(), EPSILON);
-        assertFalse(index.testedSteps().get(0).getRight().isValid());
+        assertResultInvalidEquals(assertions, index.testedSteps().get(0), -1000);
+        assertions.assertAll();
     }
 
     @Test
     void checkThatEngineFailsWhenMaxIterationTooLow() {
-        double limit = -1500;
-        double minValue = -1000;
-        double maxValue = 1000;
-        double precision = 200;
-        Index<Object> index = new Index<>(minValue, maxValue, precision);
-        IndexStrategy indexStrategy = new RangeDivisionIndexStrategy(true);
-        NetworkValidator<Object> networkValidator = new NetworkValidatorMock(limit);
-        assertThrows(DichotomyException.class, () -> new DichotomyEngine<>(index, indexStrategy, Mockito.mock(NetworkShifter.class), networkValidator, 2));
+        final double limit = -1500;
+        final double minValue = -1000;
+        final double maxValue = 1000;
+        final double precision = 200;
+        final Index<Object> index = new Index<>(minValue, maxValue, precision);
+        final IndexStrategy indexStrategy = new RangeDivisionIndexStrategy(true);
+        final NetworkValidator<Object> networkValidator = new NetworkValidatorMock(limit);
+
+        Assertions.assertThatExceptionOfType(DichotomyException.class)
+                .isThrownBy(() -> new DichotomyEngine<>(index, indexStrategy, mock(NetworkShifter.class), networkValidator, 2));
     }
 
     @Test
     void checkThatStepsIndexStrategyCreationFailsWhenStepsSizeNegative() {
-        assertThrows(DichotomyException.class, () -> new StepsIndexStrategy(true, -10));
-        assertThrows(DichotomyException.class, () -> new StepsIndexStrategy(true, 0));
+        Assertions.assertThatExceptionOfType(DichotomyException.class)
+                        .isThrownBy(() -> new StepsIndexStrategy(true, -10));
+        Assertions.assertThatExceptionOfType(DichotomyException.class)
+                        .isThrownBy(() -> new StepsIndexStrategy(true, 0));
     }
 
     @Test
     void checkDichotomyEngineChecksLimitsWhenIntervalSmallerThanPrecision() {
-        double limit = 0;
-        double minValue = -50;
-        double maxValue = 50;
-        double precision = 200;
-        int maxIterations = 5;
-        Index<Object> index = new Index<>(minValue, maxValue, precision);
-        IndexStrategy indexStrategy = new RangeDivisionIndexStrategy(true);
-        NetworkValidator<Object> networkValidator = new NetworkValidatorMock(limit);
-        DichotomyEngine<Object> engine = new DichotomyEngine<>(index, indexStrategy, Mockito.mock(NetworkShifter.class), networkValidator, maxIterations);
+        final double limit = 0;
+        final double minValue = -50;
+        final double maxValue = 50;
+        final double precision = 200;
+        final int maxIterations = 5;
+        final Index<Object> index = new Index<>(minValue, maxValue, precision);
+        final IndexStrategy indexStrategy = new RangeDivisionIndexStrategy(true);
+        final NetworkValidator<Object> networkValidator = new NetworkValidatorMock(limit);
+        final DichotomyEngine<Object> engine = new DichotomyEngine<>(index, indexStrategy, mock(NetworkShifter.class), networkValidator, maxIterations);
+
         engine.run(initialNetwork);
 
-        assertEquals(2, index.testedSteps().size());
+        SoftAssertions assertions = new SoftAssertions();
+        assertions.assertThat(index.testedSteps().size()).isEqualTo(2);
 
-        assertTrue(index.highestValidStep().getRight().isValid());
-        assertEquals(-50, index.highestValidStep().getLeft(), EPSILON);
-        assertFalse(index.lowestInvalidStep().getRight().isValid());
-        assertEquals(50, index.lowestInvalidStep().getLeft(), EPSILON);
+        assertResultValidEquals(assertions, index.highestValidStep(), -50);
+        assertResultInvalidEquals(assertions, index.lowestInvalidStep(), 50);
 
-        assertEquals(-50, index.testedSteps().get(0).getLeft(), EPSILON);
-        assertTrue(index.testedSteps().get(0).getRight().isValid());
-        assertEquals(50, index.testedSteps().get(1).getLeft(), EPSILON);
-        assertFalse(index.testedSteps().get(1).getRight().isValid());
+        assertResultValidEquals(assertions, index.testedSteps().get(0), -50);
+        assertResultInvalidEquals(assertions, index.testedSteps().get(1), 50);
+        assertions.assertAll();
     }
 
     @Test
     void checkDichotomyEngineStopEarlyWhenIntervalSmallerThanPrecisionButMinUnsecure() {
-        double limit = -100;
-        double minValue = -50;
-        double maxValue = 50;
-        double precision = 100;
-        int maxIterations = 5;
-        Index<Object> index = new Index<>(minValue, maxValue, precision);
-        IndexStrategy indexStrategy = new RangeDivisionIndexStrategy(true);
-        NetworkValidator<Object> networkValidator = new NetworkValidatorMock(limit);
-        DichotomyEngine<Object> engine = new DichotomyEngine<>(index, indexStrategy, Mockito.mock(NetworkShifter.class), networkValidator, maxIterations);
+        final double limit = -100;
+        final double minValue = -50;
+        final double maxValue = 50;
+        final double precision = 100;
+        final int maxIterations = 5;
+        final Index<Object> index = new Index<>(minValue, maxValue, precision);
+        final IndexStrategy indexStrategy = new RangeDivisionIndexStrategy(true);
+        final NetworkValidator<Object> networkValidator = new NetworkValidatorMock(limit);
+        final DichotomyEngine<Object> engine = new DichotomyEngine<>(index, indexStrategy, mock(NetworkShifter.class), networkValidator, maxIterations);
+
         engine.run(initialNetwork);
 
-        assertEquals(1, index.testedSteps().size());
+        SoftAssertions assertions = new SoftAssertions();
+        assertions.assertThat(index.testedSteps().size()).isEqualTo(1);
 
-        assertNull(index.highestValidStep());
-        assertFalse(index.lowestInvalidStep().getRight().isValid());
-        assertEquals(-50, index.lowestInvalidStep().getLeft(), EPSILON);
+        assertions.assertThat(index.highestValidStep()).isNull();
+        assertResultInvalidEquals(assertions, index.lowestInvalidStep(), -50);
 
-        assertEquals(-50, index.testedSteps().get(0).getLeft(), EPSILON);
-        assertFalse(index.testedSteps().get(0).getRight().isValid());
+        assertResultInvalidEquals(assertions, index.testedSteps().get(0), -50);
+        assertions.assertAll();
     }
 
     @Test
     void checkDichotomyEngineStopEarlyWhenIntervalSmallerThanPrecisionButMaxSecure() {
-        double limit = 100;
-        double minValue = -50;
-        double maxValue = 50;
-        double precision = 100;
-        int maxIterations = 5;
-        Index<Object> index = new Index<>(minValue, maxValue, precision);
-        IndexStrategy indexStrategy = new RangeDivisionIndexStrategy(false);
-        NetworkValidator<Object> networkValidator = new NetworkValidatorMock(limit);
-        DichotomyEngine<Object> engine = new DichotomyEngine<>(index, indexStrategy, Mockito.mock(NetworkShifter.class), networkValidator, maxIterations);
+        final double limit = 100;
+        final double minValue = -50;
+        final double maxValue = 50;
+        final double precision = 100;
+        final int maxIterations = 5;
+        final Index<Object> index = new Index<>(minValue, maxValue, precision);
+        final IndexStrategy indexStrategy = new RangeDivisionIndexStrategy(false);
+        final NetworkValidator<Object> networkValidator = new NetworkValidatorMock(limit);
+        final DichotomyEngine<Object> engine = new DichotomyEngine<>(index, indexStrategy, mock(NetworkShifter.class), networkValidator, maxIterations);
+
         engine.run(initialNetwork);
 
-        assertEquals(1, index.testedSteps().size());
+        SoftAssertions assertions = new SoftAssertions();
+        assertions.assertThat(index.testedSteps().size()).isEqualTo(1);
 
-        assertTrue(index.highestValidStep().getRight().isValid());
-        assertNull(index.lowestInvalidStep());
-        assertEquals(50, index.highestValidStep().getLeft(), EPSILON);
+        assertions.assertThat(index.lowestInvalidStep()).isNull();
+        assertResultValidEquals(assertions, index.highestValidStep(), 50);
 
-        assertEquals(50, index.testedSteps().get(0).getLeft(), EPSILON);
-        assertTrue(index.testedSteps().get(0).getRight().isValid());
+        assertResultValidEquals(assertions, index.testedSteps().get(0), 50);
+        assertions.assertAll();
     }
 
     @Test
     void checkSoftInterruptionNotInterrupted() {
-        double limit = -340;
-        double minValue = -1000;
-        double maxValue = 1000;
-        double precision = 200;
-        double stepsSize = 400;
-        Index<Object> index = new Index<>(minValue, maxValue, precision);
-        IndexStrategy indexStrategy = new StepsIndexStrategy(true, stepsSize);
-        NetworkValidator<Object> networkValidator = new NetworkValidatorMock(limit);
-        InterruptionStrategy interruptionStrategy = Mockito.mock(InterruptionStrategy.class);
-        Mockito.when(interruptionStrategy.shouldTaskBeInterruptedSoftly("id")).thenReturn(false);
-        DichotomyEngine<Object> engine = new DichotomyEngine<>(index, indexStrategy, interruptionStrategy, Mockito.mock(NetworkShifter.class), networkValidator, "id");
-        DichotomyResult<Object> dichotomyResult = engine.run(initialNetwork);
+        final double limit = -340;
+        final double minValue = -1000;
+        final double maxValue = 1000;
+        final double precision = 200;
+        final double stepsSize = 400;
+        final Index<Object> index = new Index<>(minValue, maxValue, precision);
+        final IndexStrategy indexStrategy = new StepsIndexStrategy(true, stepsSize);
+        final NetworkValidator<Object> networkValidator = new NetworkValidatorMock(limit);
+        final InterruptionStrategy interruptionStrategy = mock(InterruptionStrategy.class);
+        when(interruptionStrategy.shouldTaskBeInterruptedSoftly("id")).thenReturn(false);
+        final DichotomyEngine<Object> engine = new DichotomyEngine<>(index, indexStrategy, interruptionStrategy, mock(NetworkShifter.class), networkValidator, "id");
 
-        assertFalse(dichotomyResult.isInterrupted());
-        assertEquals(4, index.testedSteps().size());
+        final DichotomyResult<Object> dichotomyResult = engine.run(initialNetwork);
 
-        assertTrue(index.highestValidStep().getRight().isValid());
-        assertEquals(-400, index.highestValidStep().getLeft(), EPSILON);
-        assertFalse(index.lowestInvalidStep().getRight().isValid());
-        assertEquals(-200, index.lowestInvalidStep().getLeft(), EPSILON);
+        SoftAssertions assertions = new SoftAssertions();
+        assertions.assertThat(dichotomyResult.isInterrupted()).isFalse();
+        assertions.assertThat(index.testedSteps().size()).isEqualTo(4);
 
-        assertEquals(-1000, index.testedSteps().get(0).getLeft(), EPSILON);
-        assertTrue(index.testedSteps().get(0).getRight().isValid());
-        assertEquals(-600, index.testedSteps().get(1).getLeft(), EPSILON);
-        assertTrue(index.testedSteps().get(1).getRight().isValid());
-        assertEquals(-200, index.testedSteps().get(2).getLeft(), EPSILON);
-        assertFalse(index.testedSteps().get(2).getRight().isValid());
-        assertEquals(-400, index.testedSteps().get(3).getLeft(), EPSILON);
-        assertTrue(index.testedSteps().get(3).getRight().isValid());
+        assertResultValidEquals(assertions, index.highestValidStep(), -400);
+        assertResultInvalidEquals(assertions, index.lowestInvalidStep(), -200);
+
+        assertResultValidEquals(assertions, index.testedSteps().get(0), -1000);
+        assertResultValidEquals(assertions, index.testedSteps().get(1), -600);
+        assertResultInvalidEquals(assertions, index.testedSteps().get(2), -200);
+        assertResultValidEquals(assertions, index.testedSteps().get(3), -400);
+        assertions.assertAll();
     }
 
     @Test
     void checkSoftInterruptionBeforeFirstRao() {
-        double limit = -340;
-        double minValue = -1000;
-        double maxValue = 1000;
-        double precision = 200;
-        double stepsSize = 400;
-        Index<Object> index = new Index<>(minValue, maxValue, precision);
-        IndexStrategy indexStrategy = new StepsIndexStrategy(true, stepsSize);
-        NetworkValidator<Object> networkValidator = new NetworkValidatorMock(limit);
-        InterruptionStrategy interruptionStrategy = Mockito.mock(InterruptionStrategy.class);
-        Mockito.when(interruptionStrategy.shouldTaskBeInterruptedSoftly("id")).thenReturn(true);
-        DichotomyEngine<Object> engine = new DichotomyEngine<>(index, indexStrategy, interruptionStrategy, Mockito.mock(NetworkShifter.class), networkValidator, "id");
-        DichotomyResult<Object> dichotomyResult = engine.run(initialNetwork);
+        final double limit = -340;
+        final double minValue = -1000;
+        final double maxValue = 1000;
+        final double precision = 200;
+        final double stepsSize = 400;
+        final Index<Object> index = new Index<>(minValue, maxValue, precision);
+        final IndexStrategy indexStrategy = new StepsIndexStrategy(true, stepsSize);
+        final NetworkValidator<Object> networkValidator = new NetworkValidatorMock(limit);
+        final InterruptionStrategy interruptionStrategy = mock(InterruptionStrategy.class);
+        when(interruptionStrategy.shouldTaskBeInterruptedSoftly("id")).thenReturn(true);
+        final DichotomyEngine<Object> engine = new DichotomyEngine<>(index, indexStrategy, interruptionStrategy, mock(NetworkShifter.class), networkValidator, "id");
 
-        assertTrue(dichotomyResult.isInterrupted());
-        assertEquals(0, index.testedSteps().size());
+        final DichotomyResult<Object> dichotomyResult = engine.run(initialNetwork);
+
+        SoftAssertions assertions = new SoftAssertions();
+        assertions.assertThat(dichotomyResult.isInterrupted()).isTrue();
+        assertions.assertThat(index.testedSteps().size()).isEqualTo(0);
+        assertions.assertAll();
     }
 
     @Test
     void checkSoftInterruptionBetweenFirstAndSecondRao() {
-        double limit = -340;
-        double minValue = -1000;
-        double maxValue = 1000;
-        double precision = 200;
-        double stepsSize = 400;
-        Index<Object> index = new Index<>(minValue, maxValue, precision);
-        IndexStrategy indexStrategy = new StepsIndexStrategy(true, stepsSize);
-        NetworkValidator<Object> networkValidator = new NetworkValidatorMock(limit);
-        InterruptionStrategy interruptionStrategy = Mockito.mock(InterruptionStrategy.class);
-        Mockito.when(interruptionStrategy.shouldTaskBeInterruptedSoftly("id")).thenReturn(false).thenReturn(true);
-        DichotomyEngine<Object> engine = new DichotomyEngine<>(index, indexStrategy, interruptionStrategy, Mockito.mock(NetworkShifter.class), networkValidator, "id");
-        DichotomyResult<Object> dichotomyResult = engine.run(initialNetwork);
+        final double limit = -340;
+        final double minValue = -1000;
+        final double maxValue = 1000;
+        final double precision = 200;
+        final double stepsSize = 400;
+        final Index<Object> index = new Index<>(minValue, maxValue, precision);
+        final IndexStrategy indexStrategy = new StepsIndexStrategy(true, stepsSize);
+        final NetworkValidator<Object> networkValidator = new NetworkValidatorMock(limit);
+        final InterruptionStrategy interruptionStrategy = mock(InterruptionStrategy.class);
+        when(interruptionStrategy.shouldTaskBeInterruptedSoftly("id")).thenReturn(false).thenReturn(true);
+        final DichotomyEngine<Object> engine = new DichotomyEngine<>(index, indexStrategy, interruptionStrategy, mock(NetworkShifter.class), networkValidator, "id");
 
-        assertTrue(dichotomyResult.isInterrupted());
-        assertEquals(1, index.testedSteps().size());
+        final DichotomyResult<Object> dichotomyResult = engine.run(initialNetwork);
+
+        SoftAssertions assertions = new SoftAssertions();
+        assertions.assertThat(dichotomyResult.isInterrupted()).isTrue();
+        assertions.assertThat(index.testedSteps().size()).isEqualTo(1);
+        assertions.assertAll();
     }
 
     @Test
     void checkSoftInterruptionDuringRao() throws ValidationException, RaoInterruptionException {
-        double minValue = -1000;
-        double maxValue = 1000;
-        double precision = 200;
-        double stepsSize = 400;
-        Index<Object> index = new Index<>(minValue, maxValue, precision);
-        IndexStrategy indexStrategy = new StepsIndexStrategy(false, stepsSize);
-        NetworkValidator<Object> networkValidator = Mockito.mock(NetworkValidator.class);
-        Mockito.when(networkValidator.validateNetwork(Mockito.any(), Mockito.any())).thenThrow(new RaoInterruptionException("test"));
-        InterruptionStrategy interruptionStrategy = Mockito.mock(InterruptionStrategy.class);
-        Mockito.when(interruptionStrategy.shouldTaskBeInterruptedSoftly("id")).thenReturn(false).thenReturn(true);
-        DichotomyEngine<Object> engine = new DichotomyEngine<>(index, indexStrategy, interruptionStrategy, Mockito.mock(NetworkShifter.class), networkValidator, "id");
-        DichotomyResult<Object> dichotomyResult = engine.run(initialNetwork);
+        final double minValue = -1000;
+        final double maxValue = 1000;
+        final double precision = 200;
+        final double stepsSize = 400;
+        final Index<Object> index = new Index<>(minValue, maxValue, precision);
+        final IndexStrategy indexStrategy = new StepsIndexStrategy(false, stepsSize);
+        final NetworkValidator<Object> networkValidator = mock(NetworkValidator.class);
+        when(networkValidator.validateNetwork(any(), any())).thenThrow(new RaoInterruptionException("test"));
+        final InterruptionStrategy interruptionStrategy = mock(InterruptionStrategy.class);
+        when(interruptionStrategy.shouldTaskBeInterruptedSoftly("id")).thenReturn(false).thenReturn(true);
+        final DichotomyEngine<Object> engine = new DichotomyEngine<>(index, indexStrategy, interruptionStrategy, mock(NetworkShifter.class), networkValidator, "id");
 
-        assertTrue(dichotomyResult.isInterrupted());
-        assertEquals(0, index.testedSteps().size());
+        final DichotomyResult<Object> dichotomyResult = engine.run(initialNetwork);
+
+        SoftAssertions assertions = new SoftAssertions();
+        assertions.assertThat(dichotomyResult.isInterrupted()).isTrue();
+        assertions.assertThat(index.testedSteps().size()).isEqualTo(0);
+        assertions.assertAll();
+    }
+
+    private static void assertResultValidEquals(SoftAssertions assertions, Pair<Double, DichotomyStepResult<Object>> index, int expected) {
+        assertions.assertThat(index.getLeft()).isEqualTo(expected, Assertions.withPrecision(EPSILON));
+        assertions.assertThat(index.getRight().isValid()).isTrue();
+    }
+
+    private static void assertResultInvalidEquals(SoftAssertions assertions, Pair<Double, DichotomyStepResult<Object>> index, int expected) {
+        assertions.assertThat(index.getLeft()).isEqualTo(expected, Assertions.withPrecision(EPSILON));
+        assertions.assertThat(index.getRight().isValid()).isFalse();
+    }
+
+    @Test
+    void validateThrowsGlskLimitationException() throws GlskLimitationException, ShiftingException {
+        final double stepValue = 1600d;
+        final String initialVariantName = "initialVariant";
+        final NetworkShifter networkShifter = mock(NetworkShifter.class);
+        final Network network = mock(Network.class);
+        final VariantManager variantManager = mock(VariantManager.class);
+        final DichotomyStepResult<Object> lastDichotomyStepResult = mock(DichotomyStepResult.class);
+        final Index<Object> index = mock(Index.class);
+        final IndexStrategy indexStrategy = mock(IndexStrategy.class);
+        final NetworkValidator<Object> networkValidator = mock(NetworkValidator.class);
+        final DichotomyEngine<Object> engine = new DichotomyEngine<>(index, indexStrategy, networkShifter, networkValidator);
+
+        when(network.getVariantManager()).thenReturn(variantManager);
+        when(network.getVariantManager()).thenReturn(variantManager);
+        Mockito.doNothing().when(variantManager).cloneVariant(eq(initialVariantName), anyString());
+        Mockito.doNothing().when(variantManager).setWorkingVariant(anyString());
+        Mockito.doThrow(GlskLimitationException.class).when(networkShifter).shiftNetwork(stepValue, network);
+
+        final DichotomyStepResult<Object> result = engine.validate(stepValue, network, initialVariantName, lastDichotomyStepResult);
+
+        Assertions.assertThat(result).isNotNull();
+        Assertions.assertThat(result.getReasonInvalid()).isEqualTo(ReasonInvalid.GLSK_LIMITATION);
+    }
+
+    @ParameterizedTest
+    @EnumSource(value = ReasonInvalid.class,
+            names = {"BALANCE_LOADFLOW_DIVERGENCE", "UNKNOWN_TERMINAL_BUS"})
+    void validateThrowsShiftingException(final ReasonInvalid reasonInvalid) throws GlskLimitationException, ShiftingException {
+        final double stepValue = 1600d;
+        final String initialVariantName = "initialVariant";
+        final NetworkShifter networkShifter = mock(NetworkShifter.class);
+        final Network network = mock(Network.class);
+        final VariantManager variantManager = mock(VariantManager.class);
+        final DichotomyStepResult<Object> lastDichotomyStepResult = mock(DichotomyStepResult.class);
+        final Index<Object> index = mock(Index.class);
+        final IndexStrategy indexStrategy = mock(IndexStrategy.class);
+        final NetworkValidator<Object> networkValidator = mock(NetworkValidator.class);
+        final DichotomyEngine<Object> engine = new DichotomyEngine<>(index, indexStrategy, networkShifter, networkValidator);
+
+        when(network.getVariantManager()).thenReturn(variantManager);
+        when(network.getVariantManager()).thenReturn(variantManager);
+        Mockito.doNothing().when(variantManager).cloneVariant(eq(initialVariantName), anyString());
+        Mockito.doNothing().when(variantManager).setWorkingVariant(anyString());
+        Mockito.doThrow(new ShiftingException("Error message", reasonInvalid)).when(networkShifter).shiftNetwork(stepValue, network);
+
+        final DichotomyStepResult<Object> result = engine.validate(stepValue, network, initialVariantName, lastDichotomyStepResult);
+
+        Assertions.assertThat(result).isNotNull();
+        Assertions.assertThat(result.getReasonInvalid()).isEqualTo(reasonInvalid);
+    }
+
+    @Test
+    void validateThrowsShiftingExceptionDefault() throws GlskLimitationException, ShiftingException {
+        final double stepValue = 1600d;
+        final String initialVariantName = "initialVariant";
+        final NetworkShifter networkShifter = mock(NetworkShifter.class);
+        final Network network = mock(Network.class);
+        final VariantManager variantManager = mock(VariantManager.class);
+        final DichotomyStepResult<Object> lastDichotomyStepResult = mock(DichotomyStepResult.class);
+        final Index<Object> index = mock(Index.class);
+        final IndexStrategy indexStrategy = mock(IndexStrategy.class);
+        final NetworkValidator<Object> networkValidator = mock(NetworkValidator.class);
+        final DichotomyEngine<Object> engine = new DichotomyEngine<>(index, indexStrategy, networkShifter, networkValidator);
+
+        when(network.getVariantManager()).thenReturn(variantManager);
+        when(network.getVariantManager()).thenReturn(variantManager);
+        Mockito.doNothing().when(variantManager).cloneVariant(eq(initialVariantName), anyString());
+        Mockito.doNothing().when(variantManager).setWorkingVariant(anyString());
+        Mockito.doThrow(new ShiftingException("Error message")).when(networkShifter).shiftNetwork(stepValue, network);
+
+        final DichotomyStepResult<Object> result = engine.validate(stepValue, network, initialVariantName, lastDichotomyStepResult);
+
+        Assertions.assertThat(result).isNotNull();
+        Assertions.assertThat(result.getReasonInvalid()).isEqualTo(ReasonInvalid.VALIDATION_FAILED);
+    }
+
+    @Test
+    void validateThrowsValidationException() throws GlskLimitationException, ShiftingException, ValidationException, RaoInterruptionException {
+        final double stepValue = 1600d;
+        final String initialVariantName = "initialVariant";
+        final NetworkShifter networkShifter = mock(NetworkShifter.class);
+        final Network network = mock(Network.class);
+        final VariantManager variantManager = mock(VariantManager.class);
+        final DichotomyStepResult<Object> lastDichotomyStepResult = mock(DichotomyStepResult.class);
+        final Index<Object> index = mock(Index.class);
+        final IndexStrategy indexStrategy = mock(IndexStrategy.class);
+        final NetworkValidator<Object> networkValidator = mock(NetworkValidator.class);
+        final DichotomyEngine<Object> engine = new DichotomyEngine<>(index, indexStrategy, networkShifter, networkValidator);
+
+        when(network.getVariantManager()).thenReturn(variantManager);
+        when(network.getVariantManager()).thenReturn(variantManager);
+        Mockito.doNothing().when(variantManager).cloneVariant(eq(initialVariantName), anyString());
+        Mockito.doNothing().when(variantManager).setWorkingVariant(anyString());
+        Mockito.doNothing().when(networkShifter).shiftNetwork(stepValue, network);
+        Mockito.when(networkValidator.validateNetwork(network, lastDichotomyStepResult)).thenThrow(ValidationException.class);
+
+        final DichotomyStepResult<Object> result = engine.validate(stepValue, network, initialVariantName, lastDichotomyStepResult);
+
+        Assertions.assertThat(result).isNotNull();
+        Assertions.assertThat(result.getReasonInvalid()).isEqualTo(ReasonInvalid.VALIDATION_FAILED);
+    }
+
+    @Test
+    void validateThrowsRaoInterruptionException() throws GlskLimitationException, ShiftingException, ValidationException, RaoInterruptionException {
+        final double stepValue = 1600d;
+        final String initialVariantName = "initialVariant";
+        final NetworkShifter networkShifter = mock(NetworkShifter.class);
+        final Network network = mock(Network.class);
+        final VariantManager variantManager = mock(VariantManager.class);
+        final DichotomyStepResult<Object> lastDichotomyStepResult = mock(DichotomyStepResult.class);
+        final Index<Object> index = mock(Index.class);
+        final IndexStrategy indexStrategy = mock(IndexStrategy.class);
+        final NetworkValidator<Object> networkValidator = mock(NetworkValidator.class);
+        final DichotomyEngine<Object> engine = new DichotomyEngine<>(index, indexStrategy, networkShifter, networkValidator);
+
+        when(network.getVariantManager()).thenReturn(variantManager);
+        when(network.getVariantManager()).thenReturn(variantManager);
+        Mockito.doNothing().when(variantManager).cloneVariant(eq(initialVariantName), anyString());
+        Mockito.doNothing().when(variantManager).setWorkingVariant(anyString());
+        Mockito.doNothing().when(networkShifter).shiftNetwork(stepValue, network);
+        Mockito.when(networkValidator.validateNetwork(network, lastDichotomyStepResult)).thenThrow(RaoInterruptionException.class);
+
+        final DichotomyStepResult<Object> result = engine.validate(stepValue, network, initialVariantName, lastDichotomyStepResult);
+
+        Assertions.assertThat(result).isNotNull();
+        Assertions.assertThat(result.getReasonInvalid()).isEqualTo(ReasonInvalid.RAO_INTERRUPTION);
     }
 }

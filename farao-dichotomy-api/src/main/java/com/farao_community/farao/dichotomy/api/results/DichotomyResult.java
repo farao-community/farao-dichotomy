@@ -41,8 +41,12 @@ public final class DichotomyResult<I> {
         String failureMessage = "None";
         if (index.lowestInvalidStep() != null && index.highestValidStep() != null) {
             if (index.lowestInvalidStep().getRight().isFailed()) {
-                limitingCause = index.lowestInvalidStep().getRight().getReasonInvalid() == ReasonInvalid.GLSK_LIMITATION ?
-                    LimitingCause.GLSK_LIMITATION : LimitingCause.COMPUTATION_FAILURE;
+                limitingCause = switch (index.lowestInvalidStep().getRight().getReasonInvalid()) {
+                    case GLSK_LIMITATION -> LimitingCause.GLSK_LIMITATION;
+                    case BALANCE_LOADFLOW_DIVERGENCE -> LimitingCause.BALANCE_LOADFLOW_DIVERGENCE;
+                    case UNKNOWN_TERMINAL_BUS -> LimitingCause.UNKNOWN_TERMINAL_BUS;
+                    default -> LimitingCause.COMPUTATION_FAILURE;
+                };
                 failureMessage = index.lowestInvalidStep().getRight().getFailureMessage();
             } else {
                 limitingCause = LimitingCause.CRITICAL_BRANCH;
@@ -55,11 +59,11 @@ public final class DichotomyResult<I> {
     }
 
     public DichotomyStepResult<I> getHighestValidStep() {
-        return highestValidStep.getRight();
+        return highestValidStep == null ? null : highestValidStep.getRight();
     }
 
     public DichotomyStepResult<I> getLowestInvalidStep() {
-        return lowestInvalidStep.getRight();
+        return lowestInvalidStep == null ? null : lowestInvalidStep.getRight();
     }
 
     public LimitingCause getLimitingCause() {

@@ -10,8 +10,10 @@ package com.farao_community.farao.dichotomy.api.results;
  * @author Joris Mancini {@literal <joris.mancini at rte-france.com>}
  */
 public enum LimitingCause {
-    GLSK_LIMITATION,
-    CRITICAL_BRANCH,
+    BALANCE_LOADFLOW_DIVERGENCE,
     COMPUTATION_FAILURE,
-    INDEX_EVALUATION_OR_MAX_ITERATION
+    CRITICAL_BRANCH,
+    GLSK_LIMITATION,
+    INDEX_EVALUATION_OR_MAX_ITERATION,
+    UNKNOWN_TERMINAL_BUS
 }

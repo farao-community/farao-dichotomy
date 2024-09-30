@@ -117,21 +117,30 @@ public class DichotomyEngine<T> {
         return DichotomyResult.buildFromIndex(index);
     }
 
-    private DichotomyStepResult<T> validate(double stepValue, Network network, String initialVariant, DichotomyStepResult<T> lastDichotomyStepResult) {
-        String newVariant = variantName(stepValue, initialVariant);
+    DichotomyStepResult<T> validate(double stepValue, Network network, String initialVariant, DichotomyStepResult<T> lastDichotomyStepResult) {
+        final String newVariant = variantName(stepValue, initialVariant);
         network.getVariantManager().cloneVariant(initialVariant, newVariant);
         network.getVariantManager().setWorkingVariant(newVariant);
+        final String formattedStepValueForLogs = Formatter.formatDoubleDecimals(stepValue);
         try {
             networkShifter.shiftNetwork(stepValue, network);
             return networkValidator.validateNetwork(network, lastDichotomyStepResult);
         } catch (GlskLimitationException e) {
-            BUSINESS_WARNS.warn(String.format("GLSK limits have been reached for step value %s", Formatter.formatDoubleDecimals(stepValue)));
+            BUSINESS_WARNS.warn(String.format("GLSK limits have been reached for step value %s", formattedStepValueForLogs));
             return DichotomyStepResult.fromFailure(ReasonInvalid.GLSK_LIMITATION, e.getMessage());
-        } catch (ShiftingException | ValidationException e) {
-            BUSINESS_WARNS.warn(String.format("Validation failed for step value %s", Formatter.formatDoubleDecimals(stepValue)));
+        } catch (ShiftingException e) {
+            if (e.getReason() == ReasonInvalid.BALANCE_LOADFLOW_DIVERGENCE || e.getReason() == ReasonInvalid.UNKNOWN_TERMINAL_BUS) {
+                BUSINESS_WARNS.warn(String.format("%s for step value %s", e.getMessage(), formattedStepValueForLogs));
+                return DichotomyStepResult.fromFailure(e.getReason(), e.getMessage());
+            } else {
+                BUSINESS_WARNS.warn(String.format("Validation failed for step value %s", formattedStepValueForLogs));
+                return DichotomyStepResult.fromFailure(ReasonInvalid.VALIDATION_FAILED, e.getMessage());
+            }
+        } catch (ValidationException e) {
+            BUSINESS_WARNS.warn(String.format("Validation failed for step value %s", formattedStepValueForLogs));
             return DichotomyStepResult.fromFailure(ReasonInvalid.VALIDATION_FAILED, e.getMessage());
         } catch (RaoInterruptionException e) {
-            BUSINESS_WARNS.warn(String.format("RAO interrupted during step value %.2f", stepValue));
+            BUSINESS_WARNS.warn(String.format("RAO interrupted during step value %s", formattedStepValueForLogs));
             return DichotomyStepResult.fromFailure(ReasonInvalid.RAO_INTERRUPTION, e.getMessage());
         } finally {
             network.getVariantManager().setWorkingVariant(initialVariant);
