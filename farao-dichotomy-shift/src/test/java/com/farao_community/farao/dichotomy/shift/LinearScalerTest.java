@@ -8,6 +8,7 @@ package com.farao_community.farao.dichotomy.shift;
 
 import com.farao_community.farao.dichotomy.api.NetworkValidator;
 import com.farao_community.farao.dichotomy.api.exceptions.GlskLimitationException;
+import com.farao_community.farao.dichotomy.api.exceptions.RaoFailureException;
 import com.farao_community.farao.dichotomy.api.exceptions.RaoInterruptionException;
 import com.farao_community.farao.dichotomy.api.exceptions.ShiftingException;
 import com.farao_community.farao.dichotomy.api.exceptions.ValidationException;
@@ -63,7 +64,7 @@ class LinearScalerTest {
     }
 
     @Test
-    void scalingNetworkValidationStrategyWithSecure() throws ShiftingException, ValidationException, GlskLimitationException, RaoInterruptionException {
+    void scalingNetworkValidationStrategyWithSecure() throws ShiftingException, ValidationException, GlskLimitationException, RaoInterruptionException, RaoFailureException {
         Mockito.when(shiftDispatcher.dispatch(200)).thenReturn(Map.of(
                 "10YCH-SWISSGRIDZ", 200.
         ));
@@ -76,7 +77,7 @@ class LinearScalerTest {
     }
 
     @Test
-    void scalingNetworkValidationStrategyWithUnsecure() throws ShiftingException, ValidationException, GlskLimitationException, RaoInterruptionException {
+    void scalingNetworkValidationStrategyWithUnsecure() throws ShiftingException, ValidationException, GlskLimitationException, RaoInterruptionException, RaoFailureException {
         Mockito.when(shiftDispatcher.dispatch(200)).thenReturn(Map.of(
                 "10YCH-SWISSGRIDZ", 200.
         ));
@@ -86,18 +87,6 @@ class LinearScalerTest {
         linearScaler.shiftNetwork(200, network);
         DichotomyStepResult<?> networkStepResult = networkValidator.validateNetwork(network, null);
         assertFalse(networkStepResult.isValid());
-    }
-
-    @Test
-    void scalingNetworkValidationStrategyWithFailure() throws ShiftingException, ValidationException, GlskLimitationException, RaoInterruptionException {
-        Mockito.when(shiftDispatcher.dispatch(200)).thenReturn(Map.of(
-                "10YCH-SWISSGRIDZ", 200.
-        ));
-        Mockito.when(networkValidator.validateNetwork(network, null)).thenThrow(new ValidationException("RAO failure"));
-
-        LinearScaler linearScaler = new LinearScaler(zonalScalable, shiftDispatcher);
-        linearScaler.shiftNetwork(200, network);
-        assertThrows(ValidationException.class, () -> networkValidator.validateNetwork(network, null));
     }
 
     @Test

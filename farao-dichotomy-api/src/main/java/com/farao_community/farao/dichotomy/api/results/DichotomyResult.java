@@ -21,6 +21,8 @@ public final class DichotomyResult<I> {
     private final LimitingCause limitingCause;
     private final String limitingFailureMessage;
     private boolean interrupted;
+    private final boolean raoFailed;
+    private final String raoFailureMessage;
 
     private DichotomyResult(Pair<Double, DichotomyStepResult<I>> highestValidStep,
                             Pair<Double, DichotomyStepResult<I>> lowestInvalidStep,
@@ -31,6 +33,17 @@ public final class DichotomyResult<I> {
         this.limitingCause = limitingCause;
         this.limitingFailureMessage = limitingFailureMessage;
         this.interrupted = false;
+        this.raoFailed = false;
+        this.raoFailureMessage = null;
+    }
+
+    private DichotomyResult(String raoFailureMessage) {
+        this.highestValidStep = null;
+        this.lowestInvalidStep = null;
+        this.limitingCause = null;
+        this.limitingFailureMessage = null;
+        this.raoFailed = true;
+        this.raoFailureMessage = raoFailureMessage;
     }
 
     public static <J> DichotomyResult<J> buildFromIndex(Index<J> index) {
@@ -56,6 +69,10 @@ public final class DichotomyResult<I> {
         Pair<Double, DichotomyStepResult<J>> highestValidStepResponse = index.highestValidStep();
         Pair<Double, DichotomyStepResult<J>> lowestInvalidStepResponse = index.lowestInvalidStep();
         return new DichotomyResult<>(highestValidStepResponse, lowestInvalidStepResponse, limitingCause, failureMessage);
+    }
+
+    public static <J> DichotomyResult<J> buildFromRaoFailure(String raoFailureMessage) {
+        return new DichotomyResult<>(raoFailureMessage);
     }
 
     public DichotomyStepResult<I> getHighestValidStep() {
@@ -96,6 +113,16 @@ public final class DichotomyResult<I> {
 
     public void setInterrupted(boolean interrupted) {
         this.interrupted = interrupted;
+    }
+
+    @JsonIgnore
+    public boolean isRaoFailed() {
+        return raoFailed;
+    }
+
+    @JsonIgnore
+    public String getRaoFailureMessage() {
+        return raoFailureMessage;
     }
 
     @Override
