@@ -8,6 +8,7 @@ package com.farao_community.farao.dichotomy.api.results;
 
 import com.powsybl.openrao.commons.PhysicalParameter;
 import com.powsybl.openrao.commons.Unit;
+import com.powsybl.openrao.commons.MinOrMax;
 import com.powsybl.openrao.data.cracapi.Instant;
 import com.powsybl.openrao.data.cracapi.RemedialAction;
 import com.powsybl.openrao.data.cracapi.State;
@@ -59,7 +60,7 @@ public class RaoResultMock implements RaoResult {
     }
 
     @Override
-    public double getVoltage(Instant optimizedInstant, VoltageCnec voltageCnec, Unit unit) {
+    public double getVoltage(Instant optimizedInstant, VoltageCnec voltageCnec, MinOrMax minOrMax, Unit unit) {
         return 0;
     }
 
