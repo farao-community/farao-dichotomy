@@ -8,6 +8,7 @@ package com.farao_community.farao.dichotomy.api;
 
 import com.farao_community.farao.dichotomy.api.exceptions.DichotomyException;
 import com.farao_community.farao.dichotomy.api.exceptions.GlskLimitationException;
+import com.farao_community.farao.dichotomy.api.exceptions.RaoFailureException;
 import com.farao_community.farao.dichotomy.api.exceptions.RaoInterruptionException;
 import com.farao_community.farao.dichotomy.api.exceptions.ShiftingException;
 import com.farao_community.farao.dichotomy.api.exceptions.ValidationException;
@@ -407,7 +408,7 @@ class DichotomyEngineTest {
     }
 
     @Test
-    void checkSoftInterruptionDuringRao() throws ValidationException, RaoInterruptionException {
+    void checkSoftInterruptionDuringRao() throws ValidationException, RaoInterruptionException, RaoFailureException {
         final double minValue = -1000;
         final double maxValue = 1000;
         final double precision = 200;
@@ -428,6 +429,29 @@ class DichotomyEngineTest {
         assertions.assertAll();
     }
 
+    @Test
+    void checkRaoFailure() throws ValidationException, RaoInterruptionException, RaoFailureException {
+        final String failureMessage = "test";
+        final double minValue = -1000;
+        final double maxValue = 1000;
+        final double precision = 200;
+        final double stepsSize = 400;
+        final Index<Object> index = new Index<>(minValue, maxValue, precision);
+        final IndexStrategy indexStrategy = new StepsIndexStrategy(false, stepsSize);
+        final NetworkValidator<Object> networkValidator = mock(NetworkValidator.class);
+        when(networkValidator.validateNetwork(any(), any())).thenThrow(new RaoFailureException(failureMessage));
+        final InterruptionStrategy interruptionStrategy = mock(InterruptionStrategy.class);
+        when(interruptionStrategy.shouldTaskBeInterruptedSoftly("id")).thenReturn(false);
+        final DichotomyEngine<Object> engine = new DichotomyEngine<>(index, indexStrategy, interruptionStrategy, mock(NetworkShifter.class), networkValidator, "id");
+
+        final DichotomyResult<Object> dichotomyResult = engine.run(initialNetwork);
+
+        SoftAssertions assertions = new SoftAssertions();
+        assertions.assertThat(dichotomyResult.isRaoFailed()).isTrue();
+        assertions.assertThat(dichotomyResult.getRaoFailureMessage()).isEqualTo(failureMessage);
+        assertions.assertAll();
+    }
+
     private static void assertResultValidEquals(SoftAssertions assertions, Pair<Double, DichotomyStepResult<Object>> index, int expected) {
         assertions.assertThat(index.getLeft()).isEqualTo(expected, Assertions.withPrecision(EPSILON));
         assertions.assertThat(index.getRight().isValid()).isTrue();
@@ -439,7 +463,7 @@ class DichotomyEngineTest {
     }
 
     @Test
-    void validateThrowsGlskLimitationException() throws GlskLimitationException, ShiftingException {
+    void validateThrowsGlskLimitationException() throws GlskLimitationException, ShiftingException, RaoFailureException {
         final double stepValue = 1600d;
         final String initialVariantName = "initialVariant";
         final NetworkShifter networkShifter = mock(NetworkShifter.class);
@@ -466,7 +490,7 @@ class DichotomyEngineTest {
     @ParameterizedTest
     @EnumSource(value = ReasonInvalid.class,
             names = {"BALANCE_LOADFLOW_DIVERGENCE", "UNKNOWN_TERMINAL_BUS"})
-    void validateThrowsShiftingException(final ReasonInvalid reasonInvalid) throws GlskLimitationException, ShiftingException {
+    void validateThrowsShiftingException(final ReasonInvalid reasonInvalid) throws GlskLimitationException, ShiftingException, RaoFailureException {
         final double stepValue = 1600d;
         final String initialVariantName = "initialVariant";
         final NetworkShifter networkShifter = mock(NetworkShifter.class);
@@ -491,7 +515,7 @@ class DichotomyEngineTest {
     }
 
     @Test
-    void validateThrowsShiftingExceptionDefault() throws GlskLimitationException, ShiftingException {
+    void validateThrowsShiftingExceptionDefault() throws GlskLimitationException, ShiftingException, RaoFailureException {
         final double stepValue = 1600d;
         final String initialVariantName = "initialVariant";
         final NetworkShifter networkShifter = mock(NetworkShifter.class);
@@ -516,7 +540,7 @@ class DichotomyEngineTest {
     }
 
     @Test
-    void validateThrowsValidationException() throws GlskLimitationException, ShiftingException, ValidationException, RaoInterruptionException {
+    void validateThrowsValidationException() throws GlskLimitationException, ShiftingException, ValidationException, RaoInterruptionException, RaoFailureException {
         final double stepValue = 1600d;
         final String initialVariantName = "initialVariant";
         final NetworkShifter networkShifter = mock(NetworkShifter.class);
@@ -542,7 +566,7 @@ class DichotomyEngineTest {
     }
 
     @Test
-    void validateThrowsRaoInterruptionException() throws GlskLimitationException, ShiftingException, ValidationException, RaoInterruptionException {
+    void validateThrowsRaoInterruptionException() throws GlskLimitationException, ShiftingException, ValidationException, RaoInterruptionException, RaoFailureException {
         final double stepValue = 1600d;
         final String initialVariantName = "initialVariant";
         final NetworkShifter networkShifter = mock(NetworkShifter.class);

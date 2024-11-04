@@ -6,6 +6,7 @@
  */
 package com.farao_community.farao.dichotomy.api;
 
+import com.farao_community.farao.dichotomy.api.exceptions.RaoFailureException;
 import com.farao_community.farao.dichotomy.api.exceptions.RaoInterruptionException;
 import com.farao_community.farao.dichotomy.api.exceptions.ValidationException;
 import com.farao_community.farao.dichotomy.api.results.DichotomyStepResult;
@@ -16,6 +17,6 @@ import com.powsybl.iidm.network.Network;
  */
 public interface NetworkValidator<I> {
 
-    DichotomyStepResult<I> validateNetwork(Network network, DichotomyStepResult<I> lastDichotomyStepResult) throws ValidationException, RaoInterruptionException;
+    DichotomyStepResult<I> validateNetwork(Network network, DichotomyStepResult<I> lastDichotomyStepResult) throws ValidationException, RaoFailureException, RaoInterruptionException;
 
 }

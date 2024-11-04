@@ -8,6 +8,7 @@ package com.farao_community.farao.dichotomy.api;
 
 import com.farao_community.farao.dichotomy.api.exceptions.DichotomyException;
 import com.farao_community.farao.dichotomy.api.exceptions.GlskLimitationException;
+import com.farao_community.farao.dichotomy.api.exceptions.RaoFailureException;
 import com.farao_community.farao.dichotomy.api.exceptions.RaoInterruptionException;
 import com.farao_community.farao.dichotomy.api.exceptions.ShiftingException;
 import com.farao_community.farao.dichotomy.api.exceptions.ValidationException;
@@ -86,7 +87,8 @@ public class DichotomyEngine<T> {
     public DichotomyResult<T> run(Network network) {
         int iterationCounter = 0;
         String initialVariant = network.getVariantManager().getWorkingVariantId();
-        while (!indexStrategy.precisionReached(index) && iterationCounter < maxIteration) {
+        String raoFailure = null;
+        while (!indexStrategy.precisionReached(index) && iterationCounter < maxIteration && raoFailure == null) {
             double nextValue = indexStrategy.nextValue(index);
             DichotomyStepResult<T> lastDichotomyStepResult = !index.testedSteps().isEmpty() ? index.testedSteps().get(index.testedSteps().size() - 1).getRight() : null;
 
@@ -96,19 +98,27 @@ public class DichotomyEngine<T> {
                 return dichotomyResult;
             } else {
                 BUSINESS_LOGS.info(String.format("Next dichotomy step: %s", Formatter.formatDoubleDecimals(nextValue)));
-                DichotomyStepResult<T> dichotomyStepResult = validate(nextValue, network, initialVariant, lastDichotomyStepResult);
-                if (dichotomyStepResult.isValid()) {
-                    BUSINESS_LOGS.info(String.format("Network at dichotomy step %s is secure", Formatter.formatDoubleDecimals(nextValue)));
-                } else if (dichotomyStepResult.getReasonInvalid().equals(ReasonInvalid.RAO_INTERRUPTION)) {
-                    BUSINESS_LOGS.info(String.format("Got interrupted before it could determine whether the network at dichotomy step %s is secure or not", Formatter.formatDoubleDecimals(nextValue)));
-                } else {
-                    BUSINESS_LOGS.info(String.format("Network at dichotomy step %s is unsecure", Formatter.formatDoubleDecimals(nextValue)));
+                try {
+                    DichotomyStepResult<T> dichotomyStepResult = validate(nextValue, network, initialVariant, lastDichotomyStepResult);
+                    if (dichotomyStepResult.isValid()) {
+                        BUSINESS_LOGS.info(String.format("Network at dichotomy step %s is secure", Formatter.formatDoubleDecimals(nextValue)));
+                    } else if (dichotomyStepResult.getReasonInvalid().equals(ReasonInvalid.RAO_INTERRUPTION)) {
+                        BUSINESS_LOGS.info(String.format("Got interrupted before it could determine whether the network at dichotomy step %s is secure or not", Formatter.formatDoubleDecimals(nextValue)));
+                    } else {
+                        BUSINESS_LOGS.info(String.format("Network at dichotomy step %s is unsecure", Formatter.formatDoubleDecimals(nextValue)));
+                    }
+                    if (!dichotomyStepResult.getReasonInvalid().equals(ReasonInvalid.RAO_INTERRUPTION)) {
+                        index.addDichotomyStepResult(nextValue, dichotomyStepResult);
+                    }
+                    iterationCounter++;
+                } catch (RaoFailureException e) {
+                    raoFailure = e.getMessage();
                 }
-                if (!dichotomyStepResult.getReasonInvalid().equals(ReasonInvalid.RAO_INTERRUPTION)) {
-                    index.addDichotomyStepResult(nextValue, dichotomyStepResult);
-                }
-                iterationCounter++;
             }
+        }
+
+        if (raoFailure != null) {
+            return DichotomyResult.buildFromRaoFailure(raoFailure);
         }
 
         if (iterationCounter == maxIteration) {
@@ -117,7 +127,7 @@ public class DichotomyEngine<T> {
         return DichotomyResult.buildFromIndex(index);
     }
 
-    DichotomyStepResult<T> validate(double stepValue, Network network, String initialVariant, DichotomyStepResult<T> lastDichotomyStepResult) {
+    DichotomyStepResult<T> validate(double stepValue, Network network, String initialVariant, DichotomyStepResult<T> lastDichotomyStepResult) throws RaoFailureException {
         final String newVariant = variantName(stepValue, initialVariant);
         network.getVariantManager().cloneVariant(initialVariant, newVariant);
         network.getVariantManager().setWorkingVariant(newVariant);
