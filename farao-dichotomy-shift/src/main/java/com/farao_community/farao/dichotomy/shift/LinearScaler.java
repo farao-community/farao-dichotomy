@@ -57,9 +57,9 @@ public final class LinearScaler implements NetworkShifter {
             String zoneId = entry.getKey();
             double asked = entry.getValue();
             BUSINESS_LOGS.info(String.format("Applying variation on zone %s (target: %s)", zoneId, Formatter.formatDoubleDecimals(stepValue)));
-            ScalingParameters scalingParameters = new ScalingParameters();
-            scalingParameters.setIterative(true);
-            scalingParameters.setReconnect(true);
+            ScalingParameters scalingParameters = new ScalingParameters()
+                    .setPriority(ScalingParameters.Priority.RESPECT_OF_VOLUME_ASKED)
+                    .setReconnect(true);
             double done = zonalScalable.getData(zoneId).scale(network, asked, scalingParameters);
             if (Math.abs(done - asked) > shiftEpsilon) {
                 BUSINESS_WARNS.warn(String.format("Incomplete variation on zone %s (target: %s, done: %s)",
