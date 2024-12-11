@@ -56,7 +56,7 @@ public final class LinearScaler implements NetworkShifter {
         for (Map.Entry<String, Double> entry : scalingValuesByCountry.entrySet()) {
             String zoneId = entry.getKey();
             double asked = entry.getValue();
-            BUSINESS_LOGS.info(String.format("Applying variation on zone %s (target: %s)", zoneId, Formatter.formatDoubleDecimals(stepValue)));
+            BUSINESS_LOGS.info(String.format("Applying variation on zone %s (target: %s)", zoneId, Formatter.formatDoubleDecimals(asked)));
             ScalingParameters scalingParameters = new ScalingParameters()
                     .setPriority(ScalingParameters.Priority.RESPECT_OF_VOLUME_ASKED)
                     .setReconnect(true);
