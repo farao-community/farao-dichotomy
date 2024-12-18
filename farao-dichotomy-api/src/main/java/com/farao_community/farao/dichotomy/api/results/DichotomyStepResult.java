@@ -7,7 +7,7 @@
 package com.farao_community.farao.dichotomy.api.results;
 
 import com.powsybl.openrao.commons.PhysicalParameter;
-import com.powsybl.openrao.data.raoresultapi.RaoResult;
+import com.powsybl.openrao.data.raoresult.api.RaoResult;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 
 /**
