@@ -199,7 +199,7 @@ public class RaoResultMock implements RaoResult {
 
     @Override
     public void setExecutionDetails(final String s) {
-
+        // do nothing: this is a mock
     }
 
     @Override

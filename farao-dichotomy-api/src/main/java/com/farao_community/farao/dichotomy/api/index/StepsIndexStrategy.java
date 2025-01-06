@@ -18,7 +18,7 @@ import com.farao_community.farao.dichotomy.api.exceptions.DichotomyException;
  *
  * @author Sebastien Murgey {@literal <sebastien.murgey at rte-france.com>}
  */
-public class StepsIndexStrategy implements IndexStrategy {
+public class StepsIndexStrategy<T> implements IndexStrategy<T> {
     private final boolean startWithMin;
     private final double increaseValueBeforeDichotomy;
 
@@ -31,7 +31,7 @@ public class StepsIndexStrategy implements IndexStrategy {
     }
 
     @Override
-    public double nextValue(Index<?> index) {
+    public double nextValue(Index<T> index) {
         if (precisionReached(index)) {
             throw new AssertionError("Dichotomy engine should not ask for next value if precision is reached");
         }

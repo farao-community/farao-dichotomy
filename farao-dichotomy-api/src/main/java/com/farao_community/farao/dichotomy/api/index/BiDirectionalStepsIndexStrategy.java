@@ -9,7 +9,7 @@ package com.farao_community.farao.dichotomy.api.index;
 /**
  * @author Joris Mancini {@literal <joris.mancini at rte-france.com>}
  */
-public class BiDirectionalStepsIndexStrategy implements IndexStrategy {
+public class BiDirectionalStepsIndexStrategy<T> implements IndexStrategy<T> {
     private final double startIndex;
     private final double stepSize;
 
@@ -19,7 +19,7 @@ public class BiDirectionalStepsIndexStrategy implements IndexStrategy {
     }
 
     @Override
-    public double nextValue(Index<?> index) {
+    public double nextValue(Index<T> index) {
         if (precisionReached(index)) {
             throw new AssertionError("Dichotomy engine should not ask for next value if precision is reached");
         }

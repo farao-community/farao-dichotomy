@@ -15,18 +15,18 @@ import java.util.function.BiPredicate;
 /**
  * @author Joris Mancini {@literal <joris.mancini at rte-france.com>}
  */
-public class BiDirectionalStepsWithReferenceIndexStrategy implements IndexStrategy {
+public class BiDirectionalStepsWithReferenceIndexStrategy<T> implements IndexStrategy<T> {
     private final double startIndex;
     private final double stepSize;
     private final double referenceExchange;
 
-    private Pair<Double, ? extends DichotomyStepResult<?>> highestSecureStep;
-    private Pair<Double, ? extends DichotomyStepResult<?>> lowestUnsecureStep;
-    private Pair<Double, ? extends DichotomyStepResult<?>> closestGlskLimitationBelowReference;
-    private Pair<Double, ? extends DichotomyStepResult<?>> closestGlskLimitationAboveReference;
+    private Pair<Double, DichotomyStepResult<T>> highestSecureStep;
+    private Pair<Double, DichotomyStepResult<T>> lowestUnsecureStep;
+    private Pair<Double, DichotomyStepResult<T>> closestGlskLimitationBelowReference;
+    private Pair<Double, DichotomyStepResult<T>> closestGlskLimitationAboveReference;
 
-    private Pair<Double, ? extends DichotomyStepResult<?>> highestAdmissibleStep;
-    private Pair<Double, ? extends DichotomyStepResult<?>> lowestInadmissibleStep;
+    private Pair<Double, DichotomyStepResult<T>> highestAdmissibleStep;
+    private Pair<Double, DichotomyStepResult<T>> lowestInadmissibleStep;
 
     public BiDirectionalStepsWithReferenceIndexStrategy(double startIndex, double stepSize, double referenceExchange) {
         this.startIndex = startIndex;
@@ -35,7 +35,7 @@ public class BiDirectionalStepsWithReferenceIndexStrategy implements IndexStrate
     }
 
     @Override
-    public double nextValue(Index<?> index) {
+    public double nextValue(Index<T> index) {
         updateDichotomyIntervalLimits(index);
         if (highestAdmissibleStep == null && lowestInadmissibleStep == null) {
             return startIndex;
@@ -49,7 +49,7 @@ public class BiDirectionalStepsWithReferenceIndexStrategy implements IndexStrate
     }
 
     @Override
-    public boolean precisionReached(Index<?> index) {
+    public boolean precisionReached(Index<T> index) {
         updateDichotomyIntervalLimits(index);
         if (highestAdmissibleStep == null && lowestInadmissibleStep == null) {
             return false;
@@ -62,7 +62,7 @@ public class BiDirectionalStepsWithReferenceIndexStrategy implements IndexStrate
         }
     }
 
-    private void updateDichotomyIntervalLimits(Index<?> index) {
+    private void updateDichotomyIntervalLimits(Index<T> index) {
         if (index.lowestInvalidStep() != null &&
             (index.lowestInvalidStep().getRight().getReasonInvalid().equals(ReasonInvalid.UNSECURE_AFTER_VALIDATION)
                 || index.lowestInvalidStep().getRight().getReasonInvalid().equals(ReasonInvalid.VALIDATION_FAILED))) {
@@ -83,15 +83,15 @@ public class BiDirectionalStepsWithReferenceIndexStrategy implements IndexStrate
         lowestInadmissibleStep = getLowestInAdmissibleStep(lowestUnsecureStep, closestGlskLimitationAboveReference);
     }
 
-    private Pair<Double, ? extends DichotomyStepResult<?>> getHighestAdmissibleStep(Pair<Double, ? extends DichotomyStepResult<?>> closestGlskLimitationBelowReference, Pair<Double, ? extends DichotomyStepResult<?>> highestSecureStep) {
+    private Pair<Double, DichotomyStepResult<T>> getHighestAdmissibleStep(Pair<Double, DichotomyStepResult<T>> closestGlskLimitationBelowReference, Pair<Double, DichotomyStepResult<T>> highestSecureStep) {
         return testAndGetStep(closestGlskLimitationBelowReference, highestSecureStep, (t, u) -> t > u);
     }
 
-    private Pair<Double, ? extends DichotomyStepResult<?>> getLowestInAdmissibleStep(Pair<Double, ? extends DichotomyStepResult<?>> lowestUnsecureStep, Pair<Double, ? extends DichotomyStepResult<?>> closestGlskLimitationAboveReference) {
+    private Pair<Double, DichotomyStepResult<T>> getLowestInAdmissibleStep(Pair<Double, DichotomyStepResult<T>> lowestUnsecureStep, Pair<Double, DichotomyStepResult<T>> closestGlskLimitationAboveReference) {
         return testAndGetStep(lowestUnsecureStep, closestGlskLimitationAboveReference, (t, u) -> t < u);
     }
 
-    private Pair<Double, ? extends DichotomyStepResult<?>> testAndGetStep(Pair<Double, ? extends DichotomyStepResult<?>> step1, Pair<Double, ? extends DichotomyStepResult<?>> step2, BiPredicate<Double, Double> biPredicate) {
+    private Pair<Double, DichotomyStepResult<T>> testAndGetStep(Pair<Double, DichotomyStepResult<T>> step1, Pair<Double, DichotomyStepResult<T>> step2, BiPredicate<Double, Double> biPredicate) {
         if (step1 == null && step2 == null) {
             return null;
         } else if (step1 == null) {
