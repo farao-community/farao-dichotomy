@@ -13,7 +13,7 @@ package com.farao_community.farao.dichotomy.api.index;
  *
  * @author Sebastien Murgey {@literal <sebastien.murgey at rte-france.com>}
  */
-public class RangeDivisionIndexStrategy implements IndexStrategy {
+public class RangeDivisionIndexStrategy<T> implements IndexStrategy<T> {
     private final boolean startWithMin;
 
     public RangeDivisionIndexStrategy(boolean startWithMin) {
@@ -21,7 +21,7 @@ public class RangeDivisionIndexStrategy implements IndexStrategy {
     }
 
     @Override
-    public double nextValue(Index<?> index) {
+    public double nextValue(Index<T> index) {
         if (precisionReached(index)) {
             throw new AssertionError("Dichotomy engine should not ask for next value if precision is reached");
         }

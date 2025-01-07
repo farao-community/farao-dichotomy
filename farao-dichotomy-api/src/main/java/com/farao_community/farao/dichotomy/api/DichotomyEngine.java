@@ -40,7 +40,7 @@ import static com.farao_community.farao.dichotomy.api.logging.DichotomyLoggerPro
 public class DichotomyEngine<T> {
     private static final int DEFAULT_MAX_ITERATION_NUMBER = 100;
     private final Index<T> index;
-    private final IndexStrategy indexStrategy;
+    private final IndexStrategy<T> indexStrategy;
     private final InterruptionStrategy interruptionStrategy;
     private final NetworkShifter networkShifter;
     private final NetworkValidator<T> networkValidator;
@@ -50,28 +50,28 @@ public class DichotomyEngine<T> {
     /**
      * Use this constructor to use the engine WITHOUT soft-interruption feature
      */
-    public DichotomyEngine(Index<T> index, IndexStrategy indexStrategy, NetworkShifter networkShifter, NetworkValidator<T> networkValidator) {
+    public DichotomyEngine(Index<T> index, IndexStrategy<T> indexStrategy, NetworkShifter networkShifter, NetworkValidator<T> networkValidator) {
         this(index, indexStrategy, null, networkShifter, networkValidator, null);
     }
 
     /**
      * Use this constructor to use the engine with the soft-interruption feature
      */
-    public DichotomyEngine(Index<T> index, IndexStrategy indexStrategy, InterruptionStrategy interruptionStrategy, NetworkShifter networkShifter, NetworkValidator<T> networkValidator, String taskId) {
+    public DichotomyEngine(Index<T> index, IndexStrategy<T> indexStrategy, InterruptionStrategy interruptionStrategy, NetworkShifter networkShifter, NetworkValidator<T> networkValidator, String taskId) {
         this(index, indexStrategy, interruptionStrategy, networkShifter, networkValidator, DEFAULT_MAX_ITERATION_NUMBER, taskId);
     }
 
     /**
      * Use this constructor to use the engine WITHOUT soft-interruption feature
      */
-    public DichotomyEngine(Index<T> index, IndexStrategy indexStrategy, NetworkShifter networkShifter, NetworkValidator<T> networkValidator, int maxIteration) {
+    public DichotomyEngine(Index<T> index, IndexStrategy<T> indexStrategy, NetworkShifter networkShifter, NetworkValidator<T> networkValidator, int maxIteration) {
         this(index, indexStrategy, null, networkShifter, networkValidator, maxIteration, null);
     }
 
     /**
      * Use this constructor to use the engine with the soft-interruption feature
      */
-    public DichotomyEngine(Index<T> index, IndexStrategy indexStrategy, InterruptionStrategy interruptionStrategy, NetworkShifter networkShifter, NetworkValidator<T> networkValidator, int maxIteration, String taskId) {
+    public DichotomyEngine(Index<T> index, IndexStrategy<T> indexStrategy, InterruptionStrategy interruptionStrategy, NetworkShifter networkShifter, NetworkValidator<T> networkValidator, int maxIteration, String taskId) {
         if (maxIteration < 3) {
             throw new DichotomyException("Max number of iterations of the dichotomy engine should be at least 3.");
         }
@@ -88,25 +88,19 @@ public class DichotomyEngine<T> {
         int iterationCounter = 0;
         String initialVariant = network.getVariantManager().getWorkingVariantId();
         String raoFailure = null;
-        while (!indexStrategy.precisionReached(index) && iterationCounter < maxIteration && raoFailure == null) {
-            double nextValue = indexStrategy.nextValue(index);
-            DichotomyStepResult<T> lastDichotomyStepResult = !index.testedSteps().isEmpty() ? index.testedSteps().get(index.testedSteps().size() - 1).getRight() : null;
 
+        while (!indexStrategy.precisionReached(index) && iterationCounter < maxIteration && raoFailure == null) {
             if (interruptionStrategy != null && interruptionStrategy.shouldTaskBeInterruptedSoftly(taskId)) {
                 DichotomyResult<T> dichotomyResult = DichotomyResult.buildFromIndex(index);
                 dichotomyResult.setInterrupted(true);
                 return dichotomyResult;
             } else {
+                double nextValue = indexStrategy.nextValue(index);
                 BUSINESS_LOGS.info(String.format("Next dichotomy step: %s", Formatter.formatDoubleDecimals(nextValue)));
                 try {
+                    DichotomyStepResult<T> lastDichotomyStepResult = getLastDichotomyStepResult();
                     DichotomyStepResult<T> dichotomyStepResult = validate(nextValue, network, initialVariant, lastDichotomyStepResult);
-                    if (dichotomyStepResult.isValid()) {
-                        BUSINESS_LOGS.info(String.format("Network at dichotomy step %s is secure", Formatter.formatDoubleDecimals(nextValue)));
-                    } else if (dichotomyStepResult.getReasonInvalid().equals(ReasonInvalid.RAO_INTERRUPTION)) {
-                        BUSINESS_LOGS.info(String.format("Got interrupted before it could determine whether the network at dichotomy step %s is secure or not", Formatter.formatDoubleDecimals(nextValue)));
-                    } else {
-                        BUSINESS_LOGS.info(String.format("Network at dichotomy step %s is unsecure", Formatter.formatDoubleDecimals(nextValue)));
-                    }
+                    logDichotomyStepResult(dichotomyStepResult, nextValue);
                     if (!dichotomyStepResult.getReasonInvalid().equals(ReasonInvalid.RAO_INTERRUPTION)) {
                         index.addDichotomyStepResult(nextValue, dichotomyStepResult);
                     }
@@ -125,6 +119,20 @@ public class DichotomyEngine<T> {
             BUSINESS_WARNS.warn("Max number of iteration {} reached during dichotomy, research precision has not been reached.", maxIteration);
         }
         return DichotomyResult.buildFromIndex(index);
+    }
+
+    private DichotomyStepResult<T> getLastDichotomyStepResult() {
+        return !index.testedSteps().isEmpty() ? index.testedSteps().getLast().getRight() : null;
+    }
+
+    private static <T> void logDichotomyStepResult(final DichotomyStepResult<T> dichotomyStepResult, final double nextValue) {
+        if (dichotomyStepResult.isValid()) {
+            BUSINESS_LOGS.info(String.format("Network at dichotomy step %s is secure", Formatter.formatDoubleDecimals(nextValue)));
+        } else if (dichotomyStepResult.getReasonInvalid().equals(ReasonInvalid.RAO_INTERRUPTION)) {
+            BUSINESS_LOGS.info(String.format("Got interrupted before it could determine whether the network at dichotomy step %s is secure or not", Formatter.formatDoubleDecimals(nextValue)));
+        } else {
+            BUSINESS_LOGS.info(String.format("Network at dichotomy step %s is unsecure", Formatter.formatDoubleDecimals(nextValue)));
+        }
     }
 
     DichotomyStepResult<T> validate(double stepValue, Network network, String initialVariant, DichotomyStepResult<T> lastDichotomyStepResult) throws RaoFailureException {

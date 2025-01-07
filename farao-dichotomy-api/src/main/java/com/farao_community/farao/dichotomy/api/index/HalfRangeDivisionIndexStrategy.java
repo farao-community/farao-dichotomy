@@ -15,7 +15,7 @@ package com.farao_community.farao.dichotomy.api.index;
  *
  * @author Marc Schwitzguebel {@literal <marc.schwitzguebel at rte-france.com>}
  */
-public class HalfRangeDivisionIndexStrategy implements IndexStrategy {
+public class HalfRangeDivisionIndexStrategy<T> implements IndexStrategy<T> {
 
     private final boolean startWithMin;
 
@@ -24,7 +24,7 @@ public class HalfRangeDivisionIndexStrategy implements IndexStrategy {
     }
 
     @Override
-    public double nextValue(Index<?> index) {
+    public double nextValue(Index<T> index) {
         if (precisionReached(index)) {
             throw new AssertionError("Dichotomy engine should not ask for next value if precision is reached");
         }
@@ -47,7 +47,7 @@ public class HalfRangeDivisionIndexStrategy implements IndexStrategy {
     }
 
     @Override
-    public boolean precisionReached(Index<?> index) {
+    public boolean precisionReached(Index<T> index) {
         if (index.lowestInvalidStep() != null && Math.abs(index.lowestInvalidStep().getLeft() - index.minValue()) < EPSILON) {
             return true;
         }
