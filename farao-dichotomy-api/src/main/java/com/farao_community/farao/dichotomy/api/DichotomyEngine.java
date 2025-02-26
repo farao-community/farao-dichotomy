@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2020, RTE (http://www.rte-france.com)
+ * Copyright (c) 2025, RTE (http://www.rte-france.com)
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
@@ -45,7 +45,7 @@ public class DichotomyEngine<T> {
     private final NetworkShifter networkShifter;
     private final NetworkValidator<T> networkValidator;
     private final int maxIteration;
-    private final String taskId;
+    private final String runId;
 
     /**
      * Use this constructor to use the engine WITHOUT soft-interruption feature
@@ -57,8 +57,8 @@ public class DichotomyEngine<T> {
     /**
      * Use this constructor to use the engine with the soft-interruption feature
      */
-    public DichotomyEngine(Index<T> index, IndexStrategy<T> indexStrategy, InterruptionStrategy interruptionStrategy, NetworkShifter networkShifter, NetworkValidator<T> networkValidator, String taskId) {
-        this(index, indexStrategy, interruptionStrategy, networkShifter, networkValidator, DEFAULT_MAX_ITERATION_NUMBER, taskId);
+    public DichotomyEngine(Index<T> index, IndexStrategy<T> indexStrategy, InterruptionStrategy interruptionStrategy, NetworkShifter networkShifter, NetworkValidator<T> networkValidator, String runId) {
+        this(index, indexStrategy, interruptionStrategy, networkShifter, networkValidator, DEFAULT_MAX_ITERATION_NUMBER, runId);
     }
 
     /**
@@ -71,7 +71,7 @@ public class DichotomyEngine<T> {
     /**
      * Use this constructor to use the engine with the soft-interruption feature
      */
-    public DichotomyEngine(Index<T> index, IndexStrategy<T> indexStrategy, InterruptionStrategy interruptionStrategy, NetworkShifter networkShifter, NetworkValidator<T> networkValidator, int maxIteration, String taskId) {
+    public DichotomyEngine(Index<T> index, IndexStrategy<T> indexStrategy, InterruptionStrategy interruptionStrategy, NetworkShifter networkShifter, NetworkValidator<T> networkValidator, int maxIteration, String runId) {
         if (maxIteration < 3) {
             throw new DichotomyException("Max number of iterations of the dichotomy engine should be at least 3.");
         }
@@ -81,7 +81,7 @@ public class DichotomyEngine<T> {
         this.networkShifter = networkShifter;
         this.networkValidator = Objects.requireNonNull(networkValidator);
         this.maxIteration = maxIteration;
-        this.taskId = taskId;
+        this.runId = runId;
     }
 
     public DichotomyResult<T> run(Network network) {
@@ -90,10 +90,8 @@ public class DichotomyEngine<T> {
         String raoFailure = null;
 
         while (!indexStrategy.precisionReached(index) && iterationCounter < maxIteration && raoFailure == null) {
-            if (interruptionStrategy != null && interruptionStrategy.shouldTaskBeInterruptedSoftly(taskId)) {
-                DichotomyResult<T> dichotomyResult = DichotomyResult.buildFromIndex(index);
-                dichotomyResult.setInterrupted(true);
-                return dichotomyResult;
+            if (interruptionStrategy != null && interruptionStrategy.shouldRunBeInterruptedSoftly(runId)) {
+                return buildInterruptedResult();
             } else {
                 double nextValue = indexStrategy.nextValue(index);
                 BUSINESS_LOGS.info(String.format("Next dichotomy step: %s", Formatter.formatDoubleDecimals(nextValue)));
@@ -101,7 +99,9 @@ public class DichotomyEngine<T> {
                     DichotomyStepResult<T> lastDichotomyStepResult = getLastDichotomyStepResult();
                     DichotomyStepResult<T> dichotomyStepResult = validate(nextValue, network, initialVariant, lastDichotomyStepResult);
                     logDichotomyStepResult(dichotomyStepResult, nextValue);
-                    if (!dichotomyStepResult.getReasonInvalid().equals(ReasonInvalid.RAO_INTERRUPTION)) {
+                    if (dichotomyStepResult.getReasonInvalid().equals(ReasonInvalid.RAO_INTERRUPTION)) {
+                        return buildInterruptedResult();
+                    } else {
                         index.addDichotomyStepResult(nextValue, dichotomyStepResult);
                     }
                     iterationCounter++;
@@ -119,6 +119,12 @@ public class DichotomyEngine<T> {
             BUSINESS_WARNS.warn("Max number of iteration {} reached during dichotomy, research precision has not been reached.", maxIteration);
         }
         return DichotomyResult.buildFromIndex(index);
+    }
+
+    private DichotomyResult<T> buildInterruptedResult() {
+        final DichotomyResult<T> dichotomyResult = DichotomyResult.buildFromIndex(index);
+        dichotomyResult.setInterrupted(true);
+        return dichotomyResult;
     }
 
     private DichotomyStepResult<T> getLastDichotomyStepResult() {
