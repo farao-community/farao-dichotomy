@@ -344,7 +344,7 @@ class DichotomyEngineTest {
         final IndexStrategy indexStrategy = new StepsIndexStrategy(true, stepsSize);
         final NetworkValidator<Object> networkValidator = new NetworkValidatorMock(limit);
         final InterruptionStrategy interruptionStrategy = mock(InterruptionStrategy.class);
-        when(interruptionStrategy.shouldTaskBeInterruptedSoftly("id")).thenReturn(false);
+        when(interruptionStrategy.shouldRunBeInterruptedSoftly("id")).thenReturn(false);
         final DichotomyEngine<Object> engine = new DichotomyEngine<>(index, indexStrategy, interruptionStrategy, mock(NetworkShifter.class), networkValidator, "id");
 
         final DichotomyResult<Object> dichotomyResult = engine.run(initialNetwork);
@@ -374,7 +374,7 @@ class DichotomyEngineTest {
         final IndexStrategy indexStrategy = new StepsIndexStrategy(true, stepsSize);
         final NetworkValidator<Object> networkValidator = new NetworkValidatorMock(limit);
         final InterruptionStrategy interruptionStrategy = mock(InterruptionStrategy.class);
-        when(interruptionStrategy.shouldTaskBeInterruptedSoftly("id")).thenReturn(true);
+        when(interruptionStrategy.shouldRunBeInterruptedSoftly("id")).thenReturn(true);
         final DichotomyEngine<Object> engine = new DichotomyEngine<>(index, indexStrategy, interruptionStrategy, mock(NetworkShifter.class), networkValidator, "id");
 
         final DichotomyResult<Object> dichotomyResult = engine.run(initialNetwork);
@@ -396,7 +396,7 @@ class DichotomyEngineTest {
         final IndexStrategy indexStrategy = new StepsIndexStrategy(true, stepsSize);
         final NetworkValidator<Object> networkValidator = new NetworkValidatorMock(limit);
         final InterruptionStrategy interruptionStrategy = mock(InterruptionStrategy.class);
-        when(interruptionStrategy.shouldTaskBeInterruptedSoftly("id")).thenReturn(false).thenReturn(true);
+        when(interruptionStrategy.shouldRunBeInterruptedSoftly("id")).thenReturn(false).thenReturn(true);
         final DichotomyEngine<Object> engine = new DichotomyEngine<>(index, indexStrategy, interruptionStrategy, mock(NetworkShifter.class), networkValidator, "id");
 
         final DichotomyResult<Object> dichotomyResult = engine.run(initialNetwork);
@@ -418,7 +418,7 @@ class DichotomyEngineTest {
         final NetworkValidator<Object> networkValidator = mock(NetworkValidator.class);
         when(networkValidator.validateNetwork(any(), any())).thenThrow(new RaoInterruptionException("test"));
         final InterruptionStrategy interruptionStrategy = mock(InterruptionStrategy.class);
-        when(interruptionStrategy.shouldTaskBeInterruptedSoftly("id")).thenReturn(false).thenReturn(true);
+        when(interruptionStrategy.shouldRunBeInterruptedSoftly("id")).thenReturn(false).thenReturn(true);
         final DichotomyEngine<Object> engine = new DichotomyEngine<>(index, indexStrategy, interruptionStrategy, mock(NetworkShifter.class), networkValidator, "id");
 
         final DichotomyResult<Object> dichotomyResult = engine.run(initialNetwork);
@@ -441,7 +441,7 @@ class DichotomyEngineTest {
         final NetworkValidator<Object> networkValidator = mock(NetworkValidator.class);
         when(networkValidator.validateNetwork(any(), any())).thenThrow(new RaoFailureException(failureMessage));
         final InterruptionStrategy interruptionStrategy = mock(InterruptionStrategy.class);
-        when(interruptionStrategy.shouldTaskBeInterruptedSoftly("id")).thenReturn(false);
+        when(interruptionStrategy.shouldRunBeInterruptedSoftly("id")).thenReturn(false);
         final DichotomyEngine<Object> engine = new DichotomyEngine<>(index, indexStrategy, interruptionStrategy, mock(NetworkShifter.class), networkValidator, "id");
 
         final DichotomyResult<Object> dichotomyResult = engine.run(initialNetwork);
