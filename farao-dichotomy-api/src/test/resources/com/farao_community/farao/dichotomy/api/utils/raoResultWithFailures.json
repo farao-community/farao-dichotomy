@@ -1,0 +1,46 @@
+{
+  "type" : "RAO_RESULT",
+  "version" : "1.7",
+  "info" : "Testing data",
+  "computationStatusMap" : [ {
+    "computationStatus" : "FAILURE",
+    "instant" : "outage",
+    "contingency" : "C1"
+  }, {
+    "computationStatus" : "FAILURE",
+    "instant" : "outage",
+    "contingency" : "C2"
+  }, {
+    "computationStatus" : "FAILURE",
+    "instant" : "outage",
+    "contingency" : "C3"
+  }, {
+    "computationStatus" : "FAILURE",
+    "instant" : "auto",
+    "contingency" : "C1"
+  }, {
+    "computationStatus" : "FAILURE",
+    "instant" : "auto",
+    "contingency" : "C4"
+  }, {
+    "computationStatus" : "FAILURE",
+    "instant" : "auto",
+    "contingency" : "C5"
+  }, {
+    "computationStatus" : "FAILURE",
+    "instant" : "auto",
+    "contingency" : "C6"
+  }, {
+    "computationStatus" : "FAILURE",
+    "instant" : "curative",
+    "contingency" : "C2"
+  }, {
+    "computationStatus" : "FAILURE",
+    "instant" : "curative",
+    "contingency" : "C5"
+  }, {
+    "computationStatus" : "FAILURE",
+    "instant" : "curative",
+    "contingency" : "C7"
+  } ]
+}
