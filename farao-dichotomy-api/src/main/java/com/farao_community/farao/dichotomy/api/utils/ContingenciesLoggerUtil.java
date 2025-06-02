@@ -39,7 +39,7 @@ public final class ContingenciesLoggerUtil {
                     (computationStatusMapJsonNode == null || computationStatusMapJsonNode.isNull())
                             ? List.of()
                             : objectMapper.readValue(computationStatusMapJsonNode.traverse(), new TypeReference<>() {
-                              });
+                                });
             computationStatusMapList.stream()
                     .filter(csme -> "FAILURE".equalsIgnoreCase(csme.computationStatus()))
                     .collect(Collectors.groupingBy(ComputationStatusMapElement::instant))
