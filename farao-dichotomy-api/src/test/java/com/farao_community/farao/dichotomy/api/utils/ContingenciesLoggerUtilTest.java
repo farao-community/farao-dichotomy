@@ -43,4 +43,16 @@ class ContingenciesLoggerUtilTest {
         // Then
         Mockito.verify(loggerMock, Mockito.times(0)).warn(Mockito.eq(SENSITIVITY_FAILURE_WARNING_MESSAGE), Mockito.anyString(), Mockito.anyString());
     }
+
+    @Test
+    void logNoComputationStatusMap() {
+        // Given
+        final Logger loggerMock = Mockito.mock(Logger.class);
+        final String inputFile = "raoResultNoComputationStatusMap.json";
+        final String inputFilePath = Objects.requireNonNull(getClass().getResource(inputFile)).toString();
+        // When
+        ContingenciesLoggerUtil.logContingencies(inputFilePath, loggerMock);
+        // Then
+        Mockito.verify(loggerMock, Mockito.times(0)).warn(Mockito.eq(SENSITIVITY_FAILURE_WARNING_MESSAGE), Mockito.anyString(), Mockito.anyString());
+    }
 }

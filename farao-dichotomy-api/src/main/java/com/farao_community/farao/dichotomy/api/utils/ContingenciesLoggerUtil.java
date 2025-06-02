@@ -9,6 +9,7 @@ package com.farao_community.farao.dichotomy.api.utils;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 
 import java.io.IOException;
@@ -27,11 +28,18 @@ public final class ContingenciesLoggerUtil {
     }
 
     public static void logContingencies(String raoResultFileUrl, Logger logger) {
+        if (StringUtils.isEmpty(raoResultFileUrl) || logger == null) {
+            throw new IllegalArgumentException("Parameters cannot be empty");
+        }
+
         try (final InputStream inputStream = new URI(raoResultFileUrl).toURL().openStream()) {
             final ObjectMapper objectMapper = new ObjectMapper();
             final JsonNode computationStatusMapJsonNode = objectMapper.readTree(inputStream).get("computationStatusMap");
-            final List<ComputationStatusMapElement> computationStatusMapList = objectMapper.readValue(computationStatusMapJsonNode.traverse(), new TypeReference<>() {
-            });
+            final List<ComputationStatusMapElement> computationStatusMapList =
+                    (computationStatusMapJsonNode == null || computationStatusMapJsonNode.isNull())
+                            ? List.of()
+                            : objectMapper.readValue(computationStatusMapJsonNode.traverse(), new TypeReference<>() {
+                              });
             computationStatusMapList.stream()
                     .filter(csme -> "FAILURE".equalsIgnoreCase(csme.computationStatus()))
                     .collect(Collectors.groupingBy(ComputationStatusMapElement::instant))
