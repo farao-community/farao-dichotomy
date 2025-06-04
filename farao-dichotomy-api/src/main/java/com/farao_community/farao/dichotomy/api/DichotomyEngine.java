@@ -44,6 +44,7 @@ public class DichotomyEngine<T> {
     private final InterruptionStrategy interruptionStrategy;
     private final NetworkShifter networkShifter;
     private final NetworkValidator<T> networkValidator;
+    private final NetworkExporter networkExporter;
     private final int maxIteration;
     private final String runId;
 
@@ -58,20 +59,34 @@ public class DichotomyEngine<T> {
      * Use this constructor to use the engine with the soft-interruption feature
      */
     public DichotomyEngine(Index<T> index, IndexStrategy<T> indexStrategy, InterruptionStrategy interruptionStrategy, NetworkShifter networkShifter, NetworkValidator<T> networkValidator, String runId) {
-        this(index, indexStrategy, interruptionStrategy, networkShifter, networkValidator, DEFAULT_MAX_ITERATION_NUMBER, runId);
+        this(index, indexStrategy, interruptionStrategy, networkShifter, networkValidator, null, DEFAULT_MAX_ITERATION_NUMBER, runId);
+    }
+
+    /**
+     * Use this constructor to use the engine with the soft-interruption feature and network-export
+     */
+    public DichotomyEngine(Index<T> index, IndexStrategy<T> indexStrategy, InterruptionStrategy interruptionStrategy, NetworkShifter networkShifter, NetworkValidator<T> networkValidator, NetworkExporter networkExporter, String runId) {
+        this(index, indexStrategy, interruptionStrategy, networkShifter, networkValidator, networkExporter, DEFAULT_MAX_ITERATION_NUMBER, runId);
     }
 
     /**
      * Use this constructor to use the engine WITHOUT soft-interruption feature
      */
     public DichotomyEngine(Index<T> index, IndexStrategy<T> indexStrategy, NetworkShifter networkShifter, NetworkValidator<T> networkValidator, int maxIteration) {
-        this(index, indexStrategy, null, networkShifter, networkValidator, maxIteration, null);
+        this(index, indexStrategy, null, networkShifter, networkValidator, null, maxIteration, null);
     }
 
     /**
-     * Use this constructor to use the engine with the soft-interruption feature
+     * Use this constructor to use the engine with the soft-interruption feature but WITHOUT network-exporter
      */
     public DichotomyEngine(Index<T> index, IndexStrategy<T> indexStrategy, InterruptionStrategy interruptionStrategy, NetworkShifter networkShifter, NetworkValidator<T> networkValidator, int maxIteration, String runId) {
+        this(index, indexStrategy, interruptionStrategy, networkShifter, networkValidator, null, maxIteration, runId);
+    }
+
+    /**
+     * Use this constructor to use the engine with the soft-interruption feature and network-exporter
+     */
+    public DichotomyEngine(Index<T> index, IndexStrategy<T> indexStrategy, InterruptionStrategy interruptionStrategy, NetworkShifter networkShifter, NetworkValidator<T> networkValidator, NetworkExporter networkExporter, int maxIteration, String runId) {
         if (maxIteration < 3) {
             throw new DichotomyException("Max number of iterations of the dichotomy engine should be at least 3.");
         }
@@ -80,6 +95,7 @@ public class DichotomyEngine<T> {
         this.interruptionStrategy = interruptionStrategy;
         this.networkShifter = networkShifter;
         this.networkValidator = Objects.requireNonNull(networkValidator);
+        this.networkExporter = networkExporter;
         this.maxIteration = maxIteration;
         this.runId = runId;
     }
@@ -155,6 +171,17 @@ public class DichotomyEngine<T> {
         } catch (ShiftingException e) {
             if (e.getReason() == ReasonInvalid.BALANCE_LOADFLOW_DIVERGENCE || e.getReason() == ReasonInvalid.UNKNOWN_TERMINAL_BUS) {
                 BUSINESS_WARNS.warn(String.format("%s for step value %s", e.getMessage(), formattedStepValueForLogs));
+                // TODO Export network?
+                //  Add a copy of current working variant in DichotomyStepResult so that it can be processed by runner?
+                //  Use an exporter given in function parameters to export the network?
+                if (networkExporter != null) {
+                    try {
+                        networkExporter.export(network);
+                    } catch (Exception ex) {
+                        BUSINESS_WARNS.warn("Exception occurred while exporting network", ex);
+                    }
+                }
+
                 return DichotomyStepResult.fromFailure(e.getReason(), e.getMessage());
             } else {
                 BUSINESS_WARNS.warn(String.format("Validation failed for step value %s", formattedStepValueForLogs));
