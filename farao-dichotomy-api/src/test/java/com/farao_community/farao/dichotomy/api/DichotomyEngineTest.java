@@ -515,6 +515,62 @@ class DichotomyEngineTest {
     }
 
     @Test
+    void validateThrowsShiftingExceptionAndExportsNetwork() throws GlskLimitationException, ShiftingException, RaoFailureException {
+        final ReasonInvalid reasonInvalid = ReasonInvalid.BALANCE_LOADFLOW_DIVERGENCE;
+        final double stepValue = 1600d;
+        final String initialVariantName = "initialVariant";
+        final NetworkShifter networkShifter = mock(NetworkShifter.class);
+        final NetworkExporter networkExporter = mock(NetworkExporter.class);
+        final Network network = mock(Network.class);
+        final VariantManager variantManager = mock(VariantManager.class);
+        final DichotomyStepResult<Object> lastDichotomyStepResult = mock(DichotomyStepResult.class);
+        final Index<Object> index = mock(Index.class);
+        final IndexStrategy indexStrategy = mock(IndexStrategy.class);
+        final NetworkValidator<Object> networkValidator = mock(NetworkValidator.class);
+        final DichotomyEngine<Object> engine = new DichotomyEngine<>(index, indexStrategy, null, networkShifter, networkValidator, networkExporter, "0");
+
+        when(network.getVariantManager()).thenReturn(variantManager);
+        when(network.getVariantManager()).thenReturn(variantManager);
+        Mockito.doNothing().when(variantManager).cloneVariant(eq(initialVariantName), anyString());
+        Mockito.doNothing().when(variantManager).setWorkingVariant(anyString());
+        Mockito.doThrow(new ShiftingException("Error message", reasonInvalid)).when(networkShifter).shiftNetwork(stepValue, network);
+
+        final DichotomyStepResult<Object> result = engine.validate(stepValue, network, initialVariantName, lastDichotomyStepResult);
+
+        Assertions.assertThat(result).isNotNull();
+        Assertions.assertThat(result.getReasonInvalid()).isEqualTo(reasonInvalid);
+        Mockito.verify(networkExporter, Mockito.times(1)).export(network);
+    }
+
+    @Test
+    void validateThrowsShiftingExceptionAndDoesNotExportNetwork() throws GlskLimitationException, ShiftingException, RaoFailureException {
+        final ReasonInvalid reasonInvalid = ReasonInvalid.UNKNOWN_TERMINAL_BUS;
+        final double stepValue = 1600d;
+        final String initialVariantName = "initialVariant";
+        final NetworkShifter networkShifter = mock(NetworkShifter.class);
+        final NetworkExporter networkExporter = mock(NetworkExporter.class);
+        final Network network = mock(Network.class);
+        final VariantManager variantManager = mock(VariantManager.class);
+        final DichotomyStepResult<Object> lastDichotomyStepResult = mock(DichotomyStepResult.class);
+        final Index<Object> index = mock(Index.class);
+        final IndexStrategy indexStrategy = mock(IndexStrategy.class);
+        final NetworkValidator<Object> networkValidator = mock(NetworkValidator.class);
+        final DichotomyEngine<Object> engine = new DichotomyEngine<>(index, indexStrategy, null, networkShifter, networkValidator, networkExporter, "0");
+
+        when(network.getVariantManager()).thenReturn(variantManager);
+        when(network.getVariantManager()).thenReturn(variantManager);
+        Mockito.doNothing().when(variantManager).cloneVariant(eq(initialVariantName), anyString());
+        Mockito.doNothing().when(variantManager).setWorkingVariant(anyString());
+        Mockito.doThrow(new ShiftingException("Error message", reasonInvalid)).when(networkShifter).shiftNetwork(stepValue, network);
+
+        final DichotomyStepResult<Object> result = engine.validate(stepValue, network, initialVariantName, lastDichotomyStepResult);
+
+        Assertions.assertThat(result).isNotNull();
+        Assertions.assertThat(result.getReasonInvalid()).isEqualTo(reasonInvalid);
+        Mockito.verify(networkExporter, Mockito.times(0)).export(network);
+    }
+
+    @Test
     void validateThrowsShiftingExceptionDefault() throws GlskLimitationException, ShiftingException, RaoFailureException {
         final double stepValue = 1600d;
         final String initialVariantName = "initialVariant";
