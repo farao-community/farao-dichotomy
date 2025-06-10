@@ -171,9 +171,6 @@ public class DichotomyEngine<T> {
         } catch (ShiftingException e) {
             if (e.getReason() == ReasonInvalid.BALANCE_LOADFLOW_DIVERGENCE || e.getReason() == ReasonInvalid.UNKNOWN_TERMINAL_BUS) {
                 BUSINESS_WARNS.warn(String.format("%s for step value %s", e.getMessage(), formattedStepValueForLogs));
-                // TODO Export network?
-                //  Add a copy of current working variant in DichotomyStepResult so that it can be processed by runner?
-                //  Use an exporter given in function parameters to export the network?
                 if (networkExporter != null) {
                     try {
                         networkExporter.export(network);
