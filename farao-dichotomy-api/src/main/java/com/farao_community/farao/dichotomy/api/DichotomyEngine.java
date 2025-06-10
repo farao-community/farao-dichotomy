@@ -169,21 +169,7 @@ public class DichotomyEngine<T> {
             BUSINESS_WARNS.warn(String.format("GLSK limits have been reached for step value %s", formattedStepValueForLogs));
             return DichotomyStepResult.fromFailure(ReasonInvalid.GLSK_LIMITATION, e.getMessage());
         } catch (ShiftingException e) {
-            if (e.getReason() == ReasonInvalid.BALANCE_LOADFLOW_DIVERGENCE || e.getReason() == ReasonInvalid.UNKNOWN_TERMINAL_BUS) {
-                BUSINESS_WARNS.warn(String.format("%s for step value %s", e.getMessage(), formattedStepValueForLogs));
-                if (networkExporter != null) {
-                    try {
-                        networkExporter.export(network);
-                    } catch (Exception ex) {
-                        BUSINESS_WARNS.warn("Exception occurred while exporting network", ex);
-                    }
-                }
-
-                return DichotomyStepResult.fromFailure(e.getReason(), e.getMessage());
-            } else {
-                BUSINESS_WARNS.warn(String.format("Validation failed for step value %s", formattedStepValueForLogs));
-                return DichotomyStepResult.fromFailure(ReasonInvalid.VALIDATION_FAILED, e.getMessage());
-            }
+            return handleShiftingException(e, network, formattedStepValueForLogs);
         } catch (ValidationException e) {
             BUSINESS_WARNS.warn(String.format("Validation failed for step value %s", formattedStepValueForLogs));
             return DichotomyStepResult.fromFailure(ReasonInvalid.VALIDATION_FAILED, e.getMessage());
@@ -193,6 +179,25 @@ public class DichotomyEngine<T> {
         } finally {
             network.getVariantManager().setWorkingVariant(initialVariant);
             network.getVariantManager().removeVariant(newVariant);
+        }
+    }
+
+    private DichotomyStepResult<T> handleShiftingException(final ShiftingException e, final Network network, final String formattedStepValueForLogs) {
+        if (e.getReason() == ReasonInvalid.BALANCE_LOADFLOW_DIVERGENCE || e.getReason() == ReasonInvalid.UNKNOWN_TERMINAL_BUS) {
+            BUSINESS_WARNS.warn(String.format("%s for step value %s", e.getMessage(), formattedStepValueForLogs));
+
+            if (networkExporter != null && e.getReason() == ReasonInvalid.BALANCE_LOADFLOW_DIVERGENCE) {
+                try {
+                    networkExporter.export(network);
+                } catch (Exception ex) {
+                    BUSINESS_WARNS.warn("Exception occurred while exporting network", ex);
+                }
+            }
+
+            return DichotomyStepResult.fromFailure(e.getReason(), e.getMessage());
+        } else {
+            BUSINESS_WARNS.warn(String.format("Validation failed for step value %s", formattedStepValueForLogs));
+            return DichotomyStepResult.fromFailure(ReasonInvalid.VALIDATION_FAILED, e.getMessage());
         }
     }
 
