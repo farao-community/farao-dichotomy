@@ -58,9 +58,14 @@ class DichotomyEngineTest {
         final double maxValue = 1000;
         final double precision = 200;
         final Index<Object> index = new Index<>(minValue, maxValue, precision);
-        final IndexStrategy indexStrategy = new RangeDivisionIndexStrategy(true);
+        final IndexStrategy<Object> indexStrategy = new RangeDivisionIndexStrategy<>(true);
         final NetworkValidator<Object> networkValidator = new NetworkValidatorMock(limit);
-        final DichotomyEngine<Object> engine = new DichotomyEngine<>(index, indexStrategy, mock(NetworkShifter.class), networkValidator);
+        final DichotomyEngine<Object> engine = DichotomyEngine.builder()
+                .withIndex(index)
+                .withIndexStrategy(indexStrategy)
+                .withNetworkShifter(mock(NetworkShifter.class))
+                .withNetworkValidator(networkValidator)
+                .build();
 
         engine.run(initialNetwork);
 
@@ -86,9 +91,14 @@ class DichotomyEngineTest {
         final double maxValue = 1000;
         final double precision = 200;
         final Index<Object> index = new Index<>(minValue, maxValue, precision);
-        final IndexStrategy indexStrategy = new RangeDivisionIndexStrategy(false);
+        final IndexStrategy<Object> indexStrategy = new RangeDivisionIndexStrategy<>(false);
         final NetworkValidator<Object> networkValidator = new NetworkValidatorMock(limit);
-        final DichotomyEngine<Object> engine = new DichotomyEngine<>(index, indexStrategy, mock(NetworkShifter.class), networkValidator);
+        final DichotomyEngine<Object> engine = DichotomyEngine.builder()
+                .withIndex(index)
+                .withIndexStrategy(indexStrategy)
+                .withNetworkShifter(mock(NetworkShifter.class))
+                .withNetworkValidator(networkValidator)
+                .build();
 
         engine.run(initialNetwork);
 
@@ -115,9 +125,14 @@ class DichotomyEngineTest {
         final double precision = 200;
         final double stepsSize = 400;
         final Index<Object> index = new Index<>(minValue, maxValue, precision);
-        final IndexStrategy indexStrategy = new StepsIndexStrategy(true, stepsSize);
+        final IndexStrategy<Object> indexStrategy = new StepsIndexStrategy<>(true, stepsSize);
         final NetworkValidator<Object> networkValidator = new NetworkValidatorMock(limit);
-        final DichotomyEngine<Object> engine = new DichotomyEngine<>(index, indexStrategy, mock(NetworkShifter.class), networkValidator);
+        final DichotomyEngine<Object> engine = DichotomyEngine.builder()
+                .withIndex(index)
+                .withIndexStrategy(indexStrategy)
+                .withNetworkShifter(mock(NetworkShifter.class))
+                .withNetworkValidator(networkValidator)
+                .build();
 
         engine.run(initialNetwork);
 
@@ -142,9 +157,14 @@ class DichotomyEngineTest {
         final double precision = 200;
         final double stepsSize = 400;
         final Index<Object> index = new Index<>(minValue, maxValue, precision);
-        final IndexStrategy indexStrategy = new StepsIndexStrategy(false, stepsSize);
+        final IndexStrategy<Object> indexStrategy = new StepsIndexStrategy<>(false, stepsSize);
         final NetworkValidator<Object> networkValidator = new NetworkValidatorMock(limit);
-        final DichotomyEngine<Object> engine = new DichotomyEngine<>(index, indexStrategy, mock(NetworkShifter.class), networkValidator);
+        final DichotomyEngine<Object> engine = DichotomyEngine.builder()
+                .withIndex(index)
+                .withIndexStrategy(indexStrategy)
+                .withNetworkShifter(mock(NetworkShifter.class))
+                .withNetworkValidator(networkValidator)
+                .build();
 
         engine.run(initialNetwork);
 
@@ -171,9 +191,15 @@ class DichotomyEngineTest {
         final double precision = 200;
         final int maxIterations = 5;
         final Index<Object> index = new Index<>(minValue, maxValue, precision);
-        final IndexStrategy indexStrategy = new RangeDivisionIndexStrategy(true);
+        final IndexStrategy<Object> indexStrategy = new RangeDivisionIndexStrategy<>(true);
         final NetworkValidator<Object> networkValidator = new NetworkValidatorMock(limit);
-        final DichotomyEngine<Object> engine = new DichotomyEngine<>(index, indexStrategy, mock(NetworkShifter.class), networkValidator, maxIterations);
+        final DichotomyEngine<Object> engine = DichotomyEngine.builder()
+                .withIndex(index)
+                .withIndexStrategy(indexStrategy)
+                .withNetworkShifter(mock(NetworkShifter.class))
+                .withNetworkValidator(networkValidator)
+                .withMaxIteration(maxIterations)
+                .build();
 
         engine.run(initialNetwork);
 
@@ -198,9 +224,14 @@ class DichotomyEngineTest {
         final double maxValue = 1000;
         final double precision = 200;
         final Index<Object> index = new Index<>(minValue, maxValue, precision);
-        final IndexStrategy indexStrategy = new RangeDivisionIndexStrategy(true);
+        final IndexStrategy<Object> indexStrategy = new RangeDivisionIndexStrategy<>(true);
         final NetworkValidator<Object> networkValidator = new NetworkValidatorMock(limit);
-        final DichotomyEngine<Object> engine = new DichotomyEngine<>(index, indexStrategy, mock(NetworkShifter.class), networkValidator);
+        final DichotomyEngine<Object> engine = DichotomyEngine.builder()
+                .withIndex(index)
+                .withIndexStrategy(indexStrategy)
+                .withNetworkShifter(mock(NetworkShifter.class))
+                .withNetworkValidator(networkValidator)
+                .build();
 
         engine.run(initialNetwork);
 
@@ -222,9 +253,14 @@ class DichotomyEngineTest {
         final double maxValue = 1000;
         final double precision = 200;
         final Index<Object> index = new Index<>(minValue, maxValue, precision);
-        final IndexStrategy indexStrategy = new RangeDivisionIndexStrategy(true);
+        final IndexStrategy<Object> indexStrategy = new RangeDivisionIndexStrategy<>(true);
         final NetworkValidator<Object> networkValidator = new NetworkValidatorMock(limit);
-        final DichotomyEngine<Object> engine = new DichotomyEngine<>(index, indexStrategy, mock(NetworkShifter.class), networkValidator);
+        final DichotomyEngine<Object> engine = DichotomyEngine.builder()
+                .withIndex(index)
+                .withIndexStrategy(indexStrategy)
+                .withNetworkShifter(mock(NetworkShifter.class))
+                .withNetworkValidator(networkValidator)
+                .build();
 
         engine.run(initialNetwork);
 
@@ -234,7 +270,7 @@ class DichotomyEngineTest {
         assertions.assertThat(index.highestValidStep()).isNull();
         assertResultInvalidEquals(assertions, index.lowestInvalidStep(), -1000);
 
-        assertResultInvalidEquals(assertions, index.testedSteps().get(0), -1000);
+        assertResultInvalidEquals(assertions, index.testedSteps().getFirst(), -1000);
         assertions.assertAll();
     }
 
@@ -245,19 +281,26 @@ class DichotomyEngineTest {
         final double maxValue = 1000;
         final double precision = 200;
         final Index<Object> index = new Index<>(minValue, maxValue, precision);
-        final IndexStrategy indexStrategy = new RangeDivisionIndexStrategy(true);
+        final IndexStrategy<Object> indexStrategy = new RangeDivisionIndexStrategy<>(true);
         final NetworkValidator<Object> networkValidator = new NetworkValidatorMock(limit);
 
+        final DichotomyEngine.Builder<Object> builder = DichotomyEngine.builder()
+                .withIndex(index)
+                .withIndexStrategy(indexStrategy)
+                .withNetworkShifter(mock(NetworkShifter.class))
+                .withNetworkValidator(networkValidator)
+                .withMaxIteration(2);
+
         Assertions.assertThatExceptionOfType(DichotomyException.class)
-                .isThrownBy(() -> new DichotomyEngine<>(index, indexStrategy, mock(NetworkShifter.class), networkValidator, 2));
+                .isThrownBy(builder::build);
     }
 
     @Test
     void checkThatStepsIndexStrategyCreationFailsWhenStepsSizeNegative() {
         Assertions.assertThatExceptionOfType(DichotomyException.class)
-                        .isThrownBy(() -> new StepsIndexStrategy(true, -10));
+                        .isThrownBy(() -> new StepsIndexStrategy<>(true, -10));
         Assertions.assertThatExceptionOfType(DichotomyException.class)
-                        .isThrownBy(() -> new StepsIndexStrategy(true, 0));
+                        .isThrownBy(() -> new StepsIndexStrategy<>(true, 0));
     }
 
     @Test
@@ -268,9 +311,15 @@ class DichotomyEngineTest {
         final double precision = 200;
         final int maxIterations = 5;
         final Index<Object> index = new Index<>(minValue, maxValue, precision);
-        final IndexStrategy indexStrategy = new RangeDivisionIndexStrategy(true);
+        final IndexStrategy<Object> indexStrategy = new RangeDivisionIndexStrategy<>(true);
         final NetworkValidator<Object> networkValidator = new NetworkValidatorMock(limit);
-        final DichotomyEngine<Object> engine = new DichotomyEngine<>(index, indexStrategy, mock(NetworkShifter.class), networkValidator, maxIterations);
+        final DichotomyEngine<Object> engine = DichotomyEngine.builder()
+                .withIndex(index)
+                .withIndexStrategy(indexStrategy)
+                .withNetworkShifter(mock(NetworkShifter.class))
+                .withNetworkValidator(networkValidator)
+                .withMaxIteration(maxIterations)
+                .build();
 
         engine.run(initialNetwork);
 
@@ -293,9 +342,15 @@ class DichotomyEngineTest {
         final double precision = 100;
         final int maxIterations = 5;
         final Index<Object> index = new Index<>(minValue, maxValue, precision);
-        final IndexStrategy indexStrategy = new RangeDivisionIndexStrategy(true);
+        final IndexStrategy<Object> indexStrategy = new RangeDivisionIndexStrategy<>(true);
         final NetworkValidator<Object> networkValidator = new NetworkValidatorMock(limit);
-        final DichotomyEngine<Object> engine = new DichotomyEngine<>(index, indexStrategy, mock(NetworkShifter.class), networkValidator, maxIterations);
+        final DichotomyEngine<Object> engine = DichotomyEngine.builder()
+                .withIndex(index)
+                .withIndexStrategy(indexStrategy)
+                .withNetworkShifter(mock(NetworkShifter.class))
+                .withNetworkValidator(networkValidator)
+                .withMaxIteration(maxIterations)
+                .build();
 
         engine.run(initialNetwork);
 
@@ -305,7 +360,7 @@ class DichotomyEngineTest {
         assertions.assertThat(index.highestValidStep()).isNull();
         assertResultInvalidEquals(assertions, index.lowestInvalidStep(), -50);
 
-        assertResultInvalidEquals(assertions, index.testedSteps().get(0), -50);
+        assertResultInvalidEquals(assertions, index.testedSteps().getFirst(), -50);
         assertions.assertAll();
     }
 
@@ -317,9 +372,15 @@ class DichotomyEngineTest {
         final double precision = 100;
         final int maxIterations = 5;
         final Index<Object> index = new Index<>(minValue, maxValue, precision);
-        final IndexStrategy indexStrategy = new RangeDivisionIndexStrategy(false);
+        final IndexStrategy<Object> indexStrategy = new RangeDivisionIndexStrategy<>(false);
         final NetworkValidator<Object> networkValidator = new NetworkValidatorMock(limit);
-        final DichotomyEngine<Object> engine = new DichotomyEngine<>(index, indexStrategy, mock(NetworkShifter.class), networkValidator, maxIterations);
+        final DichotomyEngine<Object> engine = DichotomyEngine.builder()
+                .withIndex(index)
+                .withIndexStrategy(indexStrategy)
+                .withNetworkShifter(mock(NetworkShifter.class))
+                .withNetworkValidator(networkValidator)
+                .withMaxIteration(maxIterations)
+                .build();
 
         engine.run(initialNetwork);
 
@@ -329,7 +390,7 @@ class DichotomyEngineTest {
         assertions.assertThat(index.lowestInvalidStep()).isNull();
         assertResultValidEquals(assertions, index.highestValidStep(), 50);
 
-        assertResultValidEquals(assertions, index.testedSteps().get(0), 50);
+        assertResultValidEquals(assertions, index.testedSteps().getFirst(), 50);
         assertions.assertAll();
     }
 
@@ -341,11 +402,18 @@ class DichotomyEngineTest {
         final double precision = 200;
         final double stepsSize = 400;
         final Index<Object> index = new Index<>(minValue, maxValue, precision);
-        final IndexStrategy indexStrategy = new StepsIndexStrategy(true, stepsSize);
+        final IndexStrategy<Object> indexStrategy = new StepsIndexStrategy<>(true, stepsSize);
         final NetworkValidator<Object> networkValidator = new NetworkValidatorMock(limit);
         final InterruptionStrategy interruptionStrategy = mock(InterruptionStrategy.class);
         when(interruptionStrategy.shouldRunBeInterruptedSoftly("id")).thenReturn(false);
-        final DichotomyEngine<Object> engine = new DichotomyEngine<>(index, indexStrategy, interruptionStrategy, mock(NetworkShifter.class), networkValidator, "id");
+        final DichotomyEngine<Object> engine = DichotomyEngine.builder()
+                .withIndex(index)
+                .withIndexStrategy(indexStrategy)
+                .withInterruptionStrategy(interruptionStrategy)
+                .withNetworkShifter(mock(NetworkShifter.class))
+                .withNetworkValidator(networkValidator)
+                .withRunId("id")
+                .build();
 
         final DichotomyResult<Object> dichotomyResult = engine.run(initialNetwork);
 
@@ -371,11 +439,18 @@ class DichotomyEngineTest {
         final double precision = 200;
         final double stepsSize = 400;
         final Index<Object> index = new Index<>(minValue, maxValue, precision);
-        final IndexStrategy indexStrategy = new StepsIndexStrategy(true, stepsSize);
+        final IndexStrategy<Object> indexStrategy = new StepsIndexStrategy<>(true, stepsSize);
         final NetworkValidator<Object> networkValidator = new NetworkValidatorMock(limit);
         final InterruptionStrategy interruptionStrategy = mock(InterruptionStrategy.class);
         when(interruptionStrategy.shouldRunBeInterruptedSoftly("id")).thenReturn(true);
-        final DichotomyEngine<Object> engine = new DichotomyEngine<>(index, indexStrategy, interruptionStrategy, mock(NetworkShifter.class), networkValidator, "id");
+        final DichotomyEngine<Object> engine = DichotomyEngine.builder()
+                .withIndex(index)
+                .withIndexStrategy(indexStrategy)
+                .withInterruptionStrategy(interruptionStrategy)
+                .withNetworkShifter(mock(NetworkShifter.class))
+                .withNetworkValidator(networkValidator)
+                .withRunId("id")
+                .build();
 
         final DichotomyResult<Object> dichotomyResult = engine.run(initialNetwork);
 
@@ -393,11 +468,18 @@ class DichotomyEngineTest {
         final double precision = 200;
         final double stepsSize = 400;
         final Index<Object> index = new Index<>(minValue, maxValue, precision);
-        final IndexStrategy indexStrategy = new StepsIndexStrategy(true, stepsSize);
+        final IndexStrategy<Object> indexStrategy = new StepsIndexStrategy<>(true, stepsSize);
         final NetworkValidator<Object> networkValidator = new NetworkValidatorMock(limit);
         final InterruptionStrategy interruptionStrategy = mock(InterruptionStrategy.class);
         when(interruptionStrategy.shouldRunBeInterruptedSoftly("id")).thenReturn(false).thenReturn(true);
-        final DichotomyEngine<Object> engine = new DichotomyEngine<>(index, indexStrategy, interruptionStrategy, mock(NetworkShifter.class), networkValidator, "id");
+        final DichotomyEngine<Object> engine = DichotomyEngine.builder()
+                .withIndex(index)
+                .withIndexStrategy(indexStrategy)
+                .withInterruptionStrategy(interruptionStrategy)
+                .withNetworkShifter(mock(NetworkShifter.class))
+                .withNetworkValidator(networkValidator)
+                .withRunId("id")
+                .build();
 
         final DichotomyResult<Object> dichotomyResult = engine.run(initialNetwork);
 
@@ -414,12 +496,19 @@ class DichotomyEngineTest {
         final double precision = 200;
         final double stepsSize = 400;
         final Index<Object> index = new Index<>(minValue, maxValue, precision);
-        final IndexStrategy indexStrategy = new StepsIndexStrategy(false, stepsSize);
+        final IndexStrategy<Object> indexStrategy = new StepsIndexStrategy<>(false, stepsSize);
         final NetworkValidator<Object> networkValidator = mock(NetworkValidator.class);
         when(networkValidator.validateNetwork(any(), any())).thenThrow(new RaoInterruptionException("test"));
         final InterruptionStrategy interruptionStrategy = mock(InterruptionStrategy.class);
         when(interruptionStrategy.shouldRunBeInterruptedSoftly("id")).thenReturn(false).thenReturn(true);
-        final DichotomyEngine<Object> engine = new DichotomyEngine<>(index, indexStrategy, interruptionStrategy, mock(NetworkShifter.class), networkValidator, "id");
+        final DichotomyEngine<Object> engine = DichotomyEngine.builder()
+                .withIndex(index)
+                .withIndexStrategy(indexStrategy)
+                .withInterruptionStrategy(interruptionStrategy)
+                .withNetworkShifter(mock(NetworkShifter.class))
+                .withNetworkValidator(networkValidator)
+                .withRunId("id")
+                .build();
 
         final DichotomyResult<Object> dichotomyResult = engine.run(initialNetwork);
 
@@ -437,12 +526,19 @@ class DichotomyEngineTest {
         final double precision = 200;
         final double stepsSize = 400;
         final Index<Object> index = new Index<>(minValue, maxValue, precision);
-        final IndexStrategy indexStrategy = new StepsIndexStrategy(false, stepsSize);
+        final IndexStrategy<Object> indexStrategy = new StepsIndexStrategy<>(false, stepsSize);
         final NetworkValidator<Object> networkValidator = mock(NetworkValidator.class);
         when(networkValidator.validateNetwork(any(), any())).thenThrow(new RaoFailureException(failureMessage));
         final InterruptionStrategy interruptionStrategy = mock(InterruptionStrategy.class);
         when(interruptionStrategy.shouldRunBeInterruptedSoftly("id")).thenReturn(false);
-        final DichotomyEngine<Object> engine = new DichotomyEngine<>(index, indexStrategy, interruptionStrategy, mock(NetworkShifter.class), networkValidator, "id");
+        final DichotomyEngine<Object> engine = DichotomyEngine.builder()
+                .withIndex(index)
+                .withIndexStrategy(indexStrategy)
+                .withInterruptionStrategy(interruptionStrategy)
+                .withNetworkShifter(mock(NetworkShifter.class))
+                .withNetworkValidator(networkValidator)
+                .withRunId("id")
+                .build();
 
         final DichotomyResult<Object> dichotomyResult = engine.run(initialNetwork);
 
@@ -471,9 +567,14 @@ class DichotomyEngineTest {
         final VariantManager variantManager = mock(VariantManager.class);
         final DichotomyStepResult<Object> lastDichotomyStepResult = mock(DichotomyStepResult.class);
         final Index<Object> index = mock(Index.class);
-        final IndexStrategy indexStrategy = mock(IndexStrategy.class);
+        final IndexStrategy<Object> indexStrategy = mock(IndexStrategy.class);
         final NetworkValidator<Object> networkValidator = mock(NetworkValidator.class);
-        final DichotomyEngine<Object> engine = new DichotomyEngine<>(index, indexStrategy, networkShifter, networkValidator);
+        final DichotomyEngine<Object> engine = DichotomyEngine.builder()
+                .withIndex(index)
+                .withIndexStrategy(indexStrategy)
+                .withNetworkShifter(networkShifter)
+                .withNetworkValidator(networkValidator)
+                .build();
 
         when(network.getVariantManager()).thenReturn(variantManager);
         when(network.getVariantManager()).thenReturn(variantManager);
@@ -498,9 +599,14 @@ class DichotomyEngineTest {
         final VariantManager variantManager = mock(VariantManager.class);
         final DichotomyStepResult<Object> lastDichotomyStepResult = mock(DichotomyStepResult.class);
         final Index<Object> index = mock(Index.class);
-        final IndexStrategy indexStrategy = mock(IndexStrategy.class);
+        final IndexStrategy<Object> indexStrategy = mock(IndexStrategy.class);
         final NetworkValidator<Object> networkValidator = mock(NetworkValidator.class);
-        final DichotomyEngine<Object> engine = new DichotomyEngine<>(index, indexStrategy, networkShifter, networkValidator);
+        final DichotomyEngine<Object> engine = DichotomyEngine.builder()
+                .withIndex(index)
+                .withIndexStrategy(indexStrategy)
+                .withNetworkShifter(networkShifter)
+                .withNetworkValidator(networkValidator)
+                .build();
 
         when(network.getVariantManager()).thenReturn(variantManager);
         when(network.getVariantManager()).thenReturn(variantManager);
@@ -525,9 +631,16 @@ class DichotomyEngineTest {
         final VariantManager variantManager = mock(VariantManager.class);
         final DichotomyStepResult<Object> lastDichotomyStepResult = mock(DichotomyStepResult.class);
         final Index<Object> index = mock(Index.class);
-        final IndexStrategy indexStrategy = mock(IndexStrategy.class);
+        final IndexStrategy<Object> indexStrategy = mock(IndexStrategy.class);
         final NetworkValidator<Object> networkValidator = mock(NetworkValidator.class);
-        final DichotomyEngine<Object> engine = new DichotomyEngine<>(index, indexStrategy, null, networkShifter, networkValidator, networkExporter, "0");
+        final DichotomyEngine<Object> engine = DichotomyEngine.builder()
+                .withIndex(index)
+                .withIndexStrategy(indexStrategy)
+                .withNetworkShifter(networkShifter)
+                .withNetworkValidator(networkValidator)
+                .withNetworkExporter(networkExporter)
+                .withRunId("0")
+                .build();
 
         when(network.getVariantManager()).thenReturn(variantManager);
         when(network.getVariantManager()).thenReturn(variantManager);
@@ -553,9 +666,16 @@ class DichotomyEngineTest {
         final VariantManager variantManager = mock(VariantManager.class);
         final DichotomyStepResult<Object> lastDichotomyStepResult = mock(DichotomyStepResult.class);
         final Index<Object> index = mock(Index.class);
-        final IndexStrategy indexStrategy = mock(IndexStrategy.class);
+        final IndexStrategy<Object> indexStrategy = mock(IndexStrategy.class);
         final NetworkValidator<Object> networkValidator = mock(NetworkValidator.class);
-        final DichotomyEngine<Object> engine = new DichotomyEngine<>(index, indexStrategy, null, networkShifter, networkValidator, networkExporter, "0");
+        final DichotomyEngine<Object> engine = DichotomyEngine.builder()
+                .withIndex(index)
+                .withIndexStrategy(indexStrategy)
+                .withNetworkShifter(networkShifter)
+                .withNetworkValidator(networkValidator)
+                .withNetworkExporter(networkExporter)
+                .withRunId("0")
+                .build();
 
         when(network.getVariantManager()).thenReturn(variantManager);
         when(network.getVariantManager()).thenReturn(variantManager);
@@ -567,7 +687,7 @@ class DichotomyEngineTest {
 
         Assertions.assertThat(result).isNotNull();
         Assertions.assertThat(result.getReasonInvalid()).isEqualTo(reasonInvalid);
-        Mockito.verify(networkExporter, Mockito.times(0)).export(network);
+        Mockito.verify(networkExporter, Mockito.never()).export(network);
     }
 
     @Test
@@ -579,9 +699,14 @@ class DichotomyEngineTest {
         final VariantManager variantManager = mock(VariantManager.class);
         final DichotomyStepResult<Object> lastDichotomyStepResult = mock(DichotomyStepResult.class);
         final Index<Object> index = mock(Index.class);
-        final IndexStrategy indexStrategy = mock(IndexStrategy.class);
+        final IndexStrategy<Object> indexStrategy = mock(IndexStrategy.class);
         final NetworkValidator<Object> networkValidator = mock(NetworkValidator.class);
-        final DichotomyEngine<Object> engine = new DichotomyEngine<>(index, indexStrategy, networkShifter, networkValidator);
+        final DichotomyEngine<Object> engine = DichotomyEngine.builder()
+                .withIndex(index)
+                .withIndexStrategy(indexStrategy)
+                .withNetworkShifter(networkShifter)
+                .withNetworkValidator(networkValidator)
+                .build();
 
         when(network.getVariantManager()).thenReturn(variantManager);
         when(network.getVariantManager()).thenReturn(variantManager);
@@ -604,9 +729,14 @@ class DichotomyEngineTest {
         final VariantManager variantManager = mock(VariantManager.class);
         final DichotomyStepResult<Object> lastDichotomyStepResult = mock(DichotomyStepResult.class);
         final Index<Object> index = mock(Index.class);
-        final IndexStrategy indexStrategy = mock(IndexStrategy.class);
+        final IndexStrategy<Object> indexStrategy = mock(IndexStrategy.class);
         final NetworkValidator<Object> networkValidator = mock(NetworkValidator.class);
-        final DichotomyEngine<Object> engine = new DichotomyEngine<>(index, indexStrategy, networkShifter, networkValidator);
+        final DichotomyEngine<Object> engine = DichotomyEngine.builder()
+                .withIndex(index)
+                .withIndexStrategy(indexStrategy)
+                .withNetworkShifter(networkShifter)
+                .withNetworkValidator(networkValidator)
+                .build();
 
         when(network.getVariantManager()).thenReturn(variantManager);
         when(network.getVariantManager()).thenReturn(variantManager);
@@ -630,9 +760,14 @@ class DichotomyEngineTest {
         final VariantManager variantManager = mock(VariantManager.class);
         final DichotomyStepResult<Object> lastDichotomyStepResult = mock(DichotomyStepResult.class);
         final Index<Object> index = mock(Index.class);
-        final IndexStrategy indexStrategy = mock(IndexStrategy.class);
+        final IndexStrategy<Object> indexStrategy = mock(IndexStrategy.class);
         final NetworkValidator<Object> networkValidator = mock(NetworkValidator.class);
-        final DichotomyEngine<Object> engine = new DichotomyEngine<>(index, indexStrategy, networkShifter, networkValidator);
+        final DichotomyEngine<Object> engine = DichotomyEngine.builder()
+                .withIndex(index)
+                .withIndexStrategy(indexStrategy)
+                .withNetworkShifter(networkShifter)
+                .withNetworkValidator(networkValidator)
+                .build();
 
         when(network.getVariantManager()).thenReturn(variantManager);
         when(network.getVariantManager()).thenReturn(variantManager);
@@ -645,5 +780,81 @@ class DichotomyEngineTest {
 
         Assertions.assertThat(result).isNotNull();
         Assertions.assertThat(result.getReasonInvalid()).isEqualTo(ReasonInvalid.RAO_INTERRUPTION);
+    }
+
+    @Test
+    void checkBuilderDefaultValues() {
+        final Index<Object> index = mock(Index.class);
+        final IndexStrategy<Object> indexStrategy = mock(IndexStrategy.class);
+        final NetworkValidator<Object> networkValidator = mock(NetworkValidator.class);
+
+        final DichotomyEngine<Object> engine = DichotomyEngine.builder()
+                .withIndex(index)
+                .withIndexStrategy(indexStrategy)
+                .withNetworkValidator(networkValidator)
+                .build();
+
+        Assertions.assertThat(engine)
+                .isNotNull()
+                .hasFieldOrPropertyWithValue("interruptionStrategy", null)
+                .hasFieldOrPropertyWithValue("networkShifter", null)
+                .hasFieldOrPropertyWithValue("networkExporter", null)
+                .hasFieldOrPropertyWithValue("maxIteration", 100)
+                .hasFieldOrPropertyWithValue("runId", null);
+    }
+
+    @Test
+    void checkBuilderValues() {
+        final Index<Object> index = mock(Index.class);
+        final IndexStrategy<Object> indexStrategy = mock(IndexStrategy.class);
+        final InterruptionStrategy interruptionStrategy = mock(InterruptionStrategy.class);
+        final NetworkValidator<Object> networkValidator = mock(NetworkValidator.class);
+        final NetworkShifter networkShifter = mock(NetworkShifter.class);
+        final NetworkExporter networkExporter = mock(NetworkExporter.class);
+
+        final DichotomyEngine<Object> engine = DichotomyEngine.builder()
+                .withIndex(index)
+                .withIndexStrategy(indexStrategy)
+                .withInterruptionStrategy(interruptionStrategy)
+                .withNetworkShifter(networkShifter)
+                .withNetworkValidator(networkValidator)
+                .withNetworkExporter(networkExporter)
+                .withMaxIteration(72)
+                .withRunId("0")
+                .build();
+
+        Assertions.assertThat(engine)
+                .isNotNull()
+                .hasFieldOrPropertyWithValue("index", index)
+                .hasFieldOrPropertyWithValue("indexStrategy", indexStrategy)
+                .hasFieldOrPropertyWithValue("interruptionStrategy", interruptionStrategy)
+                .hasFieldOrPropertyWithValue("networkShifter", networkShifter)
+                .hasFieldOrPropertyWithValue("networkValidator", networkValidator)
+                .hasFieldOrPropertyWithValue("networkExporter", networkExporter)
+                .hasFieldOrPropertyWithValue("maxIteration", 72)
+                .hasFieldOrPropertyWithValue("runId", "0");
+    }
+
+    @Test
+    void checkBuilderRequiredValues() {
+        final Index<Object> index = mock(Index.class);
+        final IndexStrategy<Object> indexStrategy = mock(IndexStrategy.class);
+        final NetworkValidator<Object> networkValidator = mock(NetworkValidator.class);
+
+        final DichotomyEngine.Builder<Object> builderWithoutIndex = DichotomyEngine.builder()
+                .withIndexStrategy(indexStrategy)
+                .withNetworkValidator(networkValidator);
+
+        final DichotomyEngine.Builder<Object> builderWithoutIndesStrategy = DichotomyEngine.builder()
+                .withIndex(index)
+                .withNetworkValidator(networkValidator);
+
+        final DichotomyEngine.Builder<Object> builderWithoutNetworkValidator = DichotomyEngine.builder()
+                .withIndex(index)
+                .withIndexStrategy(indexStrategy);
+
+        Assertions.assertThatExceptionOfType(NullPointerException.class).isThrownBy(builderWithoutIndex::build);
+        Assertions.assertThatExceptionOfType(NullPointerException.class).isThrownBy(builderWithoutIndesStrategy::build);
+        Assertions.assertThatExceptionOfType(NullPointerException.class).isThrownBy(builderWithoutNetworkValidator::build);
     }
 }

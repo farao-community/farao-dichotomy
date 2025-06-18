@@ -49,44 +49,9 @@ public class DichotomyEngine<T> {
     private final String runId;
 
     /**
-     * Use this constructor to use the engine WITHOUT soft-interruption feature
+     * Use the builder
      */
-    public DichotomyEngine(Index<T> index, IndexStrategy<T> indexStrategy, NetworkShifter networkShifter, NetworkValidator<T> networkValidator) {
-        this(index, indexStrategy, null, networkShifter, networkValidator, null);
-    }
-
-    /**
-     * Use this constructor to use the engine with the soft-interruption feature
-     */
-    public DichotomyEngine(Index<T> index, IndexStrategy<T> indexStrategy, InterruptionStrategy interruptionStrategy, NetworkShifter networkShifter, NetworkValidator<T> networkValidator, String runId) {
-        this(index, indexStrategy, interruptionStrategy, networkShifter, networkValidator, null, DEFAULT_MAX_ITERATION_NUMBER, runId);
-    }
-
-    /**
-     * Use this constructor to use the engine with the soft-interruption feature and network-export
-     */
-    public DichotomyEngine(Index<T> index, IndexStrategy<T> indexStrategy, InterruptionStrategy interruptionStrategy, NetworkShifter networkShifter, NetworkValidator<T> networkValidator, NetworkExporter networkExporter, String runId) {
-        this(index, indexStrategy, interruptionStrategy, networkShifter, networkValidator, networkExporter, DEFAULT_MAX_ITERATION_NUMBER, runId);
-    }
-
-    /**
-     * Use this constructor to use the engine WITHOUT soft-interruption feature
-     */
-    public DichotomyEngine(Index<T> index, IndexStrategy<T> indexStrategy, NetworkShifter networkShifter, NetworkValidator<T> networkValidator, int maxIteration) {
-        this(index, indexStrategy, null, networkShifter, networkValidator, null, maxIteration, null);
-    }
-
-    /**
-     * Use this constructor to use the engine with the soft-interruption feature but WITHOUT network-exporter
-     */
-    public DichotomyEngine(Index<T> index, IndexStrategy<T> indexStrategy, InterruptionStrategy interruptionStrategy, NetworkShifter networkShifter, NetworkValidator<T> networkValidator, int maxIteration, String runId) {
-        this(index, indexStrategy, interruptionStrategy, networkShifter, networkValidator, null, maxIteration, runId);
-    }
-
-    /**
-     * Use this constructor to use the engine with the soft-interruption feature and network-exporter
-     */
-    public DichotomyEngine(Index<T> index, IndexStrategy<T> indexStrategy, InterruptionStrategy interruptionStrategy, NetworkShifter networkShifter, NetworkValidator<T> networkValidator, NetworkExporter networkExporter, int maxIteration, String runId) {
+    DichotomyEngine(Index<T> index, IndexStrategy<T> indexStrategy, InterruptionStrategy interruptionStrategy, NetworkShifter networkShifter, NetworkValidator<T> networkValidator, NetworkExporter networkExporter, int maxIteration, String runId) {
         if (maxIteration < 3) {
             throw new DichotomyException("Max number of iterations of the dichotomy engine should be at least 3.");
         }
@@ -203,5 +168,67 @@ public class DichotomyEngine<T> {
 
     private String variantName(double stepValue, String initialVariant) {
         return String.format("%s-ScaledBy-%d", initialVariant, (int) stepValue);
+    }
+
+    public static <T> Builder<T> builder() {
+        return new Builder<>();
+    }
+
+    public static final class Builder<T> {
+        private Index<T> index;
+        private IndexStrategy<T> indexStrategy;
+        private InterruptionStrategy interruptionStrategy;
+        private NetworkShifter networkShifter;
+        private NetworkValidator<T> networkValidator;
+        private NetworkExporter networkExporter;
+        private int maxIteration = DEFAULT_MAX_ITERATION_NUMBER;
+        private String runId;
+
+        private Builder() {
+        }
+
+        public Builder<T> withIndex(Index<T> index) {
+            this.index = index;
+            return this;
+        }
+
+        public Builder<T> withIndexStrategy(IndexStrategy<T> indexStrategy) {
+            this.indexStrategy = indexStrategy;
+            return this;
+        }
+
+        public Builder<T> withInterruptionStrategy(InterruptionStrategy interruptionStrategy) {
+            this.interruptionStrategy = interruptionStrategy;
+            return this;
+        }
+
+        public Builder<T> withNetworkShifter(NetworkShifter networkShifter) {
+            this.networkShifter = networkShifter;
+            return this;
+        }
+
+        public Builder<T> withNetworkValidator(NetworkValidator<T> networkValidator) {
+            this.networkValidator = networkValidator;
+            return this;
+        }
+
+        public Builder<T> withNetworkExporter(NetworkExporter networkExporter) {
+            this.networkExporter = networkExporter;
+            return this;
+        }
+
+        public Builder<T> withMaxIteration(int maxIteration) {
+            this.maxIteration = maxIteration;
+            return this;
+        }
+
+        public Builder<T> withRunId(String runId) {
+            this.runId = runId;
+            return this;
+        }
+
+        public DichotomyEngine<T> build() {
+            return new DichotomyEngine<>(index, indexStrategy, interruptionStrategy, networkShifter, networkValidator, networkExporter, maxIteration, runId);
+        }
     }
 }
