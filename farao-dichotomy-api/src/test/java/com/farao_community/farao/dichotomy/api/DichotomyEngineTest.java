@@ -786,18 +786,19 @@ class DichotomyEngineTest {
     void checkBuilderDefaultValues() {
         final Index<Object> index = mock(Index.class);
         final IndexStrategy<Object> indexStrategy = mock(IndexStrategy.class);
+        final NetworkShifter networkShifter = mock(NetworkShifter.class);
         final NetworkValidator<Object> networkValidator = mock(NetworkValidator.class);
 
         final DichotomyEngine<Object> engine = DichotomyEngine.builder()
                 .withIndex(index)
                 .withIndexStrategy(indexStrategy)
+                .withNetworkShifter(networkShifter)
                 .withNetworkValidator(networkValidator)
                 .build();
 
         Assertions.assertThat(engine)
                 .isNotNull()
                 .hasFieldOrPropertyWithValue("interruptionStrategy", null)
-                .hasFieldOrPropertyWithValue("networkShifter", null)
                 .hasFieldOrPropertyWithValue("networkExporter", null)
                 .hasFieldOrPropertyWithValue("maxIteration", 100)
                 .hasFieldOrPropertyWithValue("runId", null);
