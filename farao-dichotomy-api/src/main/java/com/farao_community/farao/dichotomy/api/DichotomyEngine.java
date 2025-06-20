@@ -228,10 +228,6 @@ public class DichotomyEngine<T> {
         }
 
         public DichotomyEngine<T> build() {
-            Objects.requireNonNull(index, "index is required");
-            Objects.requireNonNull(indexStrategy, "indexStrategy is required");
-            Objects.requireNonNull(networkValidator, "networkValidator is required");
-            Objects.requireNonNull(networkShifter, "networkShifter is required");
             return new DichotomyEngine<>(index, indexStrategy, interruptionStrategy, networkShifter, networkValidator, networkExporter, maxIteration, runId);
         }
     }
