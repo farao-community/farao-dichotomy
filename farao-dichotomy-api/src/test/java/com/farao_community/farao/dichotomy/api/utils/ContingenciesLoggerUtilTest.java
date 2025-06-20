@@ -41,7 +41,7 @@ class ContingenciesLoggerUtilTest {
         // When
         ContingenciesLoggerUtil.logContingencies(inputFilePath, loggerMock);
         // Then
-        Mockito.verify(loggerMock, Mockito.times(0)).warn(Mockito.eq(SENSITIVITY_FAILURE_WARNING_MESSAGE), Mockito.anyString(), Mockito.anyString());
+        Mockito.verify(loggerMock, Mockito.never()).warn(Mockito.eq(SENSITIVITY_FAILURE_WARNING_MESSAGE), Mockito.anyString(), Mockito.anyString());
     }
 
     @Test
@@ -53,6 +53,6 @@ class ContingenciesLoggerUtilTest {
         // When
         ContingenciesLoggerUtil.logContingencies(inputFilePath, loggerMock);
         // Then
-        Mockito.verify(loggerMock, Mockito.times(0)).warn(Mockito.eq(SENSITIVITY_FAILURE_WARNING_MESSAGE), Mockito.anyString(), Mockito.anyString());
+        Mockito.verify(loggerMock, Mockito.never()).warn(Mockito.eq(SENSITIVITY_FAILURE_WARNING_MESSAGE), Mockito.anyString(), Mockito.anyString());
     }
 }

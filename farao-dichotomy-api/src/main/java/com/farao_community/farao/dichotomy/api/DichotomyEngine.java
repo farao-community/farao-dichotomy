@@ -44,42 +44,23 @@ public class DichotomyEngine<T> {
     private final InterruptionStrategy interruptionStrategy;
     private final NetworkShifter networkShifter;
     private final NetworkValidator<T> networkValidator;
+    private final NetworkExporter networkExporter;
     private final int maxIteration;
     private final String runId;
 
     /**
-     * Use this constructor to use the engine WITHOUT soft-interruption feature
+     * Use the builder
      */
-    public DichotomyEngine(Index<T> index, IndexStrategy<T> indexStrategy, NetworkShifter networkShifter, NetworkValidator<T> networkValidator) {
-        this(index, indexStrategy, null, networkShifter, networkValidator, null);
-    }
-
-    /**
-     * Use this constructor to use the engine with the soft-interruption feature
-     */
-    public DichotomyEngine(Index<T> index, IndexStrategy<T> indexStrategy, InterruptionStrategy interruptionStrategy, NetworkShifter networkShifter, NetworkValidator<T> networkValidator, String runId) {
-        this(index, indexStrategy, interruptionStrategy, networkShifter, networkValidator, DEFAULT_MAX_ITERATION_NUMBER, runId);
-    }
-
-    /**
-     * Use this constructor to use the engine WITHOUT soft-interruption feature
-     */
-    public DichotomyEngine(Index<T> index, IndexStrategy<T> indexStrategy, NetworkShifter networkShifter, NetworkValidator<T> networkValidator, int maxIteration) {
-        this(index, indexStrategy, null, networkShifter, networkValidator, maxIteration, null);
-    }
-
-    /**
-     * Use this constructor to use the engine with the soft-interruption feature
-     */
-    public DichotomyEngine(Index<T> index, IndexStrategy<T> indexStrategy, InterruptionStrategy interruptionStrategy, NetworkShifter networkShifter, NetworkValidator<T> networkValidator, int maxIteration, String runId) {
+    DichotomyEngine(Index<T> index, IndexStrategy<T> indexStrategy, InterruptionStrategy interruptionStrategy, NetworkShifter networkShifter, NetworkValidator<T> networkValidator, NetworkExporter networkExporter, int maxIteration, String runId) {
         if (maxIteration < 3) {
             throw new DichotomyException("Max number of iterations of the dichotomy engine should be at least 3.");
         }
         this.index = Objects.requireNonNull(index);
         this.indexStrategy = Objects.requireNonNull(indexStrategy);
         this.interruptionStrategy = interruptionStrategy;
-        this.networkShifter = networkShifter;
+        this.networkShifter = Objects.requireNonNull(networkShifter);
         this.networkValidator = Objects.requireNonNull(networkValidator);
+        this.networkExporter = networkExporter;
         this.maxIteration = maxIteration;
         this.runId = runId;
     }
@@ -153,13 +134,7 @@ public class DichotomyEngine<T> {
             BUSINESS_WARNS.warn(String.format("GLSK limits have been reached for step value %s", formattedStepValueForLogs));
             return DichotomyStepResult.fromFailure(ReasonInvalid.GLSK_LIMITATION, e.getMessage());
         } catch (ShiftingException e) {
-            if (e.getReason() == ReasonInvalid.BALANCE_LOADFLOW_DIVERGENCE || e.getReason() == ReasonInvalid.UNKNOWN_TERMINAL_BUS) {
-                BUSINESS_WARNS.warn(String.format("%s for step value %s", e.getMessage(), formattedStepValueForLogs));
-                return DichotomyStepResult.fromFailure(e.getReason(), e.getMessage());
-            } else {
-                BUSINESS_WARNS.warn(String.format("Validation failed for step value %s", formattedStepValueForLogs));
-                return DichotomyStepResult.fromFailure(ReasonInvalid.VALIDATION_FAILED, e.getMessage());
-            }
+            return handleShiftingException(e, network, formattedStepValueForLogs);
         } catch (ValidationException e) {
             BUSINESS_WARNS.warn(String.format("Validation failed for step value %s", formattedStepValueForLogs));
             return DichotomyStepResult.fromFailure(ReasonInvalid.VALIDATION_FAILED, e.getMessage());
@@ -172,7 +147,88 @@ public class DichotomyEngine<T> {
         }
     }
 
+    private DichotomyStepResult<T> handleShiftingException(final ShiftingException e, final Network network, final String formattedStepValueForLogs) {
+        if (e.getReason() == ReasonInvalid.BALANCE_LOADFLOW_DIVERGENCE || e.getReason() == ReasonInvalid.UNKNOWN_TERMINAL_BUS) {
+            BUSINESS_WARNS.warn(String.format("%s for step value %s", e.getMessage(), formattedStepValueForLogs));
+
+            if (networkExporter != null && e.getReason() == ReasonInvalid.BALANCE_LOADFLOW_DIVERGENCE) {
+                try {
+                    networkExporter.export(network);
+                } catch (Exception ex) {
+                    BUSINESS_WARNS.warn("Exception occurred while exporting network", ex);
+                }
+            }
+
+            return DichotomyStepResult.fromFailure(e.getReason(), e.getMessage());
+        } else {
+            BUSINESS_WARNS.warn(String.format("Validation failed for step value %s", formattedStepValueForLogs));
+            return DichotomyStepResult.fromFailure(ReasonInvalid.VALIDATION_FAILED, e.getMessage());
+        }
+    }
+
     private String variantName(double stepValue, String initialVariant) {
         return String.format("%s-ScaledBy-%d", initialVariant, (int) stepValue);
+    }
+
+    public static <T> Builder<T> builder() {
+        return new Builder<>();
+    }
+
+    public static final class Builder<T> {
+        private Index<T> index;
+        private IndexStrategy<T> indexStrategy;
+        private InterruptionStrategy interruptionStrategy;
+        private NetworkShifter networkShifter;
+        private NetworkValidator<T> networkValidator;
+        private NetworkExporter networkExporter;
+        private int maxIteration = DEFAULT_MAX_ITERATION_NUMBER;
+        private String runId;
+
+        private Builder() {
+        }
+
+        public Builder<T> withIndex(Index<T> index) {
+            this.index = index;
+            return this;
+        }
+
+        public Builder<T> withIndexStrategy(IndexStrategy<T> indexStrategy) {
+            this.indexStrategy = indexStrategy;
+            return this;
+        }
+
+        public Builder<T> withInterruptionStrategy(InterruptionStrategy interruptionStrategy) {
+            this.interruptionStrategy = interruptionStrategy;
+            return this;
+        }
+
+        public Builder<T> withNetworkShifter(NetworkShifter networkShifter) {
+            this.networkShifter = networkShifter;
+            return this;
+        }
+
+        public Builder<T> withNetworkValidator(NetworkValidator<T> networkValidator) {
+            this.networkValidator = networkValidator;
+            return this;
+        }
+
+        public Builder<T> withNetworkExporter(NetworkExporter networkExporter) {
+            this.networkExporter = networkExporter;
+            return this;
+        }
+
+        public Builder<T> withMaxIteration(int maxIteration) {
+            this.maxIteration = maxIteration;
+            return this;
+        }
+
+        public Builder<T> withRunId(String runId) {
+            this.runId = runId;
+            return this;
+        }
+
+        public DichotomyEngine<T> build() {
+            return new DichotomyEngine<>(index, indexStrategy, interruptionStrategy, networkShifter, networkValidator, networkExporter, maxIteration, runId);
+        }
     }
 }
