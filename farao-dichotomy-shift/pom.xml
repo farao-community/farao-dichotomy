@@ -7,11 +7,11 @@
     <parent>
         <artifactId>farao-dichotomy</artifactId>
         <groupId>com.farao-community.farao</groupId>
-        <version>4.32.0-SNAPSHOT</version>
+        <version>4.32.0</version>
     </parent>
 
     <artifactId>farao-dichotomy-shift</artifactId>
-    <version>4.32.0-SNAPSHOT</version>
+    <version>4.32.0</version>
     <name>FARAO dichotomy shifts</name>
     <description>Shifts provider to perform classical shifts in FARAO dichotomy</description>
 
