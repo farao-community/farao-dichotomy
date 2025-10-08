@@ -92,7 +92,10 @@ public final class DichotomyStepResult<I> {
     }
 
     public boolean isFailed() {
-        return reasonInvalid == ReasonInvalid.GLSK_LIMITATION || reasonInvalid == ReasonInvalid.VALIDATION_FAILED;
+        return switch (reasonInvalid) {
+            case GLSK_LIMITATION, VALIDATION_FAILED, BALANCE_LOADFLOW_DIVERGENCE, UNKNOWN_TERMINAL_BUS -> true;
+            default -> false;
+        };
     }
 
     public String getFailureMessage() {
