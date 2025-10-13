@@ -72,17 +72,19 @@ class IndexTest {
 
     @Test
     void checkIfInBoundaries() {
-        //
+        //lowest ok
         Index<?> index = new Index<>(0, 1000, 100);
         index.addDichotomyStepResult(1e-4, DichotomyStepResult.fromFailure(ReasonInvalid.VALIDATION_FAILED, "test"));
         index.addDichotomyStepResult(999, DichotomyStepResult.fromNetworkValidationResult(new RaoResultMock(true), null));
         assertTrue(index.isInBounds());
 
+        //highest ok
         Index<?> index2 = new Index<>(0, 1000, 100);
         index2.addDichotomyStepResult(1, DichotomyStepResult.fromFailure(ReasonInvalid.VALIDATION_FAILED, "test"));
         index2.addDichotomyStepResult(999.99999999, DichotomyStepResult.fromNetworkValidationResult(new RaoResultMock(true), null));
         assertTrue(index2.isInBounds());
 
+        //none ok
         Index<?> index3 = new Index<>(0, 1000, 100);
         index3.addDichotomyStepResult(1, DichotomyStepResult.fromFailure(ReasonInvalid.VALIDATION_FAILED, "test"));
         index3.addDichotomyStepResult(999, DichotomyStepResult.fromNetworkValidationResult(new RaoResultMock(true), null));

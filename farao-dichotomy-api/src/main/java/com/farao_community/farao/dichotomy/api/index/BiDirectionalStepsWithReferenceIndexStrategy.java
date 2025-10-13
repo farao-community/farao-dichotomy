@@ -71,10 +71,10 @@ public class BiDirectionalStepsWithReferenceIndexStrategy<T> implements IndexStr
                 case VALIDATION_FAILED, UNSECURE_AFTER_VALIDATION ->
                     lowestUnsecureStep = lowestInvalidStep;
                 case GLSK_LIMITATION -> {
-                    if (index.lowestInvalidStep().getLeft() < referenceExchange) {
-                        closestGlskLimitationBelowReference = index.lowestInvalidStep();
+                    if (lowestInvalidStep.getLeft() < referenceExchange) {
+                        closestGlskLimitationBelowReference = lowestInvalidStep;
                     } else {
-                        closestGlskLimitationAboveReference = index.lowestInvalidStep();
+                        closestGlskLimitationAboveReference = lowestInvalidStep;
                     }
                 }
                 default -> {

@@ -60,8 +60,8 @@ public class Index<T> {
 
         if (hasMissingStep()
                 || highestValidStep.getLeft() == null
-                || lowestInvalidStep().getLeft() == null) {
-            throw new DichotomyException("trying to get mean voltage of non-existant steps");
+                || lowestInvalidStep.getLeft() == null) {
+            throw new DichotomyException("trying to get mean voltage of non-existent steps");
         }
 
         return (highestValidStep.getLeft() + lowestInvalidStep.getLeft()) / 2;
