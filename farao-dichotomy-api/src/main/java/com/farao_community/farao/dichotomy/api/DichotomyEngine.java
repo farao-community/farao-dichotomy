@@ -16,6 +16,7 @@ import com.farao_community.farao.dichotomy.api.index.Index;
 import com.farao_community.farao.dichotomy.api.index.IndexStrategy;
 import com.farao_community.farao.dichotomy.api.results.DichotomyResult;
 import com.farao_community.farao.dichotomy.api.results.DichotomyStepResult;
+import com.farao_community.farao.dichotomy.api.results.ReasonInvalid;
 import com.farao_community.farao.dichotomy.api.utils.Formatter;
 import com.powsybl.iidm.network.Network;
 
@@ -23,7 +24,6 @@ import java.util.Objects;
 
 import static com.farao_community.farao.dichotomy.api.logging.DichotomyLoggerProvider.BUSINESS_LOGS;
 import static com.farao_community.farao.dichotomy.api.logging.DichotomyLoggerProvider.BUSINESS_WARNS;
-import static com.farao_community.farao.dichotomy.api.results.ReasonInvalid.*;
 
 /**
  * Dichotomy engine.
@@ -77,16 +77,16 @@ public class DichotomyEngine<T> {
                 final double nextValue = indexStrategy.nextValue(index);
                 BUSINESS_LOGS.info(String.format("Next dichotomy step: %s", Formatter.formatDoubleDecimals(nextValue)));
                 try {
-                    final DichotomyStepResult<T> result = validate(nextValue,
+                    final DichotomyStepResult<T> currentStepResult = validate(nextValue,
                                                                    network,
                                                                    initialVariant,
                                                                    getLastDichotomyStepResult());
-                    logDichotomyStepResult(result, nextValue);
+                    logDichotomyStepResult(currentStepResult, nextValue);
 
-                    if (result.getReasonInvalid() == RAO_INTERRUPTION) {
+                    if (currentStepResult.getReasonInvalid() == ReasonInvalid.RAO_INTERRUPTION) {
                         return buildInterruptedResult();
                     } else {
-                        index.addDichotomyStepResult(nextValue, result);
+                        index.addDichotomyStepResult(nextValue, currentStepResult);
                     }
                     iterationCounter++;
                 } catch (final RaoFailureException e) {
@@ -118,7 +118,7 @@ public class DichotomyEngine<T> {
     private static <T> void logDichotomyStepResult(final DichotomyStepResult<T> dichotomyStepResult, final double nextValue) {
         if (dichotomyStepResult.isValid()) {
             BUSINESS_LOGS.info(String.format("Network at dichotomy step %s is secure", Formatter.formatDoubleDecimals(nextValue)));
-        } else if (dichotomyStepResult.getReasonInvalid() == RAO_INTERRUPTION) {
+        } else if (dichotomyStepResult.getReasonInvalid() == ReasonInvalid.RAO_INTERRUPTION) {
             BUSINESS_LOGS.info(String.format("Got interrupted before it could determine whether the network at dichotomy step %s is secure or not", Formatter.formatDoubleDecimals(nextValue)));
         } else {
             BUSINESS_LOGS.info(String.format("Network at dichotomy step %s is unsecure", Formatter.formatDoubleDecimals(nextValue)));
@@ -136,15 +136,15 @@ public class DichotomyEngine<T> {
             return networkValidator.validateNetwork(network, lastDichotomyStepResult);
         } catch (final GlskLimitationException e) {
             BUSINESS_WARNS.warn(String.format("GLSK limits have been reached for step value %s", formattedStepValueForLogs));
-            return DichotomyStepResult.fromFailure(GLSK_LIMITATION, e.getMessage());
+            return DichotomyStepResult.fromFailure(ReasonInvalid.GLSK_LIMITATION, e.getMessage());
         } catch (final ShiftingException e) {
             return handleShiftingException(e, network, formattedStepValueForLogs);
         } catch (final ValidationException e) {
             BUSINESS_WARNS.warn(String.format("Validation failed for step value %s", formattedStepValueForLogs));
-            return DichotomyStepResult.fromFailure(VALIDATION_FAILED, e.getMessage());
+            return DichotomyStepResult.fromFailure(ReasonInvalid.VALIDATION_FAILED, e.getMessage());
         } catch (final RaoInterruptionException e) {
             BUSINESS_WARNS.warn(String.format("RAO interrupted during step value %s", formattedStepValueForLogs));
-            return DichotomyStepResult.fromFailure(RAO_INTERRUPTION, e.getMessage());
+            return DichotomyStepResult.fromFailure(ReasonInvalid.RAO_INTERRUPTION, e.getMessage());
         } finally {
             network.getVariantManager().setWorkingVariant(initialVariant);
             network.getVariantManager().removeVariant(newVariant);
@@ -152,10 +152,10 @@ public class DichotomyEngine<T> {
     }
 
     private DichotomyStepResult<T> handleShiftingException(final ShiftingException e, final Network network, final String formattedStepValueForLogs) {
-        if (e.getReason() == BALANCE_LOADFLOW_DIVERGENCE || e.getReason() == UNKNOWN_TERMINAL_BUS) {
+        if (e.getReason() == ReasonInvalid.BALANCE_LOADFLOW_DIVERGENCE || e.getReason() == ReasonInvalid.UNKNOWN_TERMINAL_BUS) {
             BUSINESS_WARNS.warn(String.format("%s for step value %s", e.getMessage(), formattedStepValueForLogs));
 
-            if (networkExporter != null && e.getReason() == BALANCE_LOADFLOW_DIVERGENCE) {
+            if (networkExporter != null && e.getReason() == ReasonInvalid.BALANCE_LOADFLOW_DIVERGENCE) {
                 try {
                     networkExporter.export(network);
                 } catch (Exception ex) {
@@ -166,7 +166,7 @@ public class DichotomyEngine<T> {
             return DichotomyStepResult.fromFailure(e.getReason(), e.getMessage());
         } else {
             BUSINESS_WARNS.warn(String.format("Validation failed for step value %s", formattedStepValueForLogs));
-            return DichotomyStepResult.fromFailure(VALIDATION_FAILED, e.getMessage());
+            return DichotomyStepResult.fromFailure(ReasonInvalid.VALIDATION_FAILED, e.getMessage());
         }
     }
 

@@ -10,11 +10,7 @@ import com.farao_community.farao.dichotomy.api.results.DichotomyStepResult;
 import com.farao_community.farao.dichotomy.api.results.ReasonInvalid;
 import org.apache.commons.lang3.tuple.Pair;
 
-import java.util.Optional;
 import java.util.function.BiPredicate;
-
-import static com.farao_community.farao.dichotomy.api.results.DichotomyStepResult.fromFailure;
-import static com.farao_community.farao.dichotomy.api.results.ReasonInvalid.*;
 
 /**
  * @author Joris Mancini {@literal <joris.mancini at rte-france.com>}
@@ -66,38 +62,46 @@ public class BiDirectionalStepsWithReferenceIndexStrategy<T> implements IndexStr
         }
     }
 
-    private void updateDichotomyIntervalLimits(final Index<T> index) {
-        final Pair<Double, DichotomyStepResult<T>> lowestInvalid = index.lowestInvalidStep();
-        final ReasonInvalid reason = Optional.ofNullable(lowestInvalid)
-                                         .orElse(Pair.of(0D, fromFailure(ReasonInvalid.NONE, "")))
-                                         .getRight()
-                                         .getReasonInvalid();
-        if (reason == UNSECURE_AFTER_VALIDATION || reason == VALIDATION_FAILED) {
-            lowestUnsecureStep = lowestInvalid;
+    private void updateDichotomyIntervalLimits(Index<T> index) {
+        final Pair<Double, DichotomyStepResult<T>> lowestInvalidStep = index.lowestInvalidStep();
+        if (lowestInvalidStep != null) {
+            final ReasonInvalid reasonInvalid = lowestInvalidStep.getRight().getReasonInvalid();
+
+            switch (reasonInvalid) {
+                case VALIDATION_FAILED, UNSECURE_AFTER_VALIDATION ->
+                    lowestUnsecureStep = lowestInvalidStep;
+                case GLSK_LIMITATION -> {
+                    if (index.lowestInvalidStep().getLeft() < referenceExchange) {
+                        closestGlskLimitationBelowReference = index.lowestInvalidStep();
+                    } else {
+                        closestGlskLimitationAboveReference = index.lowestInvalidStep();
+                    }
+                }
+                default -> {
+                    //no operation
+                }
+            }
         }
         if (index.highestValidStep() != null) {
             highestSecureStep = index.highestValidStep();
         }
 
-        if (reason == GLSK_LIMITATION) {
-            if (lowestInvalid != null && lowestInvalid.getLeft() < referenceExchange) {
-                closestGlskLimitationBelowReference = lowestInvalid;
-            } else {
-                closestGlskLimitationAboveReference = lowestInvalid;
-            }
-        }
         highestAdmissibleStep = getHighestAdmissibleStep(closestGlskLimitationBelowReference, highestSecureStep);
         lowestInadmissibleStep = getLowestInAdmissibleStep(lowestUnsecureStep, closestGlskLimitationAboveReference);
     }
 
     private Pair<Double, DichotomyStepResult<T>> getHighestAdmissibleStep(final Pair<Double, DichotomyStepResult<T>> closestGlskLimitationBelowReference,
                                                                           final Pair<Double, DichotomyStepResult<T>> highestSecureStep) {
-        return testAndGetStep(closestGlskLimitationBelowReference, highestSecureStep, (t, u) -> t > u);
+        return testAndGetStep(closestGlskLimitationBelowReference,
+                              highestSecureStep,
+                              (res1, res2) -> res1 > res2);
     }
 
     private Pair<Double, DichotomyStepResult<T>> getLowestInAdmissibleStep(final Pair<Double, DichotomyStepResult<T>> lowestUnsecureStep,
                                                                            final Pair<Double, DichotomyStepResult<T>> closestGlskLimitationAboveReference) {
-        return testAndGetStep(lowestUnsecureStep, closestGlskLimitationAboveReference, (t, u) -> t < u);
+        return testAndGetStep(lowestUnsecureStep,
+                              closestGlskLimitationAboveReference,
+                              (res1, res2) -> res1 < res2);
     }
 
     private Pair<Double, DichotomyStepResult<T>> testAndGetStep(final Pair<Double, DichotomyStepResult<T>> below,

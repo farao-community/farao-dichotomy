@@ -27,7 +27,7 @@ import static com.farao_community.farao.dichotomy.api.results.ReasonInvalid.UNSE
  * @author Sebastien Murgey {@literal <sebastien.murgey at rte-france.com>}
  */
 public class Index<T> {
-    public static double EPSILON = 1e-3;
+    public static final double EPSILON = 1e-3;
     private final double minValue;
     private final double maxValue;
     private final double precision;
@@ -57,15 +57,18 @@ public class Index<T> {
     }
 
     public double meanOfStepVoltages() {
+
+        if (hasMissingStep()
+                || highestValidStep.getLeft() == null
+                || lowestInvalidStep().getLeft() == null) {
+            throw new DichotomyException("trying to get mean voltage of non-existant steps");
+        }
+
         return (highestValidStep.getLeft() + lowestInvalidStep.getLeft()) / 2;
     }
 
     public boolean hasMissingStep() {
         return highestValidStep == null || lowestInvalidStep == null;
-    }
-
-    public boolean hasAllSteps() {
-        return !hasMissingStep();
     }
 
     public Pair<Double, DichotomyStepResult<T>> highestValidStep() {
@@ -97,7 +100,7 @@ public class Index<T> {
     }
 
     public boolean isWithinPrecision() {
-        return Math.abs(highestValidStep.getLeft() - lowestInvalidStep.getLeft()) <= precision;
+        return !hasMissingStep() && Math.abs(highestValidStep.getLeft() - lowestInvalidStep.getLeft()) <= precision;
     }
 
     private boolean isStepAroundBound(final Pair<Double, DichotomyStepResult<T>> step, final double bound) {
@@ -105,7 +108,8 @@ public class Index<T> {
     }
 
     public boolean isInBounds() {
-        return isStepAroundBound(lowestInvalidStep, minValue) || isStepAroundBound(highestValidStep, maxValue);
+        return isStepAroundBound(lowestInvalidStep, minValue)
+                   || isStepAroundBound(highestValidStep, maxValue);
     }
 
 }
