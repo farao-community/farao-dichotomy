@@ -43,15 +43,12 @@ public class HalfRangeDivisionIndexStrategy<T> implements IndexStrategy<T> {
                 return (index.lowestInvalidStep().getLeft() + index.minValue()) / 2;
             }
         }
-        return (index.lowestInvalidStep().getLeft() + index.highestValidStep().getLeft()) / 2;
+        return index.meanOfStepVoltages();
     }
 
     @Override
     public boolean precisionReached(Index<T> index) {
-        if (index.lowestInvalidStep() != null && Math.abs(index.lowestInvalidStep().getLeft() - index.minValue()) < EPSILON) {
-            return true;
-        }
-        if (index.highestValidStep() != null && Math.abs(index.highestValidStep().getLeft() - index.maxValue()) < EPSILON) {
+        if (index.isInBounds()) {
             return true;
         }
         if (index.lowestInvalidStep() != null && index.highestValidStep() == null) {
@@ -60,6 +57,6 @@ public class HalfRangeDivisionIndexStrategy<T> implements IndexStrategy<T> {
         if (index.lowestInvalidStep() == null) {
             return false;
         }
-        return Math.abs(index.highestValidStep().getLeft() - index.lowestInvalidStep().getLeft()) <= index.precision();
+        return index.isWithinPrecision();
     }
 }

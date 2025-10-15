@@ -35,7 +35,7 @@ public class BiDirectionalStepsWithReferenceIndexStrategy<T> implements IndexStr
     }
 
     @Override
-    public double nextValue(Index<T> index) {
+    public double nextValue(final Index<T> index) {
         updateDichotomyIntervalLimits(index);
         if (highestAdmissibleStep == null && lowestInadmissibleStep == null) {
             return startIndex;
@@ -49,60 +49,75 @@ public class BiDirectionalStepsWithReferenceIndexStrategy<T> implements IndexStr
     }
 
     @Override
-    public boolean precisionReached(Index<T> index) {
+    public boolean precisionReached(final Index<T> index) {
         updateDichotomyIntervalLimits(index);
         if (highestAdmissibleStep == null && lowestInadmissibleStep == null) {
             return false;
         } else if (highestAdmissibleStep == null) {
-            return Math.abs(lowestInadmissibleStep.getLeft() - index.minValue()) < EPSILON;
+            return Math.abs(lowestInadmissibleStep.getLeft() - index.minValue()) < Index.EPSILON;
         } else if (lowestInadmissibleStep == null) {
-            return Math.abs(highestAdmissibleStep.getLeft() - index.maxValue()) < EPSILON;
+            return Math.abs(highestAdmissibleStep.getLeft() - index.maxValue()) < Index.EPSILON;
         } else {
             return Math.abs(highestAdmissibleStep.getLeft() - lowestInadmissibleStep.getLeft()) < index.precision();
         }
     }
 
     private void updateDichotomyIntervalLimits(Index<T> index) {
-        if (index.lowestInvalidStep() != null &&
-            (index.lowestInvalidStep().getRight().getReasonInvalid().equals(ReasonInvalid.UNSECURE_AFTER_VALIDATION)
-                || index.lowestInvalidStep().getRight().getReasonInvalid().equals(ReasonInvalid.VALIDATION_FAILED))) {
-            lowestUnsecureStep = index.lowestInvalidStep();
+        final Pair<Double, DichotomyStepResult<T>> lowestInvalidStep = index.lowestInvalidStep();
+        if (lowestInvalidStep != null) {
+            final ReasonInvalid reasonInvalid = lowestInvalidStep.getRight().getReasonInvalid();
+
+            switch (reasonInvalid) {
+                case VALIDATION_FAILED, UNSECURE_AFTER_VALIDATION ->
+                    lowestUnsecureStep = lowestInvalidStep;
+                case GLSK_LIMITATION -> {
+                    if (lowestInvalidStep.getLeft() < referenceExchange) {
+                        closestGlskLimitationBelowReference = lowestInvalidStep;
+                    } else {
+                        closestGlskLimitationAboveReference = lowestInvalidStep;
+                    }
+                }
+                default -> {
+                    //no operation
+                }
+            }
         }
         if (index.highestValidStep() != null) {
             highestSecureStep = index.highestValidStep();
         }
 
-        if (index.lowestInvalidStep() != null && index.lowestInvalidStep().getRight().getReasonInvalid().equals(ReasonInvalid.GLSK_LIMITATION)) {
-            if (index.lowestInvalidStep().getLeft() < referenceExchange) {
-                closestGlskLimitationBelowReference = index.lowestInvalidStep();
-            } else {
-                closestGlskLimitationAboveReference = index.lowestInvalidStep();
-            }
-        }
         highestAdmissibleStep = getHighestAdmissibleStep(closestGlskLimitationBelowReference, highestSecureStep);
         lowestInadmissibleStep = getLowestInAdmissibleStep(lowestUnsecureStep, closestGlskLimitationAboveReference);
     }
 
-    private Pair<Double, DichotomyStepResult<T>> getHighestAdmissibleStep(Pair<Double, DichotomyStepResult<T>> closestGlskLimitationBelowReference, Pair<Double, DichotomyStepResult<T>> highestSecureStep) {
-        return testAndGetStep(closestGlskLimitationBelowReference, highestSecureStep, (t, u) -> t > u);
+    private Pair<Double, DichotomyStepResult<T>> getHighestAdmissibleStep(final Pair<Double, DichotomyStepResult<T>> closestGlskLimitationBelowReference,
+                                                                          final Pair<Double, DichotomyStepResult<T>> highestSecureStep) {
+        return testAndGetStep(closestGlskLimitationBelowReference,
+                              highestSecureStep,
+                              (res1, res2) -> res1 > res2);
     }
 
-    private Pair<Double, DichotomyStepResult<T>> getLowestInAdmissibleStep(Pair<Double, DichotomyStepResult<T>> lowestUnsecureStep, Pair<Double, DichotomyStepResult<T>> closestGlskLimitationAboveReference) {
-        return testAndGetStep(lowestUnsecureStep, closestGlskLimitationAboveReference, (t, u) -> t < u);
+    private Pair<Double, DichotomyStepResult<T>> getLowestInAdmissibleStep(final Pair<Double, DichotomyStepResult<T>> lowestUnsecureStep,
+                                                                           final Pair<Double, DichotomyStepResult<T>> closestGlskLimitationAboveReference) {
+        return testAndGetStep(lowestUnsecureStep,
+                              closestGlskLimitationAboveReference,
+                              (res1, res2) -> res1 < res2);
     }
 
-    private Pair<Double, DichotomyStepResult<T>> testAndGetStep(Pair<Double, DichotomyStepResult<T>> step1, Pair<Double, DichotomyStepResult<T>> step2, BiPredicate<Double, Double> biPredicate) {
-        if (step1 == null && step2 == null) {
+    private Pair<Double, DichotomyStepResult<T>> testAndGetStep(final Pair<Double, DichotomyStepResult<T>> below,
+                                                                final Pair<Double, DichotomyStepResult<T>> above,
+                                                                final BiPredicate<Double, Double> rule) {
+        if (below == null && above == null) {
             return null;
-        } else if (step1 == null) {
-            return step2;
-        } else if (step2 == null) {
-            return step1;
-        } else { // step1 && step2 are != null
-            if (biPredicate.test(step1.getLeft(), step2.getLeft())) {
-                return step1;
+        } else if (below == null) {
+            return above;
+        } else if (above == null) {
+            return below;
+        } else { // if steps below and above reference are not null
+            if (rule.test(below.getLeft(), above.getLeft())) {
+                return below;
             } else {
-                return step2;
+                return above;
             }
         }
     }

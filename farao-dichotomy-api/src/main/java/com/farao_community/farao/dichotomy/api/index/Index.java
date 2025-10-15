@@ -8,11 +8,12 @@ package com.farao_community.farao.dichotomy.api.index;
 
 import com.farao_community.farao.dichotomy.api.exceptions.DichotomyException;
 import com.farao_community.farao.dichotomy.api.results.DichotomyStepResult;
-import com.farao_community.farao.dichotomy.api.results.ReasonInvalid;
 import org.apache.commons.lang3.tuple.Pair;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import static com.farao_community.farao.dichotomy.api.results.ReasonInvalid.UNSECURE_AFTER_VALIDATION;
 
 /**
  * Object responsible for storing the dichotomy index state during dichotomy calculation.
@@ -26,6 +27,7 @@ import java.util.List;
  * @author Sebastien Murgey {@literal <sebastien.murgey at rte-france.com>}
  */
 public class Index<T> {
+    public static final double EPSILON = 1e-3;
     private final double minValue;
     private final double maxValue;
     private final double precision;
@@ -54,6 +56,21 @@ public class Index<T> {
         return precision;
     }
 
+    public double meanOfStepVoltages() {
+
+        if (hasMissingStep()
+                || highestValidStep.getLeft() == null
+                || lowestInvalidStep.getLeft() == null) {
+            throw new DichotomyException("Trying to get mean voltage of non-existent steps");
+        }
+
+        return (highestValidStep.getLeft() + lowestInvalidStep.getLeft()) / 2;
+    }
+
+    public boolean hasMissingStep() {
+        return highestValidStep == null || lowestInvalidStep == null;
+    }
+
     public Pair<Double, DichotomyStepResult<T>> highestValidStep() {
         return highestValidStep;
     }
@@ -73,13 +90,26 @@ public class Index<T> {
             }
             highestValidStep = Pair.of(stepValue, stepResult);
         } else {
-            if (lowestInvalidStep != null && lowestInvalidStep.getRight().getReasonInvalid().equals(ReasonInvalid.UNSECURE_AFTER_VALIDATION)
+            if (lowestInvalidStep != null && lowestInvalidStep.getRight().getReasonInvalid() == UNSECURE_AFTER_VALIDATION
                 && lowestInvalidStep.getLeft() < stepValue) {
                 throw new AssertionError("Step result tested is unsecure but its value is higher than lowest unsecure step one. Should not happen");
             }
             lowestInvalidStep = Pair.of(stepValue, stepResult);
         }
         stepResults.add(Pair.of(stepValue, stepResult));
+    }
+
+    public boolean isWithinPrecision() {
+        return !hasMissingStep() && Math.abs(highestValidStep.getLeft() - lowestInvalidStep.getLeft()) <= precision;
+    }
+
+    private boolean isStepAroundBound(final Pair<Double, DichotomyStepResult<T>> step, final double bound) {
+        return step != null && Math.abs(step.getLeft() - bound) < EPSILON;
+    }
+
+    public boolean isInBounds() {
+        return isStepAroundBound(lowestInvalidStep, minValue)
+                   || isStepAroundBound(highestValidStep, maxValue);
     }
 
 }

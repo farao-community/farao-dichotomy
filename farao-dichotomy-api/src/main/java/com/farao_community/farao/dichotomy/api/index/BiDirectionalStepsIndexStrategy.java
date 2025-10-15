@@ -19,7 +19,7 @@ public class BiDirectionalStepsIndexStrategy<T> implements IndexStrategy<T> {
     }
 
     @Override
-    public double nextValue(Index<T> index) {
+    public double nextValue(final Index<T> index) {
         if (precisionReached(index)) {
             throw new AssertionError("Dichotomy engine should not ask for next value if precision is reached");
         }
@@ -31,7 +31,7 @@ public class BiDirectionalStepsIndexStrategy<T> implements IndexStrategy<T> {
         } else if (index.lowestInvalidStep() == null) {
             return Math.min(index.maxValue(), index.highestValidStep().getLeft() + stepSize);
         } else {
-            return (index.lowestInvalidStep().getLeft() + index.highestValidStep().getLeft()) / 2;
+            return index.meanOfStepVoltages();
         }
     }
 }
