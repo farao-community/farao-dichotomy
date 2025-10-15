@@ -113,7 +113,7 @@ public class BiDirectionalStepsWithReferenceIndexStrategy<T> implements IndexStr
             return above;
         } else if (above == null) {
             return below;
-        } else { // step1 && step2 are != null
+        } else { // if steps below and above reference are not null
             if (rule.test(below.getLeft(), above.getLeft())) {
                 return below;
             } else {
