@@ -21,7 +21,7 @@ public class RangeDivisionIndexStrategy<T> implements IndexStrategy<T> {
     }
 
     @Override
-    public double nextValue(Index<T> index) {
+    public double nextValue(final Index<T> index) {
         if (precisionReached(index)) {
             throw new AssertionError("Dichotomy engine should not ask for next value if precision is reached");
         }
@@ -40,6 +40,6 @@ public class RangeDivisionIndexStrategy<T> implements IndexStrategy<T> {
                 return index.minValue();
             }
         }
-        return (index.lowestInvalidStep().getLeft() + index.highestValidStep().getLeft()) / 2;
+        return index.meanOfStepVoltages();
     }
 }

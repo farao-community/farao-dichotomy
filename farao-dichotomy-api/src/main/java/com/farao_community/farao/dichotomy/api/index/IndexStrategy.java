@@ -15,21 +15,17 @@ package com.farao_community.farao.dichotomy.api.index;
  * @author Sebastien Murgey {@literal <sebastien.murgey at rte-france.com>}
  */
 public interface IndexStrategy<T> {
-    double EPSILON = 1e-3;
 
     double nextValue(Index<T> index);
 
-    default boolean precisionReached(Index<T> index) {
-        if (index.lowestInvalidStep() != null && Math.abs(index.lowestInvalidStep().getLeft() - index.minValue()) < EPSILON) {
+    default boolean precisionReached(final Index<T> index) {
+        if (index.isInBounds()) {
             return true;
-        }
-        if (index.highestValidStep() != null && Math.abs(index.highestValidStep().getLeft() - index.maxValue()) < EPSILON) {
-            return true;
-        }
-        if (index.lowestInvalidStep() == null || index.highestValidStep() == null) {
+        } else if (index.hasMissingStep()) {
             return false;
+        } else {
+            return index.isWithinPrecision();
         }
-        return Math.abs(index.highestValidStep().getLeft() - index.lowestInvalidStep().getLeft()) <= index.precision();
     }
 
 }

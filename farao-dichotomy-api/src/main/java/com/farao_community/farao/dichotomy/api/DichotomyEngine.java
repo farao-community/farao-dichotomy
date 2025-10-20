@@ -65,28 +65,31 @@ public class DichotomyEngine<T> {
         this.runId = runId;
     }
 
-    public DichotomyResult<T> run(Network network) {
+    public DichotomyResult<T> run(final Network network) {
         int iterationCounter = 0;
-        String initialVariant = network.getVariantManager().getWorkingVariantId();
+        final String initialVariant = network.getVariantManager().getWorkingVariantId();
         String raoFailure = null;
 
         while (!indexStrategy.precisionReached(index) && iterationCounter < maxIteration && raoFailure == null) {
             if (interruptionStrategy != null && interruptionStrategy.shouldRunBeInterruptedSoftly(runId)) {
                 return buildInterruptedResult();
             } else {
-                double nextValue = indexStrategy.nextValue(index);
+                final double nextValue = indexStrategy.nextValue(index);
                 BUSINESS_LOGS.info(String.format("Next dichotomy step: %s", Formatter.formatDoubleDecimals(nextValue)));
                 try {
-                    DichotomyStepResult<T> lastDichotomyStepResult = getLastDichotomyStepResult();
-                    DichotomyStepResult<T> dichotomyStepResult = validate(nextValue, network, initialVariant, lastDichotomyStepResult);
-                    logDichotomyStepResult(dichotomyStepResult, nextValue);
-                    if (dichotomyStepResult.getReasonInvalid().equals(ReasonInvalid.RAO_INTERRUPTION)) {
+                    final DichotomyStepResult<T> currentStepResult = validate(nextValue,
+                                                                   network,
+                                                                   initialVariant,
+                                                                   getLastDichotomyStepResult());
+                    logDichotomyStepResult(currentStepResult, nextValue);
+
+                    if (currentStepResult.getReasonInvalid() == ReasonInvalid.RAO_INTERRUPTION) {
                         return buildInterruptedResult();
                     } else {
-                        index.addDichotomyStepResult(nextValue, dichotomyStepResult);
+                        index.addDichotomyStepResult(nextValue, currentStepResult);
                     }
                     iterationCounter++;
-                } catch (RaoFailureException e) {
+                } catch (final RaoFailureException e) {
                     raoFailure = e.getMessage();
                 }
             }
@@ -115,14 +118,15 @@ public class DichotomyEngine<T> {
     private static <T> void logDichotomyStepResult(final DichotomyStepResult<T> dichotomyStepResult, final double nextValue) {
         if (dichotomyStepResult.isValid()) {
             BUSINESS_LOGS.info(String.format("Network at dichotomy step %s is secure", Formatter.formatDoubleDecimals(nextValue)));
-        } else if (dichotomyStepResult.getReasonInvalid().equals(ReasonInvalid.RAO_INTERRUPTION)) {
+        } else if (dichotomyStepResult.getReasonInvalid() == ReasonInvalid.RAO_INTERRUPTION) {
             BUSINESS_LOGS.info(String.format("Got interrupted before it could determine whether the network at dichotomy step %s is secure or not", Formatter.formatDoubleDecimals(nextValue)));
         } else {
             BUSINESS_LOGS.info(String.format("Network at dichotomy step %s is unsecure", Formatter.formatDoubleDecimals(nextValue)));
         }
     }
 
-    DichotomyStepResult<T> validate(double stepValue, Network network, String initialVariant, DichotomyStepResult<T> lastDichotomyStepResult) throws RaoFailureException {
+    DichotomyStepResult<T> validate(final double stepValue, final Network network,
+                                    final String initialVariant, final DichotomyStepResult<T> lastDichotomyStepResult) throws RaoFailureException {
         final String newVariant = variantName(stepValue, initialVariant);
         network.getVariantManager().cloneVariant(initialVariant, newVariant);
         network.getVariantManager().setWorkingVariant(newVariant);
@@ -130,15 +134,15 @@ public class DichotomyEngine<T> {
         try {
             networkShifter.shiftNetwork(stepValue, network);
             return networkValidator.validateNetwork(network, lastDichotomyStepResult);
-        } catch (GlskLimitationException e) {
+        } catch (final GlskLimitationException e) {
             BUSINESS_WARNS.warn(String.format("GLSK limits have been reached for step value %s", formattedStepValueForLogs));
             return DichotomyStepResult.fromFailure(ReasonInvalid.GLSK_LIMITATION, e.getMessage());
-        } catch (ShiftingException e) {
+        } catch (final ShiftingException e) {
             return handleShiftingException(e, network, formattedStepValueForLogs);
-        } catch (ValidationException e) {
+        } catch (final ValidationException e) {
             BUSINESS_WARNS.warn(String.format("Validation failed for step value %s", formattedStepValueForLogs));
             return DichotomyStepResult.fromFailure(ReasonInvalid.VALIDATION_FAILED, e.getMessage());
-        } catch (RaoInterruptionException e) {
+        } catch (final RaoInterruptionException e) {
             BUSINESS_WARNS.warn(String.format("RAO interrupted during step value %s", formattedStepValueForLogs));
             return DichotomyStepResult.fromFailure(ReasonInvalid.RAO_INTERRUPTION, e.getMessage());
         } finally {
@@ -166,7 +170,7 @@ public class DichotomyEngine<T> {
         }
     }
 
-    private String variantName(double stepValue, String initialVariant) {
+    private String variantName(final double stepValue, final String initialVariant) {
         return String.format("%s-ScaledBy-%d", initialVariant, (int) stepValue);
     }
 
@@ -187,42 +191,42 @@ public class DichotomyEngine<T> {
         private Builder() {
         }
 
-        public Builder<T> withIndex(Index<T> index) {
+        public Builder<T> withIndex(final Index<T> index) {
             this.index = index;
             return this;
         }
 
-        public Builder<T> withIndexStrategy(IndexStrategy<T> indexStrategy) {
+        public Builder<T> withIndexStrategy(final IndexStrategy<T> indexStrategy) {
             this.indexStrategy = indexStrategy;
             return this;
         }
 
-        public Builder<T> withInterruptionStrategy(InterruptionStrategy interruptionStrategy) {
+        public Builder<T> withInterruptionStrategy(final InterruptionStrategy interruptionStrategy) {
             this.interruptionStrategy = interruptionStrategy;
             return this;
         }
 
-        public Builder<T> withNetworkShifter(NetworkShifter networkShifter) {
+        public Builder<T> withNetworkShifter(final NetworkShifter networkShifter) {
             this.networkShifter = networkShifter;
             return this;
         }
 
-        public Builder<T> withNetworkValidator(NetworkValidator<T> networkValidator) {
+        public Builder<T> withNetworkValidator(final NetworkValidator<T> networkValidator) {
             this.networkValidator = networkValidator;
             return this;
         }
 
-        public Builder<T> withNetworkExporter(NetworkExporter networkExporter) {
+        public Builder<T> withNetworkExporter(final NetworkExporter networkExporter) {
             this.networkExporter = networkExporter;
             return this;
         }
 
-        public Builder<T> withMaxIteration(int maxIteration) {
+        public Builder<T> withMaxIteration(final int maxIteration) {
             this.maxIteration = maxIteration;
             return this;
         }
 
-        public Builder<T> withRunId(String runId) {
+        public Builder<T> withRunId(final String runId) {
             this.runId = runId;
             return this;
         }

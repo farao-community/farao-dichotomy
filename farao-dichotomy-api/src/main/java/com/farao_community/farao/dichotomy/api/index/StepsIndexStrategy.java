@@ -51,6 +51,6 @@ public class StepsIndexStrategy<T> implements IndexStrategy<T> {
                 return Math.max(index.lowestInvalidStep().getLeft() - increaseValueBeforeDichotomy, index.minValue());
             }
         }
-        return (index.lowestInvalidStep().getLeft() + index.highestValidStep().getLeft()) / 2;
+        return index.meanOfStepVoltages();
     }
 }
