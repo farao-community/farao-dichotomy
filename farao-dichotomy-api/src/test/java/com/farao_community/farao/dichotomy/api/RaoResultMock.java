@@ -6,8 +6,8 @@
  */
 package com.farao_community.farao.dichotomy.api;
 
+import com.powsybl.commons.extensions.Extension;
 import com.powsybl.iidm.network.TwoSides;
-import com.powsybl.openrao.commons.MinOrMax;
 import com.powsybl.openrao.commons.PhysicalParameter;
 import com.powsybl.openrao.commons.Unit;
 import com.powsybl.openrao.data.crac.api.Instant;
@@ -23,6 +23,8 @@ import com.powsybl.openrao.data.raoresult.api.ComputationStatus;
 import com.powsybl.openrao.data.raoresult.api.RaoResult;
 import org.apache.commons.lang3.NotImplementedException;
 
+import java.util.Collection;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -55,11 +57,6 @@ public class RaoResultMock implements RaoResult {
 
     @Override
     public double getAngle(Instant optimizedInstant, AngleCnec angleCnec, Unit unit) {
-        return 0;
-    }
-
-    @Override
-    public double getVoltage(Instant optimizedInstant, VoltageCnec voltageCnec, MinOrMax minOrMax, Unit unit) {
         return 0;
     }
 
@@ -215,5 +212,31 @@ public class RaoResultMock implements RaoResult {
     @Override
     public boolean isSecure() {
         return secure;
+    }
+
+    @Override
+    public <E extends Extension<RaoResult>> void addExtension(final Class<? super E> type,
+                                                              final E extension) {
+
+    }
+
+    @Override
+    public <E extends Extension<RaoResult>> E getExtension(final Class<? super E> type) {
+        return null;
+    }
+
+    @Override
+    public <E extends Extension<RaoResult>> E getExtensionByName(final String name) {
+        return null;
+    }
+
+    @Override
+    public <E extends Extension<RaoResult>> boolean removeExtension(final Class<E> type) {
+        return false;
+    }
+
+    @Override
+    public <E extends Extension<RaoResult>> Collection<E> getExtensions() {
+        return List.of();
     }
 }

@@ -49,7 +49,7 @@
         <argLine /> <!-- required for java agent declaration, do not remove -->
         <logback.classic.version>1.5.12</logback.classic.version>
         <mockito.core.version>5.14.2</mockito.core.version>
-        <farao.dependencies.version>1.43.0</farao.dependencies.version>
+        <farao.dependencies.version>1.44.1</farao.dependencies.version>
         <assertj-core.version>3.26.3</assertj-core.version>
     </properties>
 
