@@ -31,7 +31,7 @@ import static com.farao_community.farao.dichotomy.api.logging.DichotomyLoggerPro
  * @author Joris Mancini {@literal <joris.mancini at rte-france.com>}
  */
 public final class LinearScaler implements NetworkShifter {
-    private static final double DEFAULT_EPSILON = 1e-3;
+    private static final double DEFAULT_EPSILON = 1e-2;
 
     private final ZonalData<Scalable> zonalScalable;
     private final ShiftDispatcher shiftDispatcher;
