@@ -49,12 +49,19 @@
         <argLine /> <!-- required for java agent declaration, do not remove -->
         <logback.classic.version>1.5.12</logback.classic.version>
         <mockito.core.version>5.14.2</mockito.core.version>
-        <farao.dependencies.version>1.46.0</farao.dependencies.version>
+        <farao.dependencies.version>1.47.0</farao.dependencies.version>
         <assertj-core.version>3.26.3</assertj-core.version>
+        <jackson-annotations.version>2.21</jackson-annotations.version>
     </properties>
 
     <dependencyManagement>
         <dependencies>
+            <dependency>
+                <!-- To fix version compatible with powsybl -->
+                <groupId>com.fasterxml.jackson.core</groupId>
+                <artifactId>jackson-annotations</artifactId>
+                <version>${jackson-annotations.version}</version>
+            </dependency>
             <dependency>
                 <groupId>ch.qos.logback</groupId>
                 <artifactId>logback-classic</artifactId>
