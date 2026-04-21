@@ -6,12 +6,15 @@
  */
 package com.farao_community.farao.dichotomy.api.index;
 
+import com.farao_community.farao.dichotomy.api.results.DichotomyStepResult;
+import org.apache.commons.lang3.tuple.Pair;
+
 /**
  * Implementation of IndexStrategy that consists of a basic dichotomy between minimum index value and maximum one.
  * First, it will validate minimum or maximum value (depending on startWitnMin value) and then validate recursively
  * the middle of the dichotomy interval.
  * I.E. if startWithMin is true then we start with min value then (min + max) / 2 value
- * if startWithMin is false then we start with max value then (min + max) / 2 value
+ * if startWithMin is false then we start with (min + max) / 2 value
  *
  * @author Marc Schwitzguebel {@literal <marc.schwitzguebel at rte-france.com>}
  */
@@ -28,22 +31,34 @@ public class HalfRangeDivisionIndexStrategy<T> implements IndexStrategy<T> {
         if (precisionReached(index)) {
             throw new AssertionError("Dichotomy engine should not ask for next value if precision is reached");
         }
+        final double maxValue = index.maxValue();
+        final double minValue = index.minValue();
+        final Pair<Double, DichotomyStepResult<T>> highestValidStep = index.highestValidStep();
+        final Pair<Double, DichotomyStepResult<T>> lowestValidStep = index.lowestInvalidStep();
         if (startWithMin) {
-            if (index.highestValidStep() == null) {
-                return index.minValue();
+            if (highestValidStep == null) {
+                return minValue;
             }
-            if (index.lowestInvalidStep() == null) {
-                return (index.maxValue() + index.highestValidStep().getLeft()) / 2;
+            if (lowestValidStep == null) {
+                return mid(highestValidStep.getLeft(), maxValue);
             }
         } else {
-            if (index.lowestInvalidStep() == null) {
-                return index.maxValue();
+            //coreso request for swe process: start the dichotomy with (max + min) /2
+            if (lowestValidStep == null && highestValidStep == null) {
+                return mid(minValue, maxValue);
             }
-            if (index.highestValidStep() == null) {
-                return (index.lowestInvalidStep().getLeft() + index.minValue()) / 2;
+            if (lowestValidStep == null && highestValidStep != null) {
+                return mid(highestValidStep.getLeft(), maxValue);
+            }
+            if (highestValidStep == null) {
+                return mid(minValue, lowestValidStep.getLeft());
             }
         }
         return index.meanOfStepVoltages();
+    }
+
+    private double mid(double min, double max) {
+        return (min + max) / 2.0;
     }
 
     @Override
