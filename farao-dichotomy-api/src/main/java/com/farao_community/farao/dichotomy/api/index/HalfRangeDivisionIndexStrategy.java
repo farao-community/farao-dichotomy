@@ -34,24 +34,24 @@ public class HalfRangeDivisionIndexStrategy<T> implements IndexStrategy<T> {
         final double maxValue = index.maxValue();
         final double minValue = index.minValue();
         final Pair<Double, DichotomyStepResult<T>> highestValidStep = index.highestValidStep();
-        final Pair<Double, DichotomyStepResult<T>> lowestValidStep = index.lowestInvalidStep();
+        final Pair<Double, DichotomyStepResult<T>> lowestInvalidStep = index.lowestInvalidStep();
         if (startWithMin) {
             if (highestValidStep == null) {
                 return minValue;
             }
-            if (lowestValidStep == null) {
+            if (lowestInvalidStep == null) {
                 return mid(highestValidStep.getLeft(), maxValue);
             }
         } else {
             //coreso request for swe process: start the dichotomy with (max + min) /2
-            if (lowestValidStep == null && highestValidStep == null) {
+            if (lowestInvalidStep == null && highestValidStep == null) {
                 return mid(minValue, maxValue);
             }
-            if (lowestValidStep == null && highestValidStep != null) {
+            if (lowestInvalidStep == null) {
                 return mid(highestValidStep.getLeft(), maxValue);
             }
             if (highestValidStep == null) {
-                return mid(minValue, lowestValidStep.getLeft());
+                return mid(minValue, lowestInvalidStep.getLeft());
             }
         }
         return index.meanOfStepVoltages();
