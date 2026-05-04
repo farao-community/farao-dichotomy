@@ -59,7 +59,7 @@ class HalfRangeDivisionIndexStrategyTest {
     }
 
     @Test
-    void nextValueStartWithMidTest() {
+    void nextValueStartWithMidSecureStepResultTest() {
         final Index<Boolean> index = new Index<>(MIN_VALUE, MAX_VALUE, PRECISION);
         final HalfRangeDivisionIndexStrategy strategy = new HalfRangeDivisionIndexStrategy<>(false);
         assertEquals(MID_VALUE, strategy.nextValue(index), PRECISION);
@@ -70,7 +70,7 @@ class HalfRangeDivisionIndexStrategyTest {
     }
 
     @Test
-    void nextValueStartWithMidTest2() {
+    void nextValueStartWithMidInsecureStepResultTest() {
         final Index<Boolean> index = new Index<>(MIN_VALUE, MAX_VALUE, PRECISION);
         final HalfRangeDivisionIndexStrategy strategy = new HalfRangeDivisionIndexStrategy<>(false);
         assertEquals(MID_VALUE, strategy.nextValue(index), PRECISION);
