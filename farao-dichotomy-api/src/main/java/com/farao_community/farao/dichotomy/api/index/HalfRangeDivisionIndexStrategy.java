@@ -44,14 +44,10 @@ public class HalfRangeDivisionIndexStrategy<T> implements IndexStrategy<T> {
             }
         } else {
             //coreso request for swe process: start the dichotomy with (max + min) /2
-            if (lowestInvalidStep == null && highestValidStep == null) {
-                return mid(minValue, maxValue);
-            }
-            if (lowestInvalidStep == null) {
-                return mid(highestValidStep.getLeft(), maxValue);
-            }
             if (highestValidStep == null) {
-                return mid(minValue, lowestInvalidStep.getLeft());
+                return mid(minValue, getInvalidStep(index));
+            } else {
+                return mid(index.highestValidStep().getLeft(), getInvalidStep(index));
             }
         }
         return index.meanOfStepVoltages();
@@ -69,9 +65,19 @@ public class HalfRangeDivisionIndexStrategy<T> implements IndexStrategy<T> {
         if (index.lowestInvalidStep() != null && index.highestValidStep() == null) {
             return Math.abs(index.lowestInvalidStep().getLeft() - index.minValue()) <= index.precision();
         }
-        if (index.lowestInvalidStep() == null) {
+        if (!startWithMin && index.lowestInvalidStep() == null && index.highestValidStep() != null) {
+            return Math.abs(index.maxValue() - index.highestValidStep().getLeft()) <= index.precision();
+        }
+        if (startWithMin && index.lowestInvalidStep() == null) {
             return false;
         }
         return index.isWithinPrecision();
     }
+
+    private double getInvalidStep(Index<T> index) {
+        return index.lowestInvalidStep() != null
+                ? index.lowestInvalidStep().getLeft()
+                : index.maxValue();
+    }
+
 }
