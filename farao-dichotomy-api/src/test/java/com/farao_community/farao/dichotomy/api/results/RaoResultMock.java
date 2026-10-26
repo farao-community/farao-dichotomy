@@ -8,7 +8,6 @@ package com.farao_community.farao.dichotomy.api.results;
 
 import com.powsybl.commons.extensions.Extension;
 import com.powsybl.iidm.network.TwoSides;
-import com.powsybl.openrao.commons.PhysicalParameter;
 import com.powsybl.openrao.commons.Unit;
 import com.powsybl.openrao.data.crac.api.Instant;
 import com.powsybl.openrao.data.crac.api.RemedialAction;
@@ -33,11 +32,9 @@ import java.util.Set;
  */
 public class RaoResultMock implements RaoResult {
     private final double cost;
-    private final boolean secure;
 
     public RaoResultMock(boolean secure) {
         this.cost = secure ? -10 : 10;
-        this.secure = secure;
     }
 
     @Override
@@ -197,21 +194,6 @@ public class RaoResultMock implements RaoResult {
     @Override
     public void setExecutionDetails(final String s) {
         // do nothing: this is a mock
-    }
-
-    @Override
-    public boolean isSecure(Instant instant, PhysicalParameter... physicalParameters) {
-        return secure;
-    }
-
-    @Override
-    public boolean isSecure(PhysicalParameter... physicalParameters) {
-        return secure;
-    }
-
-    @Override
-    public boolean isSecure() {
-        return secure;
     }
 
     @Override

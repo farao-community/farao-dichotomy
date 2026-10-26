@@ -10,15 +10,33 @@ import com.farao_community.farao.dichotomy.api.exceptions.DichotomyException;
 import com.farao_community.farao.dichotomy.api.results.DichotomyStepResult;
 import com.farao_community.farao.dichotomy.api.results.RaoResultMock;
 import com.farao_community.farao.dichotomy.api.results.ReasonInvalid;
+import com.powsybl.openrao.data.crac.api.Crac;
+import com.powsybl.openrao.raoapi.parameters.NotOptimizedCnecsParameters;
+import com.powsybl.openrao.raoapi.parameters.RaoParameters;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import static com.farao_community.farao.dichotomy.api.index.Index.EPSILON;
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 /**
  * @author Sebastien Murgey {@literal <sebastien.murgey at rte-france.com>}
  */
 class IndexTest {
+    private static RaoParameters raoParameters;
+    private static Crac crac;
+
+    @BeforeEach
+    void setUp() {
+        crac = mock(Crac.class);
+        raoParameters = mock(RaoParameters.class);
+        when(raoParameters.getNotOptimizedCnecsParameters()).thenReturn(mock(NotOptimizedCnecsParameters.class));
+    }
 
     @Test
     void checkStandardIndexManipulation() {
@@ -50,7 +68,7 @@ class IndexTest {
         index.addDichotomyStepResult(700, DichotomyStepResult.fromFailure(ReasonInvalid.VALIDATION_FAILED, "test"));
         //fromFailure -> we got an invalid step, but no valid
         assertTrue(index.hasMissingStep());
-        index.addDichotomyStepResult(800, DichotomyStepResult.fromNetworkValidationResult(new RaoResultMock(true), null));
+        index.addDichotomyStepResult(800, DichotomyStepResult.fromNetworkValidationResult(new RaoResultMock(true), null, crac, raoParameters));
         //then we got both
         assertFalse(index.hasMissingStep());
     }
@@ -60,11 +78,11 @@ class IndexTest {
         Index<?> index = new Index<>(0, 1000, 100);
         //difference is above 100
         index.addDichotomyStepResult(699, DichotomyStepResult.fromFailure(ReasonInvalid.VALIDATION_FAILED, "test"));
-        index.addDichotomyStepResult(800, DichotomyStepResult.fromNetworkValidationResult(new RaoResultMock(true), null));
+        index.addDichotomyStepResult(800, DichotomyStepResult.fromNetworkValidationResult(new RaoResultMock(true), null, crac, raoParameters));
         assertFalse(index.isWithinPrecision());
         //difference is less than 100
         index.addDichotomyStepResult(750, DichotomyStepResult.fromFailure(ReasonInvalid.VALIDATION_FAILED, "test"));
-        index.addDichotomyStepResult(830, DichotomyStepResult.fromNetworkValidationResult(new RaoResultMock(true), null));
+        index.addDichotomyStepResult(830, DichotomyStepResult.fromNetworkValidationResult(new RaoResultMock(true), null, crac, raoParameters));
         assertTrue(index.isWithinPrecision());
         //790 = (830+750)/2
         assertEquals(790, index.meanOfStepVoltages());
@@ -75,19 +93,19 @@ class IndexTest {
         //lowest ok
         Index<?> index = new Index<>(0, 1000, 100);
         index.addDichotomyStepResult(1e-4, DichotomyStepResult.fromFailure(ReasonInvalid.VALIDATION_FAILED, "test"));
-        index.addDichotomyStepResult(999, DichotomyStepResult.fromNetworkValidationResult(new RaoResultMock(true), null));
+        index.addDichotomyStepResult(999, DichotomyStepResult.fromNetworkValidationResult(new RaoResultMock(true), null, crac, raoParameters));
         assertTrue(index.isInBounds());
 
         //highest ok
         Index<?> index2 = new Index<>(0, 1000, 100);
         index2.addDichotomyStepResult(1, DichotomyStepResult.fromFailure(ReasonInvalid.VALIDATION_FAILED, "test"));
-        index2.addDichotomyStepResult(999.99999999, DichotomyStepResult.fromNetworkValidationResult(new RaoResultMock(true), null));
+        index2.addDichotomyStepResult(999.99999999, DichotomyStepResult.fromNetworkValidationResult(new RaoResultMock(true), null, crac, raoParameters));
         assertTrue(index2.isInBounds());
 
         //none ok
         Index<?> index3 = new Index<>(0, 1000, 100);
         index3.addDichotomyStepResult(1, DichotomyStepResult.fromFailure(ReasonInvalid.VALIDATION_FAILED, "test"));
-        index3.addDichotomyStepResult(999, DichotomyStepResult.fromNetworkValidationResult(new RaoResultMock(true), null));
+        index3.addDichotomyStepResult(999, DichotomyStepResult.fromNetworkValidationResult(new RaoResultMock(true), null, crac, raoParameters));
         assertFalse(index3.isInBounds());
     }
 }

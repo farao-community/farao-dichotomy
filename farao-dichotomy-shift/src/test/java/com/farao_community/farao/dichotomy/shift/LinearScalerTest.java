@@ -17,6 +17,9 @@ import com.powsybl.glsk.api.io.GlskDocumentImporters;
 import com.powsybl.glsk.commons.ZonalData;
 import com.powsybl.iidm.modification.scalable.Scalable;
 import com.powsybl.iidm.network.Network;
+import com.powsybl.openrao.data.crac.api.Crac;
+import com.powsybl.openrao.raoapi.parameters.NotOptimizedCnecsParameters;
+import com.powsybl.openrao.raoapi.parameters.RaoParameters;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
@@ -25,6 +28,8 @@ import java.util.Map;
 import java.util.Objects;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 /**
  * @author Joris Mancini {@literal <joris.mancini at rte-france.com>}
@@ -34,9 +39,15 @@ class LinearScalerTest {
     private ZonalData<Scalable> zonalScalable;
     private NetworkValidator<?> networkValidator;
     private ShiftDispatcher shiftDispatcher;
+    private static RaoParameters raoParameters;
+    private static Crac crac;
 
     @BeforeEach
     void setUp() {
+        crac = mock(Crac.class);
+        raoParameters = mock(RaoParameters.class);
+        when(raoParameters.getNotOptimizedCnecsParameters()).thenReturn(mock(NotOptimizedCnecsParameters.class));
+
         String networkFilename = "20210901_2230_test_network.uct";
         network = Network.read(networkFilename, getClass().getResourceAsStream(networkFilename));
 
@@ -50,7 +61,7 @@ class LinearScalerTest {
     }
 
     private <I> DichotomyStepResult<I> getStepResult(boolean secure) {
-        return DichotomyStepResult.fromNetworkValidationResult(new RaoResultMock(secure), null);
+        return DichotomyStepResult.fromNetworkValidationResult(new RaoResultMock(secure), null, crac, raoParameters);
     }
 
     @Test
@@ -68,6 +79,7 @@ class LinearScalerTest {
         Mockito.when(shiftDispatcher.dispatch(200)).thenReturn(Map.of(
                 "10YCH-SWISSGRIDZ", 200.
         ));
+        // FIXME : Unfinished stubbing detected here
         Mockito.when(networkValidator.validateNetwork(network, null)).thenReturn(getStepResult(true));
 
         LinearScaler linearScaler = new LinearScaler(zonalScalable, shiftDispatcher);
@@ -81,6 +93,7 @@ class LinearScalerTest {
         Mockito.when(shiftDispatcher.dispatch(200)).thenReturn(Map.of(
                 "10YCH-SWISSGRIDZ", 200.
         ));
+        // FIXME : Unfinished stubbing detected here
         Mockito.when(networkValidator.validateNetwork(network, null)).thenReturn(getStepResult(false));
 
         LinearScaler linearScaler = new LinearScaler(zonalScalable, shiftDispatcher);

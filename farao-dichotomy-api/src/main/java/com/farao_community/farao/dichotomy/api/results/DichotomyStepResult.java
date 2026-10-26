@@ -7,7 +7,10 @@
 package com.farao_community.farao.dichotomy.api.results;
 
 import com.powsybl.openrao.commons.PhysicalParameter;
+import com.powsybl.openrao.data.crac.api.Crac;
 import com.powsybl.openrao.data.raoresult.api.RaoResult;
+import com.powsybl.openrao.raoapi.parameters.RaoParameters;
+import com.powsybl.openrao.util.RaoResultHelper;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 
 /**
@@ -20,7 +23,8 @@ public final class DichotomyStepResult<I> {
     private final ReasonInvalid reasonInvalid;
     private final String failureMessage;
 
-    private DichotomyStepResult(ReasonInvalid reasonInvalid, String failureMessage) {
+    private DichotomyStepResult(ReasonInvalid reasonInvalid,
+                                String failureMessage) {
         this.secure = false;
         this.raoResult = null;
         this.validationData = null;
@@ -28,11 +32,18 @@ public final class DichotomyStepResult<I> {
         this.failureMessage = failureMessage;
     }
 
-    private DichotomyStepResult(RaoResult raoResult, I validationData) {
-        this(raoResult, validationData, raoResult.isSecure(PhysicalParameter.FLOW) && raoResult.isSecure(PhysicalParameter.ANGLE));
+    private DichotomyStepResult(RaoResult raoResult,
+                                I validationData,
+                                Crac crac,
+                                RaoParameters raoParameters) {
+        this(raoResult, validationData,
+             RaoResultHelper.isSecure(raoResult, crac, raoParameters, PhysicalParameter.FLOW) &&
+             RaoResultHelper.isSecure(raoResult, crac, raoParameters, PhysicalParameter.ANGLE));
     }
 
-    private DichotomyStepResult(RaoResult raoResult, I validationData, boolean secure) {
+    private DichotomyStepResult(RaoResult raoResult,
+                                I validationData,
+                                boolean secure) {
         this.raoResult = raoResult;
         this.validationData = validationData;
         this.secure = secure;
@@ -46,7 +57,7 @@ public final class DichotomyStepResult<I> {
      * there are the two only failure reasons that could qualify the {@link DichotomyStepResult} within
      * {@link ReasonInvalid} enumeration.
      *
-     * @param reasonInvalid: Qualify invalidity for failure, either GLSK_LIMITATION or VALIDATION_FAILURE
+     * @param reasonInvalid:  Qualify invalidity for failure, either GLSK_LIMITATION or VALIDATION_FAILURE
      * @param failureMessage: Additional information that could come from the original error or be created
      * @return An 'empty' {@link DichotomyStepResult} that contains only meta-information on invalidity reasons
      */
@@ -60,11 +71,13 @@ public final class DichotomyStepResult<I> {
      * According to that corresponding {@link ReasonInvalid} would be chosen: {@code NONE} for a secured network --
      * which is then valid -- and {@code UNSECURE_AFTER_VALIDATION} for an unsecured network.
      *
-     * @return A network dichotomy step result containing validation data and meta-data about its security
+     * @return A network dichotomy step result containing validation data and metadata about its security
      */
     public static <J> DichotomyStepResult<J> fromNetworkValidationResult(RaoResult raoResult,
-                                                                         J validationData) {
-        return new DichotomyStepResult<>(raoResult, validationData);
+                                                                         J validationData,
+                                                                         Crac crac,
+                                                                         RaoParameters raoParameters) {
+        return new DichotomyStepResult<>(raoResult, validationData, crac, raoParameters);
     }
 
     /**
@@ -75,7 +88,7 @@ public final class DichotomyStepResult<I> {
      * According to that corresponding {@link ReasonInvalid} would be chosen: {@code NONE} for a secured network --
      * which is then valid -- and {@code UNSECURE_AFTER_VALIDATION} for an unsecured network.
      *
-     * @return A network dichotomy step result containing validation data and meta-data about its security
+     * @return A network dichotomy step result containing validation data and metadata about its security
      */
     public static <J> DichotomyStepResult<J> fromNetworkValidationResult(RaoResult raoResult,
                                                                          J validationData,

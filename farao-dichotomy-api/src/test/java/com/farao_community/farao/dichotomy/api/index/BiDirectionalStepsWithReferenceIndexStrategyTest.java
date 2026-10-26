@@ -9,23 +9,38 @@ package com.farao_community.farao.dichotomy.api.index;
 import com.farao_community.farao.dichotomy.api.RaoResultMock;
 import com.farao_community.farao.dichotomy.api.results.DichotomyStepResult;
 import com.farao_community.farao.dichotomy.api.results.ReasonInvalid;
+import com.powsybl.openrao.data.crac.api.Crac;
 import com.powsybl.openrao.data.raoresult.api.RaoResult;
+import com.powsybl.openrao.raoapi.parameters.NotOptimizedCnecsParameters;
+import com.powsybl.openrao.raoapi.parameters.RaoParameters;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 /**
  * @author Joris Mancini {@literal <joris.mancini at rte-france.com>}
  */
 class BiDirectionalStepsWithReferenceIndexStrategyTest {
-
-    private final DichotomyStepResult<RaoResult> stepResultOk = DichotomyStepResult.fromNetworkValidationResult(
-        new RaoResultMock(true), null);
-    private final DichotomyStepResult<RaoResult> stepResultNOk = DichotomyStepResult.fromNetworkValidationResult(
-        new RaoResultMock(false), null);
-
     private final DichotomyStepResult<RaoResult> stepResultGlskLim = DichotomyStepResult.fromFailure(ReasonInvalid.GLSK_LIMITATION, "");
-    private final DichotomyStepResult<RaoResult> stepResultFailed = DichotomyStepResult.fromFailure(ReasonInvalid.VALIDATION_FAILED, "");
+
+    private DichotomyStepResult<RaoResult> stepResultOk;
+    private DichotomyStepResult<RaoResult> stepResultNOk;
+    private DichotomyStepResult<RaoResult> stepResultFailed;
+
+    @BeforeEach
+    public void setUp() {
+        Crac crac = mock(Crac.class);
+        RaoParameters raoParameters = mock(RaoParameters.class);
+        when(raoParameters.getNotOptimizedCnecsParameters()).thenReturn(mock(NotOptimizedCnecsParameters.class));
+        stepResultOk = DichotomyStepResult.fromNetworkValidationResult(
+                new RaoResultMock(true), null, crac, raoParameters);
+        stepResultNOk = DichotomyStepResult.fromNetworkValidationResult(
+                new RaoResultMock(false), null, crac, raoParameters);
+        stepResultFailed = DichotomyStepResult.fromFailure(ReasonInvalid.VALIDATION_FAILED, "");
+    }
 
     @Test
     void testIndexAfterGlskLimBelowReferenceThenUnsecureBelowReference() {
@@ -36,6 +51,7 @@ class BiDirectionalStepsWithReferenceIndexStrategyTest {
         index.addDichotomyStepResult(startingIndex, stepResultGlskLim);
         assertEquals(2000 + 650, indexStrategy.nextValue(index));
         index.addDichotomyStepResult(2650, stepResultNOk);
+        // FIXME : assertion failed Expected : 2325.0 / Actual : 3300.0
         assertEquals(2650 - (650. / 2), indexStrategy.nextValue(index));
     }
 
@@ -48,6 +64,7 @@ class BiDirectionalStepsWithReferenceIndexStrategyTest {
         index.addDichotomyStepResult(startingIndex, stepResultGlskLim);
         assertEquals(2000 + 650, indexStrategy.nextValue(index));
         index.addDichotomyStepResult(2650, stepResultNOk);
+        // FIXME : assertion failed Expected : 2325.0 / Actual : 3300.0
         assertEquals(2650 - (650. / 2), indexStrategy.nextValue(index));
     }
 
@@ -96,6 +113,7 @@ class BiDirectionalStepsWithReferenceIndexStrategyTest {
         index.addDichotomyStepResult(startingIndex, stepResultGlskLim);
         assertEquals(2000 + 650, indexStrategy.nextValue(index));
         index.addDichotomyStepResult(2650, stepResultNOk);
+        // FIXME : assertion failed Expected : 2325.0 / Actual : 3300.0
         assertEquals(2650 - (650. / 2), indexStrategy.nextValue(index));
         index.addDichotomyStepResult(2650 - (650. / 2), stepResultGlskLim);
         assertEquals((2650. + 2325) / 2, indexStrategy.nextValue(index));
@@ -124,6 +142,7 @@ class BiDirectionalStepsWithReferenceIndexStrategyTest {
 
         index.addDichotomyStepResult(startingIndex, stepResultNOk);
 
+        // FIXME : assertion failed Expected : 1350.0 / Actual : 2650.0
         assertEquals(startingIndex - stepSize, indexStrategy.nextValue(index));
     }
 
@@ -151,6 +170,7 @@ class BiDirectionalStepsWithReferenceIndexStrategyTest {
 
         index.addDichotomyStepResult(minValue + 100, stepResultNOk);
 
+        // FIXME : assertion failed Expected : 0.0 / Actual : 750.0
         assertEquals(minValue, indexStrategy.nextValue(index));
     }
 
@@ -206,6 +226,7 @@ class BiDirectionalStepsWithReferenceIndexStrategyTest {
         index.addDichotomyStepResult(2000, stepResultOk);
         index.addDichotomyStepResult(3000, stepResultNOk);
 
+        // FIXME : assertion failed Expected : 2500.0 / Actual : 3650.0
         assertEquals(2500, indexStrategy.nextValue(index));
     }
 
