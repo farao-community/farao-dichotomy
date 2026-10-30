@@ -200,17 +200,7 @@ public class RaoResultMock implements RaoResult {
     }
 
     @Override
-    public boolean isSecure(Instant instant, PhysicalParameter... physicalParameters) {
-        return secure;
-    }
-
-    @Override
     public boolean isSecure(PhysicalParameter... physicalParameters) {
-        return secure;
-    }
-
-    @Override
-    public boolean isSecure() {
         return secure;
     }
 
