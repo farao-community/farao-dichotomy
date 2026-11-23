@@ -22,23 +22,21 @@ public class HalfRangeFromMaxDivisionIndexStrategy<T> implements IndexStrategy<T
         if (precisionReached(index)) {
             throw new AssertionError("Dichotomy engine should not ask for next value if precision is reached");
         }
-        final double maxValue = index.maxValue();
-        final double minValue = index.minValue();
         final Pair<Double, DichotomyStepResult<T>> highestValidStep = index.highestValidStep();
         final Pair<Double, DichotomyStepResult<T>> lowestInvalidStep = index.lowestInvalidStep();
 
         if (lowestInvalidStep == null) {
-            return maxValue;
+            return index.maxValue();
         }
         if (highestValidStep == null) {
-            return mid(index.lowestInvalidStep().getLeft(), minValue);
+            return mean(index.lowestInvalidStep().getLeft(), index.minValue());
         }
 
         return index.meanOfStepVoltages();
     }
 
-    private double mid(double min,
-                       double max) {
+    private double mean(double min,
+                        double max) {
         return (min + max) / 2.0;
     }
 
