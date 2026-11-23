@@ -10,7 +10,7 @@ import com.farao_community.farao.dichotomy.api.results.DichotomyStepResult;
 import org.apache.commons.lang3.tuple.Pair;
 
 /**
- * Implementation of IndexStrategy that consists of a basic dichotomy between minimum index value and maximum one.
+ * Implementation of IndexStrategy that consists in a basic dichotomy between minimum index value and maximum one.
  * First, it will validate maximum value and then validate recursively the middle of the dichotomy interval.
  *
  * @author Marc Schwitzguebel {@literal <marc.schwitzguebel at rte-france.com>}
